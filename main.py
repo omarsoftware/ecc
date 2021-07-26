@@ -1,3 +1,7 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
 from tkinter import *
 from constants import *
 
@@ -16,7 +20,25 @@ ecdsa_frame = Frame(root, width=500, height=500)
 point_operations_label = Label(point_operations_frame, text="Analysis of Elliptic Curves Point Operations").pack()
 def point_operations():
     hide_all_frames()
+    '''
+    a = -1
+    b = 1
+    y, x = np.ogrid[-5:5:100j, -5:5:100j]
+    plt.contour(x.ravel(), y.ravel(), pow(y, 2) - pow(x, 3) - x * a - b, [0])        
+    plt.grid()
+    plt.show()
+    '''
+    fig = Figure(figsize=(5, 5), dpi=100)
+    y = [i**2 for i in range(101)]
+    plot1 = fig.add_subplot(111)
+    plot1.plot(y)
+    canvas = FigureCanvasTkAgg(fig, master=point_operations_frame)
+    canvas.draw()
+    canvas.get_tk_widget().pack()
+    toolbar = NavigationToolbar2Tk(canvas, point_operations_frame)
+    toolbar.update()
     point_operations_frame.pack(fill="both", expand=1)
+
 
 ecdh_label = Label(ecdh_frame, text="Elliptic-Curve Diffie-Hellman algorithm").pack()
 def ecdh():
