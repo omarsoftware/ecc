@@ -1,2 +1,2 @@
 # Global constants
-screen_size = "500x500"
+screen_size = "800x800"
