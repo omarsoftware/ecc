@@ -75,7 +75,14 @@ ecdh_label = Label(ecdh_frame, text="Elliptic-Curve Diffie-Hellman algorithm").p
 def ecdh():
     hide_all_frames()
     ecdh_frame.pack(fill="both", expand=1)
-
+    curve = EllipticCurve(-7, 10)
+    p = Point(1, 2)
+    q = Point(3, 4)
+    r = curve.point_addition(p, q)
+    print("-------")
+    print(r.get_x())
+    print("-------")
+    print(r.get_y())
 
 
 

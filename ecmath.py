@@ -1,3 +1,21 @@
+class Point:
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+    def set_x(self, x):
+        self.x = x
+
+    def get_x(self):
+        return self.x
+
+    def set_y(self, y):
+        self.y = y
+
+    def get_y(self):
+        return self.y
+
+
 class EllipticCurve:
     def __init__(self, a, b):
         self.a = a
@@ -21,20 +39,15 @@ class EllipticCurve:
     def belongsToCurve(self, point):
         return (point.get_y**2) == ((point.get_x**3)+self.a*self.x+self.b)
 
+    def point_addition(self, point_p, point_q):
+        alpha = (point_q.get_y() - point_p.get_y())/(point_q.get_x() - point_p.get_x())
 
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        point_r = Point()
+        point_r.set_x(alpha**2 - point_p.get_x() - point_q.get_x())
+        point_r.set_y(alpha*(point_r.get_x() - point_p.get_x()) + point_p.get_y())
 
-    def set_x(self, x):
-        self.x = x
+        point_pq = Point()
+        point_pq.set_x(alpha**2 - point_p.get_x() - point_q.get_x())
+        point_pq.set_y(alpha*(point_p.get_x() - point_r.get_x()) - point_p.get_y())
 
-    def get_x(self):
-        return self.x
-
-    def set_y(self, y):
-        self.y = y
-
-    def get_y(self):
-        return self.y
+        return point_pq
