@@ -4,6 +4,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from tkinter import *
 from constants import *
+from ecmath import *
 
 root = Tk()
 root.title('Analysis of Elliptic Curve Cryptography')
@@ -30,7 +31,7 @@ def update(a, b, frame):
 
     canvas = FigureCanvasTkAgg(fig, master=frame)  # A tk.DrawingArea.
     canvas.draw()
-    canvas.get_tk_widget().pack()
+    canvas.get_tk_widget().pack() 
 
 
 def point_operations():
@@ -75,11 +76,13 @@ def ecdh():
     hide_all_frames()
     ecdh_frame.pack(fill="both", expand=1)
 
+
+
+
 ecdsa_label = Label(ecdsa_frame, text="Elliptic-Curve Digital Signature Algorithm").pack()
 def ecdsa():
     hide_all_frames()
     ecdsa_frame.pack(fill="both", expand=1)
-
 
 #Creating exit
 file_menu = Menu(main_menu)
