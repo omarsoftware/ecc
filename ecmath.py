@@ -51,3 +51,29 @@ class EllipticCurve:
         point_pq.set_y(alpha*(point_p.get_x() - point_r.get_x()) - point_p.get_y())
 
         return point_pq
+
+    def point_doubling(self, point):
+        alpha = (3 * point.get_x() ** 2 + self.get_a()) / (2 * point.get_y())
+
+        point_r = Point()
+        point_r.set_x(alpha ** 2 - 2 * point.get_x())
+        point_r.set_y(alpha*(point.get_x() - point_r.get_x()) - point.get_y())
+
+        return point_r
+
+    def point_mult(self, point, k):
+        point_r = self.point_doubling(point)
+        for x in range(k-2):
+            point_r = self.point_addition(point, point_r)
+
+        return point_r
+
+
+
+
+
+
+
+
+
+
