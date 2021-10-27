@@ -16,7 +16,7 @@ class Point:
         return self.y
 
     def print(self):
-        return "("+str(self.x)+", "+str(self.y)+")"
+        return "("+str(round(self.x, 5))+", "+str(round(self.y, 5))+")"
 
 
 class EllipticCurve:
