@@ -15,6 +15,9 @@ class Point:
     def get_y(self):
         return self.y
 
+    def print(self):
+        return "("+str(self.x)+", "+str(self.y)+")"
+
 
 class EllipticCurve:
     def __init__(self, a, b):
@@ -68,6 +71,22 @@ class EllipticCurve:
 
         return point_r
 
+class User:
+    def __init__(self):
+        self.privKey = 0
+        self.pubKey = 0
+
+    def setPrivKey(self, privKey):
+        self.privKey = privKey
+
+    def getPrivKey(self):
+        return self.privKey
+
+    def setPubKey(self, pubKey):
+        self.pubKey = pubKey
+
+    def getPubKey(self):
+        return self.pubKey
 
 
 
