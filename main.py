@@ -11,10 +11,6 @@ app = Start(root)
 app.start()
 
 '''
-#Hide all frames
-def hide_all_frames():
-    point_operations_frame.pack_forget()
-    ecdh_frame.pack_forget()
-    ecdsa_frame.pack_forget()
+
 '''
 root.mainloop()
