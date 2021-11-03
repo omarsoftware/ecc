@@ -6,12 +6,22 @@ class Ecdh:
         self.master = master
         self.app = app
         self.frame = tk.Frame(self.master)
-        tk.Label(self.frame, text='ECDH Page!!!').pack()
-        tk.Entry(self.frame).pack()
-        # tk.Button(self.frame, text='Go back', command=self.go_back).pack()
+
+        title = tk.Label(self.frame, text='ECDH Page!!!').grid(row=0, column=0)
+
+        blank = tk.Label(self.frame, text='       ')
+        blank.grid(row=1, column=0)
+
+        bob_label = tk.Label(self.frame, text='Bob:').grid(row=2, column=0)
+        bob_priv = tk.Entry(self.frame).grid(row=3, column=0)
+        bob_pub = tk.Entry(self.frame).grid(row=4, column=0)
+
+        alice_label = tk.Label(self.frame, text='Alice:').grid(row=5, column=0)
+        alice_priv = tk.Entry(self.frame).grid(row=6, column=0)
+        alice_pub = tk.Entry(self.frame).grid(row=7, column=0)
 
     def start_page(self):
-        self.frame.pack()
+        self.frame.grid(column=0, row=0, sticky="NWES")
 
     def go_back(self):
         self.frame.pack_forget()

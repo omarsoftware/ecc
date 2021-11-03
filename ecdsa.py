@@ -6,14 +6,13 @@ class Ecdsa:
         self.master = master
         self.app = app
         self.frame = tk.Frame(self.master)
-        tk.Label(self.frame, text='ECDSA Page!!!').pack()
-        # tk.Button(self.frame, text='Go back', command=self.go_back).pack()
+        tk.Label(self.frame, text='ECDSA Page!!!').grid()
 
     def start_page(self):
-        self.frame.pack()
+        self.frame.grid()
 
     def go_back(self):
-        self.frame.pack_forget()
+        self.frame.grid_forget()
         self.app.main_page()
 
     def get_frame(self):

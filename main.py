@@ -9,6 +9,9 @@ class App:
     def __init__(self, root=None):
         self.root = root
         self.root.geometry(cons.screen_size)
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
         self.frame = tk.Frame(self.root)
 
         self.main_menu = tk.Menu(self.root)
@@ -32,10 +35,9 @@ class App:
         encrypt_menu.add_command(label="Elliptic-Curve Digital Signature Algorithm (ECDSA)",
                                  command=self.make_ecdsa)
 
+        self.frame.grid()
 
-        self.frame.pack()
-
-        tk.Label(self.frame, text='Main page').pack()
+        tk.Label(self.frame, text='Main page').grid()
 
         self.point_operations = PointOperations(master=self.root, app=self)
         self.ecdh = Ecdh(master=self.root, app=self)
@@ -44,26 +46,26 @@ class App:
         self.pages = [self.point_operations, self.ecdh, self.ecdsa]
 
     def main_page(self):
-        self.frame.pack()
+        self.frame.grid()
 
     def make_ecdh(self):
-        self.frame.pack_forget()
+        self.frame.grid_forget()
         self.hide_all_frames()
         self.ecdh.start_page()
 
     def make_ecdsa(self):
-        self.frame.pack_forget()
+        self.frame.grid_forget()
         self.hide_all_frames()
         self.ecdsa.start_page()
 
     def make_point_operations(self):
-        self.frame.pack_forget()
+        self.frame.grid_forget()
         self.hide_all_frames()
         self.point_operations.start_page()
 
     def hide_all_frames(self):
         for page in self.pages:
-            page.get_frame().pack_forget()
+            page.get_frame().grid_forget()
 
 
 if __name__ == '__main__':
