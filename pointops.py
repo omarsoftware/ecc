@@ -1,10 +1,32 @@
+'''
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from tkinter import *
+'''
 
+import tkinter as tk
+import constants as cons
 
+class PointOperations:
+    def __init__(self, master=None, app=None):
+        self.master = master
+        self.app = app
+        self.frame = tk.Frame(self.master)
+        tk.Label(self.frame, text='Point Operations Page!!!').pack()
+        # tk.Button(self.frame, text='Go back', command=self.go_back).pack()
+
+    def start_page(self):
+        self.frame.pack()
+
+    def go_back(self):
+        self.frame.pack_forget()
+        self.app.main_page()
+
+    def get_frame(self):
+        return self.frame
+    '''
 class PointOps:
 
     def __init__(self, frame):
@@ -63,3 +85,4 @@ class PointOps:
         update_graph.pack()
 
         self.frame.pack(fill="both", expand=1)
+    '''

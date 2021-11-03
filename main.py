@@ -1,5 +1,8 @@
 import tkinter as tk
 import constants as cons
+from ecdh import Ecdh
+from ecdsa import Ecdsa
+from pointops import PointOperations
 
 
 class App:
@@ -38,7 +41,7 @@ class App:
         self.ecdh = Ecdh(master=self.root, app=self)
         self.ecdsa = Ecdsa(master=self.root, app=self)
 
-        self.classes = [self.point_operations, self.ecdh, self.ecdsa]
+        self.pages = [self.point_operations, self.ecdh, self.ecdsa]
 
     def main_page(self):
         self.frame.pack()
@@ -59,66 +62,8 @@ class App:
         self.point_operations.start_page()
 
     def hide_all_frames(self):
-        for i in self.classes:
-            i.get_frame().pack_forget()
-
-
-class Ecdh:
-    def __init__(self, master=None, app=None):
-        self.master = master
-        self.app = app
-        self.frame = tk.Frame(self.master)
-        tk.Label(self.frame, text='ECDH Page!!!').pack()
-        tk.Entry(self.frame).pack()
-        # tk.Button(self.frame, text='Go back', command=self.go_back).pack()
-
-    def start_page(self):
-        self.frame.pack()
-
-    def go_back(self):
-        self.frame.pack_forget()
-        self.app.main_page()
-
-    def get_frame(self):
-        return self.frame
-
-
-class Ecdsa:
-    def __init__(self, master=None, app=None):
-        self.master = master
-        self.app = app
-        self.frame = tk.Frame(self.master)
-        tk.Label(self.frame, text='ECDSA Page!!!').pack()
-        # tk.Button(self.frame, text='Go back', command=self.go_back).pack()
-
-    def start_page(self):
-        self.frame.pack()
-
-    def go_back(self):
-        self.frame.pack_forget()
-        self.app.main_page()
-
-    def get_frame(self):
-        return self.frame
-
-
-class PointOperations:
-    def __init__(self, master=None, app=None):
-        self.master = master
-        self.app = app
-        self.frame = tk.Frame(self.master)
-        tk.Label(self.frame, text='Point Operations Page!!!').pack()
-        # tk.Button(self.frame, text='Go back', command=self.go_back).pack()
-
-    def start_page(self):
-        self.frame.pack()
-
-    def go_back(self):
-        self.frame.pack_forget()
-        self.app.main_page()
-
-    def get_frame(self):
-        return self.frame
+        for page in self.pages:
+            page.get_frame().pack_forget()
 
 
 if __name__ == '__main__':
