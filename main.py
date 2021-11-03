@@ -1,53 +1,52 @@
-# Multi-frame tkinter application v2.3
 import tkinter as tk
 import constants as cons
 
 
-class SampleApp(tk.Tk):
+class App:
+    def __init__(self, root=None):
+        self.root = root
+        self.root.geometry(cons.screen_size)
+        self.frame = tk.Frame(self.root)
 
-    def __init__(self):
-        tk.Tk.__init__(self)
-        self._frame = None
-        self.switch_frame(StartPage)
+        self.main_menu = tk.Menu(self.root)
+        self.root.config(menu=self.main_menu)
 
-    def switch_frame(self, frame_class):
-        """Destroys current frame and replaces it with a new one."""
-        new_frame = frame_class(self)
-        if self._frame is not None:
-            self._frame.destroy()
-        self._frame = new_frame
-        self._frame.pack()
+        # Creating exit
+        file_menu = tk.Menu(self.main_menu)
+        self.main_menu.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="Exit", command=self.root.quit)
 
+        self.frame.pack()
+        tk.Label(self.frame, text='Main page').pack()
+        tk.Button(self.frame, text='Go to Page 1',
+                  command=self.make_page_1).pack()
+        self.page_1 = Page_1(master=self.root, app=self)
 
-class StartPage(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-        master.geometry(cons.screen_size)
-        tk.Label(self, text="This is the start page").pack(side="top", fill="x", pady=10)
-        tk.Button(self, text="Open page one",
-                  command=lambda: master.switch_frame(PageOne)).pack()
-        tk.Button(self, text="Open page two",
-                  command=lambda: master.switch_frame(PageTwo)).pack()
+    def main_page(self):
+        self.frame.pack()
 
-
-class PageOne(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-        master.geometry(cons.screen_size)
-        tk.Label(self, text="This is page one").pack(side="top", fill="x", pady=10)
-        tk.Button(self, text="Return to start page",
-                  command=lambda: master.switch_frame(StartPage)).pack()
+    def make_page_1(self):
+        self.frame.pack_forget()
+        self.page_1.start_page()
 
 
-class PageTwo(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-        master.geometry(cons.screen_size)
-        tk.Label(self, text="This is page two").pack(side="top", fill="x", pady=10)
-        tk.Button(self, text="Return to start page",
-                  command=lambda: master.switch_frame(StartPage)).pack()
+class Page_1:
+    def __init__(self, master=None, app=None):
+        self.master = master
+        self.app = app
+        self.frame = tk.Frame(self.master)
+        tk.Label(self.frame, text='Page 1').pack()
+        tk.Button(self.frame, text='Go back', command=self.go_back).pack()
+
+    def start_page(self):
+        self.frame.pack()
+
+    def go_back(self):
+        self.frame.pack_forget()
+        self.app.main_page()
 
 
-if __name__ == "__main__":
-    app = SampleApp()
-    app.mainloop()
+if __name__ == '__main__':
+    root = tk.Tk()
+    app = App(root)
+    root.mainloop()
