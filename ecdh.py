@@ -7,18 +7,59 @@ class Ecdh:
         self.app = app
         self.frame = tk.Frame(self.master)
 
-        title = tk.Label(self.frame, text='ECDH Page!!!').grid(row=0, column=0)
+        title = tk.Label(self.frame, text='ECDH Page!!!').grid(row=0, column=3)
 
         blank = tk.Label(self.frame, text='       ')
         blank.grid(row=1, column=0)
 
-        bob_label = tk.Label(self.frame, text='Bob:').grid(row=2, column=0)
-        bob_priv = tk.Entry(self.frame).grid(row=3, column=0)
-        bob_pub = tk.Entry(self.frame).grid(row=4, column=0)
+        shared_label = tk.Label(self.frame, text='Shared data:').grid(row=2, column=0)
 
-        alice_label = tk.Label(self.frame, text='Alice:').grid(row=5, column=0)
-        alice_priv = tk.Entry(self.frame).grid(row=6, column=0)
-        alice_pub = tk.Entry(self.frame).grid(row=7, column=0)
+        ec_label_1 = tk.Label(self.frame, text="A = ").grid(row=3, column=0)
+        self.ec_a = tk.Entry(self.frame, width=5)
+        self.ec_a.grid(row=3, column=1)
+
+        ec_label_2 = tk.Label(self.frame, text="B = ").grid(row=4, column=0)
+        self.ec_b = tk.Entry(self.frame, width=5)
+        self.ec_b.grid(row=4, column=1)
+
+        button = tk.Button(self.frame, text="Listo", command=lambda: self.listo())
+        button.grid(row=5, column=0)
+
+        self.ec_eq_text = tk.StringVar()
+        self.ec_eq = tk.Label(self.frame, textvariable=self.ec_eq_text)
+        self.ec_eq.grid(row=6, column=0)
+
+
+        '''
+        ec_label_1 = tk.Label(self.frame, text="y\u00B2 = x\u00B3 +").grid(row=3, column=1)
+        ec_a = tk.Entry(self.frame, width=3).grid(row=3, column=2, padx=3)
+        
+        shared_ec = tk.Label(self.frame, text="Chosen Elliptic Curve:").grid(row=3, column=0)
+        
+        ec_label_2 = tk.Label(self.frame, text="x +").grid(row=3, column=3, padx=3)
+        ec_b = tk.Entry(self.frame, width=3).grid(row=3, column=4)
+        
+        
+        blank = tk.Label(self.frame, text='       ')
+        blank.grid(row=4, column=0)
+        '''
+        '''
+        bob_label = tk.Label(self.frame, text='Bob').grid(row=2, column=0)
+        bob_label_priv = tk.Label(self.frame, text="Private Key:").grid(row=3, column=0)
+        bob_priv = tk.Entry(self.frame).grid(row=3, column=1)
+        bob_label_pub = tk.Label(self.frame, text="Public Key:").grid(row=4, column=0)
+        bob_pub = tk.Entry(self.frame).grid(row=4, column=1)
+
+        alice_label = tk.Label(self.frame, text='Alice').grid(row=2, column=4)
+        alice_label_priv = tk.Label(self.frame, text="Private Key:").grid(row=3, column=4)
+        alice_priv = tk.Entry(self.frame).grid(row=3, column=5)
+        alice_label_pub = tk.Label(self.frame, text="Public Key:").grid(row=4, column=4)
+        alice_pub = tk.Entry(self.frame).grid(row=4, column=5)
+        '''
+
+    def listo(self):
+        text = "y\u00B2 = x\u00B3 + "+self.ec_a.get()+"x "+self.ec_b.get()
+        self.ec_eq_text.set(text)
 
     def start_page(self):
         self.frame.grid(column=0, row=0, sticky="NWES")
