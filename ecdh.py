@@ -62,15 +62,9 @@ class Ecdh:
         a = int(self.ec_a.get())
         b_str = self.ec_b.get()
         b = int(self.ec_b.get())
-        text = ""
-        if a > 0:
-            text = ("y\u00B2 = x\u00B3 + "+a_str)
-        else:
-            text = ("y\u00B2 = x\u00B3 "+a_str)
-        if b > 0:
-            text = (text + "x + " + b_str)
-        else:
-            text = (text+"x "+b_str)
+        
+        text = ("y\u00B2 = x\u00B3 + "+a_str) if a > 0 else ("y\u00B2 = x\u00B3 "+a_str)
+        text += (("x + " + b_str) if b > 0 else ("x "+b_str))
 
         self.ec_eq_text.set(text)
 
