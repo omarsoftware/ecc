@@ -16,7 +16,6 @@ class Ecdh:
 
         ec_label_1 = tk.Label(self.frame, text="A = ").grid(row=3, column=0)
         self.ec_a = tk.Entry(self.frame, width=5)
-        self.ec_a.bind('<Leave>', lambda e: self.exit())
         self.ec_a.grid(row=3, column=1)
 
         ec_label_2 = tk.Label(self.frame, text="B = ").grid(row=4, column=0)
@@ -57,11 +56,22 @@ class Ecdh:
         alice_label_pub = tk.Label(self.frame, text="Public Key:").grid(row=4, column=4)
         alice_pub = tk.Entry(self.frame).grid(row=4, column=5)
         '''
-    def exit(event):
-        print("saliendo del entryyyy")
 
     def listo(self):
-        text = "y\u00B2 = x\u00B3 + "+self.ec_a.get()+"x "+self.ec_b.get()
+        a_str = self.ec_a.get()
+        a = int(self.ec_a.get())
+        b_str = self.ec_b.get()
+        b = int(self.ec_b.get())
+        text = ""
+        if a > 0:
+            text = ("y\u00B2 = x\u00B3 + "+a_str)
+        else:
+            text = ("y\u00B2 = x\u00B3 "+a_str)
+        if b > 0:
+            text = (text + "x + " + b_str)
+        else:
+            text = (text+"x "+b_str)
+
         self.ec_eq_text.set(text)
 
     def start_page(self):
