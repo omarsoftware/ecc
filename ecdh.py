@@ -12,12 +12,13 @@ class Ecdh:
 
         self.elliptic_curve = None
 
-        title = tk.Label(self.frame, text='Elliptic Curve:').grid(row=0, column=0, sticky="W")
+        title = tk.Label(self.frame, text='Shared data:')
+        title.grid(row=0, column=0, sticky="W")
 
         blank = tk.Label(self.frame, text='       ')
         blank.grid(row=1, column=0)
 
-        shared_label = tk.Label(self.frame, text='Shared data:')
+        shared_label = tk.Label(self.frame, text='Elliptic Curve:')
         shared_label.grid(row=2, column=0, sticky="W")
 
         ec_label_1 = tk.Label(self.frame, text="A =").grid(row=3, column=0)
@@ -41,6 +42,8 @@ class Ecdh:
         blank2.grid(row=6, column=0)
 
         # ///////////// Begin Generator Point /////////////
+        self.g = None
+
         g_point = tk.Label(self.frame, text="Generator Point:")
         g_point.grid(row=7, column=0)
 
@@ -63,19 +66,106 @@ class Ecdh:
 
         # ///////////// End Generator Point /////////////
 
-        '''
-        bob_label = tk.Label(self.frame, text='Bob').grid(row=2, column=0)
-        bob_label_priv = tk.Label(self.frame, text="Private Key:").grid(row=3, column=0)
-        bob_priv = tk.Entry(self.frame).grid(row=3, column=1)
-        bob_label_pub = tk.Label(self.frame, text="Public Key:").grid(row=4, column=0)
-        bob_pub = tk.Entry(self.frame).grid(row=4, column=1)
+        blank3 = tk.Label(self.frame, text='       ')
+        blank3.grid(row=11, column=0)
 
-        alice_label = tk.Label(self.frame, text='Alice').grid(row=2, column=4)
-        alice_label_priv = tk.Label(self.frame, text="Private Key:").grid(row=3, column=4)
-        alice_priv = tk.Entry(self.frame).grid(row=3, column=5)
-        alice_label_pub = tk.Label(self.frame, text="Public Key:").grid(row=4, column=4)
-        alice_pub = tk.Entry(self.frame).grid(row=4, column=5)
+        # ///////////// Begin Bob /////////////
+        self.bob = ec.User()
+
+        bob_label = tk.Label(self.frame, text="Bob:")
+        bob_label.grid(row=12, column=0)
+
+        bob_label_priv = tk.Label(self.frame, text="Private Key:")
+        bob_label_priv.grid(row=13, column=0)
+
+        self.bob_entry_priv = tk.Entry(self.frame)
+        self.bob_entry_priv.grid(row=13, column=1)
+
+        bob_label_pub = tk.Label(self.frame, text="Public Key:")
+        bob_label_pub.grid(row=14, column=0)
+
+        self.bob_pub_text = tk.StringVar()
+        self.bob_label = tk.Label(self.frame, textvariable=self.bob_pub_text)
+        self.bob_label.grid(row=14, column=1)
+
+        # ///////////// End Bob /////////////
+
+        blank4 = tk.Label(self.frame, text='       ')
+        blank4.grid(row=15, column=0)
+
+        # ///////////// Begin Alice /////////////
+        self.alice = ec.User()
+
+        alice_label = tk.Label(self.frame, text="Alice:")
+        alice_label.grid(row=16, column=0)
+
+        alice_label_priv = tk.Label(self.frame, text="Private Key:")
+        alice_label_priv.grid(row=17, column=0)
+
+        self.alice_entry_priv = tk.Entry(self.frame)
+        self.alice_entry_priv.grid(row=17, column=1)
+
+        alice_label_pub = tk.Label(self.frame, text="Public Key:")
+        alice_label_pub.grid(row=18, column=0)
+
+        self.alice_pub_text = tk.StringVar()
+        self.alice_pub_label = tk.Label(self.frame, textvariable=self.alice_pub_text)
+        self.alice_pub_label.grid(row=18, column=1)
+
+        bob_alice_button = tk.Button(self.frame, text="Listo", command=lambda: self.bob_alice_ready())
+        bob_alice_button.grid(row=19, column=0)
+
+        self.bob_alice_text = tk.StringVar()
+        self.bob_alice_label = tk.Label(self.frame, textvariable=self.bob_alice_text)
+        self.bob_alice_label.grid(row=19, column=3)
+
+        # ///////////// End Alice /////////////
+
+        # ///////////// Begin Shared Calculations /////////////
+        shared_bob = tk.Label(self.frame, text="Shared key calculated by Bob: ")
+        shared_bob.grid(row=20, column=0)
+        self.shared_bob_text = tk.StringVar()
+        shared_label_bob = tk.Label(self.frame, textvariable=self.shared_bob_text)
+        shared_label_bob.grid(row=20, column=1)
+
+        shared_alice = tk.Label(self.frame, text="Shared key calculated by Alice: ")
+        shared_alice.grid(row=21, column=0)
+        self.shared_alice_text = tk.StringVar()
+        shared_label_alice = tk.Label(self.frame, textvariable=self.shared_alice_text)
+        shared_label_alice.grid(row=21, column=1)
+
+
+        # ///////////// End Shared Calculations /////////////
+
+    def bob_alice_ready(self):
+        bob_priv_str = self.bob_entry_priv.get()
+        bob_priv = int(bob_priv_str)
+        alice_priv_str = self.alice_entry_priv.get()
+        alice_priv = int(alice_priv_str)
+
+        self.bob.setPrivKey(bob_priv)
+        self.bob.setPubKey(self.elliptic_curve.point_mult(self.g, self.bob.getPrivKey()))
+        self.bob_pub_text.set(self.bob.getPubKey().print())
+
+        self.alice.setPrivKey(alice_priv)
+        self.alice.setPubKey(self.elliptic_curve.point_mult(self.g, self.alice.getPrivKey()))
+        self.alice_pub_text.set(self.alice.getPubKey().print())
+
+        self.shared_bob_text.set(self.elliptic_curve.point_mult(self.alice.getPubKey(), self.bob.getPrivKey()).print())
+        self.shared_alice_text.set(self.elliptic_curve.point_mult(self.bob.getPubKey(), self.alice.getPrivKey()).print())
+
+
         '''
+        print("Clave COMPARTIDA calculada por ALICE:")
+        print(curve.point_mult(bob.getPubKey(), alice.getPrivKey()).print())
+        print("-------")
+
+        print("Clave COMPARTIDA calculada por BOB:")
+        print(curve.point_mult(alice.getPubKey(), bob.getPrivKey()).print())
+        print("-------")
+        '''
+
+
 
     def ec_ready(self):
         a_str = self.ec_a.get()
@@ -95,6 +185,8 @@ class Ecdh:
         x = int(x_str)
         y_str = self.g_y.get()
         y = int(y_str)
+
+        self.g = ec.Point(x, y)
 
         text = "G("+x_str+", "+y_str+")"
 
