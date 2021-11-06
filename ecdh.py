@@ -12,7 +12,7 @@ class Ecdh:
 
         self.elliptic_curve = None
 
-        title = tk.Label(self.frame, text='Shared data:')
+        title = tk.Label(self.frame, text='Shared dataaaaaaaaaaaaaaaaaaaaaaaaaa:')
         title.grid(row=0, column=0, sticky="W")
 
         blank = tk.Label(self.frame, text='       ')
@@ -49,15 +49,15 @@ class Ecdh:
 
         g_x_label = tk.Label(self.frame, text="X =")
         g_x_label.grid(row=8, column=0)
-        self.g_x = tk.Entry(self.frame, width=5)
+        self.g_x = tk.Entry(self.frame, width=5, state='disabled')
         self.g_x.grid(row=8, column=1)
 
         g_y_label = tk.Label(self.frame, text="Y =")
         g_y_label.grid(row=9, column=0)
-        self.g_y = tk.Entry(self.frame, width=5)
+        self.g_y = tk.Entry(self.frame, width=5, state='disabled')
         self.g_y.grid(row=9, column=1)
 
-        g_button = tk.Button(self.frame, text="Listo", command=lambda: self.g_ready())
+        g_button = tk.Button(self.frame, text="Listo", state='disabled', command=lambda: self.g_ready())
         g_button.grid(row=10, column=0)
 
         self.g_text = tk.StringVar()
@@ -179,6 +179,8 @@ class Ecdh:
         text += (("x + " + b_str) if b > 0 else ("x "+b_str))
 
         self.ec_eq_text.set(text)
+        self.g_x.config(state='normal')
+        self.g_y.config(state='normal')
 
     def g_ready(self):
         x_str = self.g_x.get()
