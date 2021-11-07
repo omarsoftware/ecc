@@ -12,29 +12,32 @@ class Ecdh:
 
         self.elliptic_curve = None
 
-        title = tk.Label(self.frame, text='Shared dataaaaaaaaaaaaaaaaaaaaaaaaaa:')
+        title = tk.Label(self.frame, text='Elliptic-curve Diffie-Hellman')
         title.grid(row=0, column=0, sticky="W")
 
         blank = tk.Label(self.frame, text='       ')
         blank.grid(row=1, column=0)
 
-        shared_label = tk.Label(self.frame, text='Elliptic Curve:')
+        shared_label = tk.Label(self.frame, text='Step 1: choose the elliptic curve to be used by both Bob and Alice')
         shared_label.grid(row=2, column=0, sticky="W")
 
-        ec_label_1 = tk.Label(self.frame, text="A =").grid(row=3, column=0)
-        self.ec_a = tk.Entry(self.frame, width=5)
-        self.ec_a.grid(row=3, column=1)
-
-        ec_label_2 = tk.Label(self.frame, text="B =").grid(row=4, column=0)
-        self.ec_b = tk.Entry(self.frame, width=5)
-        self.ec_b.grid(row=4, column=1)
+        self.ec_frame = tk.Frame(self.frame)
+        ec_label_1 = tk.Label(self.ec_frame, text="A =")
+        ec_label_1.pack(side=tk.LEFT)
+        self.ec_a = tk.Entry(self.ec_frame, width=5)
+        self.ec_a.pack(side=tk.LEFT)
+        ec_label_2 = tk.Label(self.ec_frame, text="B =")
+        ec_label_2.pack(side=tk.LEFT)
+        self.ec_b = tk.Entry(self.ec_frame, width=5)
+        self.ec_b.pack(side=tk.LEFT)
+        self.ec_frame.grid(row=3, column=0)
 
         button = tk.Button(self.frame, text="Listo", command=lambda: self.ec_ready())
         button.grid(row=5, column=0)
 
         self.ec_eq_text = tk.StringVar()
         self.ec_eq = tk.Label(self.frame, textvariable=self.ec_eq_text)
-        self.ec_eq.grid(row=5, column=3)
+        self.ec_eq.grid(row=5, column=1)
 
         # ///////////// End Elliptic Curve /////////////
 
@@ -44,7 +47,7 @@ class Ecdh:
         # ///////////// Begin Generator Point /////////////
         self.g = None
 
-        g_point = tk.Label(self.frame, text="Generator Point:")
+        g_point = tk.Label(self.frame, text="Step 2: choose generator point to be used by both Bob and Alice")
         g_point.grid(row=7, column=0)
 
         g_x_label = tk.Label(self.frame, text="X =")
@@ -168,12 +171,30 @@ class Ecdh:
 
 
     def ec_ready(self):
-        a_str = self.ec_a.get()
-        a = int(a_str)
-        b_str = self.ec_b.get()
-        b = int(b_str)
+        try:
+            a_str = self.ec_a.get()
+            b_str = self.ec_b.get()
+            if a_str == '' or b_str == '':
+                text = "a or b are empty"
+                self.ec_eq_text.set(text)
+                raise ValueError("Empty input")
+            if not a_str.isnumeric() or not b_str.isnumeric():
+                text = "a and b must be numbers"
+                self.ec_eq_text.set(text)
+                raise ValueError("Input must be numeric")
+            a = int(a_str)
+            a_str = str(a)
+            b = int(b_str)
+            b_str = str(b)
+        except TypeError:
+            text = "Invalid input"
+            self.ec_eq_text.set(text)
+            raise ValueError("invalid input")
 
         self.elliptic_curve = ec.EllipticCurve(a, b)
+
+        if not self.elliptic_curve.isNonSingular():
+            raise ValueError("elliptic-curve is singular")
 
         text = ("y\u00B2 = x\u00B3 + "+a_str) if a > 0 else ("y\u00B2 = x\u00B3 "+a_str)
         text += (("x + " + b_str) if b > 0 else ("x "+b_str))
