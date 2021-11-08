@@ -22,11 +22,11 @@ class Ecdh:
         shared_label.grid(row=2, column=0, sticky="W")
 
         self.ec_frame = tk.Frame(self.frame)
-        ec_label_1 = tk.Label(self.ec_frame, text="A =")
+        ec_label_1 = tk.Label(self.ec_frame, text="a =")
         ec_label_1.pack(side=tk.LEFT)
         self.ec_a = tk.Entry(self.ec_frame, width=5)
         self.ec_a.pack(side=tk.LEFT)
-        ec_label_2 = tk.Label(self.ec_frame, text="B =")
+        ec_label_2 = tk.Label(self.ec_frame, text="b =")
         ec_label_2.pack(side=tk.LEFT)
         self.ec_b = tk.Entry(self.ec_frame, width=5)
         self.ec_b.pack(side=tk.LEFT)
@@ -178,7 +178,7 @@ class Ecdh:
                 text = "a or b are empty"
                 self.ec_eq_text.set(text)
                 raise ValueError("Empty input")
-            if not a_str.isnumeric() or not b_str.isnumeric():
+            if not a_str.lstrip('-').isnumeric() or not b_str.lstrip('-').isnumeric():
                 text = "a and b must be numbers"
                 self.ec_eq_text.set(text)
                 raise ValueError("Input must be numeric")
@@ -194,6 +194,8 @@ class Ecdh:
         self.elliptic_curve = ec.EllipticCurve(a, b)
 
         if not self.elliptic_curve.isNonSingular():
+            text = "elliptic-curve is singular"
+            self.ec_eq_text.set(text)
             raise ValueError("elliptic-curve is singular")
 
         text = ("y\u00B2 = x\u00B3 + "+a_str) if a > 0 else ("y\u00B2 = x\u00B3 "+a_str)
