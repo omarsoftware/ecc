@@ -36,12 +36,16 @@ class Ecdh:
         self.ec_b.pack(side=tk.LEFT)
         self.ec_frame.grid(row=4, column=0)
 
-        button = tk.Button(self.frame, text="Done", command=lambda: self.ec_ready())
-        button.grid(row=5, column=0)
+        self.button_ready_1 = tk.Button(self.frame, text="Done", command=lambda: self.ec_ready())
+        self.button_ready_1.grid(row=5, column=0)
 
         self.ec_eq_text = tk.StringVar()
         self.ec_eq = tk.Label(self.frame, textvariable=self.ec_eq_text)
         self.ec_eq.grid(row=5, column=1)
+
+        self.button_edit_1 = tk.Button(self.frame, text="Edit", command=lambda: self.ec_edit())
+        self.button_edit_1.grid(row=5, column=2)
+        self.button_edit_1.grid_forget()
 
         # ///////////// End Elliptic Curve /////////////
 
@@ -189,6 +193,17 @@ class Ecdh:
         self.g_x.config(state='normal')
         self.g_y.config(state='normal')
         self.g_button.config(state='normal')
+        self.button_edit_1.grid(row=5, column=2)
+
+    def ec_edit(self):
+        self.elliptic_curve = None
+        self.ec_eq_text.set("")
+        self.g_point.config(state='disabled')
+        self.g_x.config(state='disabled')
+        self.g_y.config(state='disabled')
+        self.g_button.config(state='disabled')
+        self.button_edit_1.grid_forget()
+        self.button_ready_1.grid(row=5, column=0)
 
     def g_ready(self):
         x_str = self.g_x.get()
