@@ -9,43 +9,29 @@ class Ecdh:
         self.frame = tk.Frame(self.master)
         self.elliptic_curve = None
         self.g = ec.Point()
+        self.ec_step = {"labels": [], "entries": []}
 
-        # ///////////// Begin Elliptic Curve /////////////
         title = tk.Label(self.frame, text='Elliptic-curve Diffie-Hellman')
         title.grid(row=0, column=0, sticky="W")
 
-        blank = tk.Label(self.frame, text='       ')
-        blank.grid(row=1, column=0)
+        blank1 = tk.Label(self.frame, text='       ')
+        blank1.grid(row=1, column=0)
 
-        shared_label = tk.Label(self.frame, text='Step 1: choose the elliptic curve to be used by both Bob and Alice')
-        shared_label.grid(row=2, column=0, sticky="W")
-
+        # ///////////// Begin Elliptic Curve /////////////
+        self.ec_title = tk.Label(self.frame)
         self.ec_gen_eq = tk.StringVar()
-        self.ec_gen_eq.set("y\u00B2 = x\u00B3 + ax + b")
-        self.ec_ge_eq_label = tk.Label(self.frame, textvariable=self.ec_gen_eq)
-        self.ec_ge_eq_label.grid(row=3, column=0)
-
+        self.ec_gen_eq_label = tk.Label(self.frame, textvariable=self.ec_gen_eq)
         self.ec_frame = tk.Frame(self.frame)
-        ec_label_1 = tk.Label(self.ec_frame, text="a =")
-        ec_label_1.pack(side=tk.LEFT)
+        self.ec_a_label = tk.Label(self.ec_frame, text="a =")
         self.ec_a = tk.Entry(self.ec_frame, width=5)
-        self.ec_a.pack(side=tk.LEFT)
-        ec_label_2 = tk.Label(self.ec_frame, text="b =")
-        ec_label_2.pack(side=tk.LEFT)
+        self.ec_b_label = tk.Label(self.ec_frame, text="b =")
         self.ec_b = tk.Entry(self.ec_frame, width=5)
-        self.ec_b.pack(side=tk.LEFT)
-        self.ec_frame.grid(row=4, column=0)
-
-        self.button_ready_1 = tk.Button(self.frame, text="Done", command=lambda: self.ec_ready())
-        self.button_ready_1.grid(row=5, column=0)
-
+        self.ec_button_ready = tk.Button(self.frame, text="Done", command=lambda: self.ec_ready())
         self.ec_eq_text = tk.StringVar()
         self.ec_eq = tk.Label(self.frame, textvariable=self.ec_eq_text)
-        self.ec_eq.grid(row=5, column=1)
+        self.ec_button_edit = tk.Button(self.frame, text="Edit", command=lambda: self.ec_clear())
 
-        self.button_edit_1 = tk.Button(self.frame, text="Edit", command=lambda: self.ec_edit())
-        self.button_edit_1.grid(row=5, column=2)
-        self.button_edit_1.grid_forget()
+        self.ec_set()
 
         # ///////////// End Elliptic Curve /////////////
 
@@ -160,6 +146,21 @@ class Ecdh:
 
         # ///////////// End Shared Calculations /////////////
 
+    def ec_set(self):
+        self.ec_title.config(text='Step 1: choose the elliptic curve to be used by both Bob and Alice')
+        self.ec_title.grid(row=2, column=0, sticky="W")
+        self.ec_gen_eq.set("y\u00B2 = x\u00B3 + ax + b")
+        self.ec_gen_eq_label.grid(row=3, column=0)
+        self.ec_a_label.pack(side=tk.LEFT)
+        self.ec_a.pack(side=tk.LEFT)
+        self.ec_b_label.pack(side=tk.LEFT)
+        self.ec_b.pack(side=tk.LEFT)
+        self.ec_frame.grid(row=4, column=0)
+        self.ec_button_ready.grid(row=5, column=0)
+        self.ec_eq.grid(row=5, column=1)
+        self.ec_button_edit.grid(row=5, column=2)
+        self.ec_button_edit.grid_forget()
+
     def ec_ready(self):
         try:
             a_str = self.ec_a.get()
@@ -193,17 +194,19 @@ class Ecdh:
         self.g_x.config(state='normal')
         self.g_y.config(state='normal')
         self.g_button.config(state='normal')
-        self.button_edit_1.grid(row=5, column=2)
+        self.ec_button_edit.grid(row=5, column=2)
 
-    def ec_edit(self):
-        self.elliptic_curve = None
+    def ec_clear(self):
+        self.ec_a.delete(0, 'end')
+        self.ec_b.delete(0, 'end')
+        self.ec_title.grid(row=2, column=0, sticky="W")
         self.ec_eq_text.set("")
-        self.g_point.config(state='disabled')
-        self.g_x.config(state='disabled')
-        self.g_y.config(state='disabled')
-        self.g_button.config(state='disabled')
-        self.button_edit_1.grid_forget()
-        self.button_ready_1.grid(row=5, column=0)
+        self.ec_button_ready.grid(row=5, column=0)
+        self.ec_eq.grid(row=5, column=1)
+        self.ec_button_edit.grid_forget()
+
+    def set_g(self):
+        pass
 
     def g_ready(self):
         x_str = self.g_x.get()
