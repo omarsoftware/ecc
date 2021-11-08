@@ -197,11 +197,11 @@ class Ecdh:
             text = "elliptic-curve is singular"
             self.ec_eq_text.set(text)
             raise ValueError("elliptic-curve is singular")
-
+        '''
         text = ("y\u00B2 = x\u00B3 + "+a_str) if a > 0 else ("y\u00B2 = x\u00B3 "+a_str)
         text += (("x + " + b_str) if b > 0 else ("x "+b_str))
-
-        self.ec_eq_text.set(text)
+        '''
+        self.ec_eq_text.set(self.elliptic_curve.print())
         self.g_x.config(state='normal')
         self.g_y.config(state='normal')
 

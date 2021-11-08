@@ -71,6 +71,21 @@ class EllipticCurve:
 
         return point_r
 
+    def print(self):
+        text = "y\u00B2 = x\u00B3"
+        if self.a > 0:
+            text += (" + " + str(self.a) + "x")
+        elif self.a < 0:
+            text += (" " + str(self.a) + "x")
+
+        if self.b > 0:
+            text += (" + " + str(self.b))
+        elif self.b < 0:
+            text += (" "+str(self.b))
+
+        return text
+
+
 class User:
     def __init__(self):
         self.privKey = 0
