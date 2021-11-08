@@ -20,6 +20,11 @@ class Ecdh:
         shared_label = tk.Label(self.frame, text='Step 1: choose the elliptic curve to be used by both Bob and Alice')
         shared_label.grid(row=2, column=0, sticky="W")
 
+        self.ec_gen_eq = tk.StringVar()
+        self.ec_gen_eq.set("y\u00B2 = x\u00B3 + ax + b")
+        self.ec_ge_eq_label = tk.Label(self.frame, textvariable=self.ec_gen_eq)
+        self.ec_ge_eq_label.grid(row=3, column=0)
+
         self.ec_frame = tk.Frame(self.frame)
         ec_label_1 = tk.Label(self.ec_frame, text="a =")
         ec_label_1.pack(side=tk.LEFT)
@@ -29,9 +34,9 @@ class Ecdh:
         ec_label_2.pack(side=tk.LEFT)
         self.ec_b = tk.Entry(self.ec_frame, width=5)
         self.ec_b.pack(side=tk.LEFT)
-        self.ec_frame.grid(row=3, column=0)
+        self.ec_frame.grid(row=4, column=0)
 
-        button = tk.Button(self.frame, text="Listo", command=lambda: self.ec_ready())
+        button = tk.Button(self.frame, text="Done", command=lambda: self.ec_ready())
         button.grid(row=5, column=0)
 
         self.ec_eq_text = tk.StringVar()
@@ -44,23 +49,23 @@ class Ecdh:
         blank2.grid(row=6, column=0)
 
         # ///////////// Begin Generator Point /////////////
-        self.g_frame = tk.Frame(self.frame)
-
         self.g_point = tk.Label(self.frame, text="Step 2: choose generator point to be used by both Bob and Alice", state='disabled')
         self.g_point.grid(row=7, column=0)
 
-        g_x_label = tk.Label(self.g_frame, text="X =")
+        self.g_frame = tk.Frame(self.frame)
+
+        g_x_label = tk.Label(self.g_frame, text="x =")
         g_x_label.pack(side=tk.LEFT)
         self.g_x = tk.Entry(self.g_frame, width=5, state='disabled')
         self.g_x.pack(side=tk.LEFT)
 
-        g_y_label = tk.Label(self.g_frame, text="Y =")
+        g_y_label = tk.Label(self.g_frame, text="y =")
         g_y_label.pack(side=tk.LEFT)
         self.g_y = tk.Entry(self.g_frame, width=5, state='disabled')
         self.g_y.pack(side=tk.LEFT)
 
         self.g_frame.grid(row=8, column=0)
-        self.g_button = tk.Button(self.frame, text="Listo", state='disabled', command=lambda: self.g_ready())
+        self.g_button = tk.Button(self.frame, text="Done", state='disabled', command=lambda: self.g_ready())
         self.g_button.grid(row=9, column=0)
 
         self.g_text = tk.StringVar()
@@ -75,87 +80,81 @@ class Ecdh:
         # ///////////// Begin Bob /////////////
         self.bob = ec.User()
 
-        bob_label = tk.Label(self.frame, text="Bob:")
-        bob_label.grid(row=12, column=0)
+        self.step3_label = tk.Label(self.frame, text="Step 3: generate private and public keys for Bob and Alice",
+                             state='disabled')
+        self.step3_label.grid(row=12, column=0)
 
-        bob_label_priv = tk.Label(self.frame, text="Private Key:")
-        bob_label_priv.grid(row=13, column=0)
+        self.bob_title = tk.Label(self.frame, text="Bob:", state='disabled')
+        self.bob_title.grid(row=13, column=0)
 
-        self.bob_entry_priv = tk.Entry(self.frame)
-        self.bob_entry_priv.grid(row=13, column=1)
+        self.bob_label_priv = tk.Label(self.frame, text="Private Key:", state='disabled')
+        self.bob_label_priv.grid(row=14, column=0)
 
-        bob_label_pub = tk.Label(self.frame, text="Public Key:")
-        bob_label_pub.grid(row=14, column=0)
+        self.bob_entry_priv = tk.Entry(self.frame, state='disabled')
+        self.bob_entry_priv.grid(row=14, column=1)
+
+        self.bob_label_pub = tk.Label(self.frame, text="Public Key:", state='disabled')
+        self.bob_label_pub.grid(row=15, column=0)
 
         self.bob_pub_text = tk.StringVar()
-        self.bob_label = tk.Label(self.frame, textvariable=self.bob_pub_text)
-        self.bob_label.grid(row=14, column=1)
+        self.bob_label = tk.Label(self.frame, textvariable=self.bob_pub_text, state='disabled')
+        self.bob_label.grid(row=15, column=1)
 
         # ///////////// End Bob /////////////
 
         blank4 = tk.Label(self.frame, text='       ')
-        blank4.grid(row=15, column=0)
+        blank4.grid(row=16, column=0)
 
         # ///////////// Begin Alice /////////////
         self.alice = ec.User()
 
-        alice_label = tk.Label(self.frame, text="Alice:")
-        alice_label.grid(row=16, column=0)
+        self.alice_title = tk.Label(self.frame, text="Alice:", state='disabled')
+        self.alice_title.grid(row=17, column=0)
 
-        alice_label_priv = tk.Label(self.frame, text="Private Key:")
-        alice_label_priv.grid(row=17, column=0)
+        self.alice_label_priv = tk.Label(self.frame, text="Private Key:", state='disabled')
+        self.alice_label_priv.grid(row=18, column=0)
 
-        self.alice_entry_priv = tk.Entry(self.frame)
-        self.alice_entry_priv.grid(row=17, column=1)
+        self.alice_entry_priv = tk.Entry(self.frame, state='disabled')
+        self.alice_entry_priv.grid(row=18, column=1)
 
-        alice_label_pub = tk.Label(self.frame, text="Public Key:")
-        alice_label_pub.grid(row=18, column=0)
+        self.alice_label_pub = tk.Label(self.frame, text="Public Key:", state='disabled')
+        self.alice_label_pub.grid(row=19, column=0)
 
         self.alice_pub_text = tk.StringVar()
-        self.alice_pub_label = tk.Label(self.frame, textvariable=self.alice_pub_text)
-        self.alice_pub_label.grid(row=18, column=1)
+        self.alice_pub_label = tk.Label(self.frame, textvariable=self.alice_pub_text, state='disabled')
+        self.alice_pub_label.grid(row=19, column=1)
 
-        bob_alice_button = tk.Button(self.frame, text="Listo", command=lambda: self.bob_alice_ready())
-        bob_alice_button.grid(row=19, column=0)
+        self.bob_alice_button = tk.Button(self.frame, text="Done", command=lambda: self.bob_alice_ready(), state='disabled')
+        self.bob_alice_button.grid(row=20, column=0)
 
         self.bob_alice_text = tk.StringVar()
-        self.bob_alice_label = tk.Label(self.frame, textvariable=self.bob_alice_text)
-        self.bob_alice_label.grid(row=19, column=3)
+        self.bob_alice_label = tk.Label(self.frame, textvariable=self.bob_alice_text, state='disabled')
+        self.bob_alice_label.grid(row=20, column=3)
 
         # ///////////// End Alice /////////////
 
-        # ///////////// Begin Shared Calculations /////////////
-        shared_bob = tk.Label(self.frame, text="Shared key calculated by Bob: ")
-        shared_bob.grid(row=20, column=0)
-        self.shared_bob_text = tk.StringVar()
-        shared_label_bob = tk.Label(self.frame, textvariable=self.shared_bob_text)
-        shared_label_bob.grid(row=20, column=1)
+        blank5 = tk.Label(self.frame, text='       ')
+        blank5.grid(row=21, column=0)
 
-        shared_alice = tk.Label(self.frame, text="Shared key calculated by Alice: ")
-        shared_alice.grid(row=21, column=0)
+        # ///////////// Begin Shared Calculations /////////////
+        self.step4_label = tk.Label(self.frame, text="Step 4: generate same shared key by Bob and Alice separately",
+                                    state='disabled')
+        self.step4_label.grid(row=22, column=0)
+
+        self.shared_bob = tk.Label(self.frame, text="Shared key calculated by Bob: ", state='disabled')
+        self.shared_bob.grid(row=23, column=0)
+        self.shared_bob_text = tk.StringVar()
+        self.shared_label_bob = tk.Label(self.frame, textvariable=self.shared_bob_text)
+        self.shared_label_bob.grid(row=23, column=1)
+
+        self.shared_alice = tk.Label(self.frame, text="Shared key calculated by Alice: ", state='disabled')
+        self.shared_alice.grid(row=24, column=0)
         self.shared_alice_text = tk.StringVar()
-        shared_label_alice = tk.Label(self.frame, textvariable=self.shared_alice_text)
-        shared_label_alice.grid(row=21, column=1)
+        self.shared_label_alice = tk.Label(self.frame, textvariable=self.shared_alice_text, state='disabled')
+        self.shared_label_alice.grid(row=24, column=1)
 
 
         # ///////////// End Shared Calculations /////////////
-
-    def bob_alice_ready(self):
-        bob_priv_str = self.bob_entry_priv.get()
-        bob_priv = int(bob_priv_str)
-        alice_priv_str = self.alice_entry_priv.get()
-        alice_priv = int(alice_priv_str)
-
-        self.bob.setPrivKey(bob_priv)
-        self.bob.setPubKey(self.elliptic_curve.point_mult(self.g, self.bob.getPrivKey()))
-        self.bob_pub_text.set(self.bob.getPubKey().print())
-
-        self.alice.setPrivKey(alice_priv)
-        self.alice.setPubKey(self.elliptic_curve.point_mult(self.g, self.alice.getPrivKey()))
-        self.alice_pub_text.set(self.alice.getPubKey().print())
-
-        self.shared_bob_text.set(self.elliptic_curve.point_mult(self.alice.getPubKey(), self.bob.getPrivKey()).print())
-        self.shared_alice_text.set(self.elliptic_curve.point_mult(self.bob.getPubKey(), self.alice.getPrivKey()).print())
 
     def ec_ready(self):
         try:
@@ -220,6 +219,46 @@ class Ecdh:
 
         text = "G = "+self.g.print()
         self.g_text.set(text)
+
+        self.step3_label.config(state="normal")
+        self.bob_title.config(state="normal")
+        self.bob_label_priv.config(state="normal")
+        self.bob_entry_priv.config(state="normal")
+        self.bob_label_pub.config(state="normal")
+        self.bob_label.config(state="normal")
+
+        self.alice_title.config(state="normal")
+        self.alice_label_priv.config(state="normal")
+        self.alice_entry_priv.config(state="normal")
+        self.alice_label_priv.config(state="normal")
+        self.alice_pub_label.config(state="normal")
+        self.alice_label_pub.config(state="normal")
+
+        self.bob_alice_button.config(state="normal")
+
+    def bob_alice_ready(self):
+        bob_priv_str = self.bob_entry_priv.get()
+        bob_priv = int(bob_priv_str)
+        alice_priv_str = self.alice_entry_priv.get()
+        alice_priv = int(alice_priv_str)
+
+        self.bob.setPrivKey(bob_priv)
+        self.bob.setPubKey(self.elliptic_curve.point_mult(self.g, self.bob.getPrivKey()))
+        self.bob_pub_text.set(self.bob.getPubKey().print())
+
+        self.alice.setPrivKey(alice_priv)
+        self.alice.setPubKey(self.elliptic_curve.point_mult(self.g, self.alice.getPrivKey()))
+        self.alice_pub_text.set(self.alice.getPubKey().print())
+
+        self.shared_bob_text.set(self.elliptic_curve.point_mult(self.alice.getPubKey(), self.bob.getPrivKey()).print())
+        self.shared_alice_text.set(self.elliptic_curve.point_mult(self.bob.getPubKey(), self.alice.getPrivKey()).print())
+
+        self.step4_label.config(state="normal")
+        self.shared_label_alice.config(state="normal")
+        self.shared_alice.config(state="normal")
+        self.shared_label_bob.config(state="normal")
+        self.shared_bob.config(state="normal")
+
 
     def start_page(self):
         self.frame.grid(column=0, row=0, sticky="NWES")
