@@ -40,7 +40,7 @@ class EllipticCurve:
         return (4*(self.a**3)+27*(self.b**2)) != 0
 
     def belongsToCurve(self, point):
-        return (point.get_y**2) == ((point.get_x**3)+self.a*self.x+self.b)
+        return (point.get_y()**2) == ((point.get_x()**3)+self.a*point.get_x()+self.b)
 
     def point_addition(self, point_p, point_q):
         alpha = (point_q.get_y() - point_p.get_y())/(point_q.get_x() - point_p.get_x())
@@ -102,12 +102,3 @@ class User:
 
     def getPubKey(self):
         return self.pubKey
-
-
-
-
-
-
-
-
-

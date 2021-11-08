@@ -7,11 +7,10 @@ class Ecdh:
         self.master = master
         self.app = app
         self.frame = tk.Frame(self.master)
+        self.elliptic_curve = None
+        self.g = ec.Point()
 
         # ///////////// Begin Elliptic Curve /////////////
-
-        self.elliptic_curve = None
-
         title = tk.Label(self.frame, text='Elliptic-curve Diffie-Hellman')
         title.grid(row=0, column=0, sticky="W")
 
@@ -45,27 +44,28 @@ class Ecdh:
         blank2.grid(row=6, column=0)
 
         # ///////////// Begin Generator Point /////////////
-        self.g = None
+        self.g_frame = tk.Frame(self.frame)
 
-        g_point = tk.Label(self.frame, text="Step 2: choose generator point to be used by both Bob and Alice")
-        g_point.grid(row=7, column=0)
+        self.g_point = tk.Label(self.frame, text="Step 2: choose generator point to be used by both Bob and Alice", state='disabled')
+        self.g_point.grid(row=7, column=0)
 
-        g_x_label = tk.Label(self.frame, text="X =")
-        g_x_label.grid(row=8, column=0)
-        self.g_x = tk.Entry(self.frame, width=5, state='disabled')
-        self.g_x.grid(row=8, column=1)
+        g_x_label = tk.Label(self.g_frame, text="X =")
+        g_x_label.pack(side=tk.LEFT)
+        self.g_x = tk.Entry(self.g_frame, width=5, state='disabled')
+        self.g_x.pack(side=tk.LEFT)
 
-        g_y_label = tk.Label(self.frame, text="Y =")
-        g_y_label.grid(row=9, column=0)
-        self.g_y = tk.Entry(self.frame, width=5, state='disabled')
-        self.g_y.grid(row=9, column=1)
+        g_y_label = tk.Label(self.g_frame, text="Y =")
+        g_y_label.pack(side=tk.LEFT)
+        self.g_y = tk.Entry(self.g_frame, width=5, state='disabled')
+        self.g_y.pack(side=tk.LEFT)
 
-        g_button = tk.Button(self.frame, text="Listo", state='disabled', command=lambda: self.g_ready())
-        g_button.grid(row=10, column=0)
+        self.g_frame.grid(row=8, column=0)
+        self.g_button = tk.Button(self.frame, text="Listo", state='disabled', command=lambda: self.g_ready())
+        self.g_button.grid(row=9, column=0)
 
         self.g_text = tk.StringVar()
         self.g_label = tk.Label(self.frame, textvariable=self.g_text)
-        self.g_label.grid(row=10, column=3)
+        self.g_label.grid(row=9, column=1)
 
         # ///////////// End Generator Point /////////////
 
@@ -157,64 +157,68 @@ class Ecdh:
         self.shared_bob_text.set(self.elliptic_curve.point_mult(self.alice.getPubKey(), self.bob.getPrivKey()).print())
         self.shared_alice_text.set(self.elliptic_curve.point_mult(self.bob.getPubKey(), self.alice.getPrivKey()).print())
 
-
-        '''
-        print("Clave COMPARTIDA calculada por ALICE:")
-        print(curve.point_mult(bob.getPubKey(), alice.getPrivKey()).print())
-        print("-------")
-
-        print("Clave COMPARTIDA calculada por BOB:")
-        print(curve.point_mult(alice.getPubKey(), bob.getPrivKey()).print())
-        print("-------")
-        '''
-
-
-
     def ec_ready(self):
         try:
             a_str = self.ec_a.get()
             b_str = self.ec_b.get()
+
             if a_str == '' or b_str == '':
                 text = "a or b are empty"
                 self.ec_eq_text.set(text)
                 raise ValueError("Empty input")
+
             if not a_str.lstrip('-').isnumeric() or not b_str.lstrip('-').isnumeric():
                 text = "a and b must be numbers"
                 self.ec_eq_text.set(text)
                 raise ValueError("Input must be numeric")
+
             a = int(a_str)
-            a_str = str(a)
             b = int(b_str)
-            b_str = str(b)
+            self.elliptic_curve = ec.EllipticCurve(a, b)
+            if not self.elliptic_curve.isNonSingular():
+                text = "elliptic-curve is singular"
+                self.ec_eq_text.set(text)
+                raise ValueError("elliptic-curve is singular")
+
         except TypeError:
             text = "Invalid input"
             self.ec_eq_text.set(text)
             raise ValueError("invalid input")
 
-        self.elliptic_curve = ec.EllipticCurve(a, b)
-
-        if not self.elliptic_curve.isNonSingular():
-            text = "elliptic-curve is singular"
-            self.ec_eq_text.set(text)
-            raise ValueError("elliptic-curve is singular")
-        '''
-        text = ("y\u00B2 = x\u00B3 + "+a_str) if a > 0 else ("y\u00B2 = x\u00B3 "+a_str)
-        text += (("x + " + b_str) if b > 0 else ("x "+b_str))
-        '''
         self.ec_eq_text.set(self.elliptic_curve.print())
+        self.g_point.config(state='normal')
         self.g_x.config(state='normal')
         self.g_y.config(state='normal')
+        self.g_button.config(state='normal')
 
     def g_ready(self):
         x_str = self.g_x.get()
-        x = int(x_str)
         y_str = self.g_y.get()
-        y = int(y_str)
+        try:
 
-        self.g = ec.Point(x, y)
+            if x_str == '' or y_str == '':
+                text = "x or y are empty"
+                self.g_text.set(text)
+                raise ValueError("Empty input")
 
-        text = "G("+x_str+", "+y_str+")"
+            if not x_str.lstrip('-').isnumeric() or not y_str.lstrip('-').isnumeric():
+                text = "x and b must be numbers"
+                self.g_text.set(text)
+                raise ValueError("Input must be numeric")
 
+            self.g.set_x(int(x_str))
+            self.g.set_y(int(y_str))
+            if not self.elliptic_curve.belongsToCurve(self.g):
+                text = "Point does not belong to curve"
+                self.g_text.set(text)
+                raise ValueError("Point does not belong to curve")
+
+        except TypeError:
+            text = "Invalid input"
+            self.g_text.set(text)
+            raise ValueError("invalid input")
+
+        text = "G = "+self.g.print()
         self.g_text.set(text)
 
     def start_page(self):
