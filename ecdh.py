@@ -8,7 +8,7 @@ class Ecdh:
         self.app = app
         self.frame = tk.Frame(self.master)
         self.elliptic_curve = None
-        self.g = ec.Point()
+        self.g = None
 
         title = tk.Label(self.frame, text='Elliptic-curve Diffie-Hellman')
         title.grid(row=0, column=0, sticky="W")
@@ -28,7 +28,7 @@ class Ecdh:
         self.ec_ready_button = tk.Button(self.frame)
         self.ec_eq_text = tk.StringVar()
         self.ec_eq = tk.Label(self.frame)
-        self.ec_button_edit = tk.Button(self.frame)
+        self.ec_edit_button = tk.Button(self.frame)
 
         self.ec_set()
 
@@ -47,9 +47,9 @@ class Ecdh:
         self.g_ready_button = tk.Button(self.frame)
         self.g_text = tk.StringVar()
         self.g_label = tk.Label(self.frame)
+        self.g_edit_button = tk.Button(self.frame)
 
         self.g_set()
-
         # ///////////// End Generator Point /////////////
 
         blank3 = tk.Label(self.frame, text='       ')
@@ -161,8 +161,8 @@ class Ecdh:
 
         self.ec_eq.config(textvariable=self.ec_eq_text)
 
-        self.ec_button_edit.config(text="Edit", command=lambda: self.ec_clear())
-        self.ec_button_edit.grid_forget()
+        self.ec_edit_button.config(text="Edit", command=lambda: self.ec_clear())
+        self.ec_edit_button.grid_forget()
 
     def ec_ready(self):
         try:
@@ -196,7 +196,7 @@ class Ecdh:
         self.ec_a_entry.config(state="disabled")
         self.ec_b_entry.config(state="disabled")
         self.ec_ready_button.grid_forget()
-        self.ec_button_edit.grid(row=5, column=0)
+        self.ec_edit_button.grid(row=5, column=0)
 
         self.g_title.config(state='normal')
         self.g_x_label.config(state='normal')
@@ -207,17 +207,18 @@ class Ecdh:
 
 
     def ec_clear(self):
-        self.ec_a_entry.delete(0, 'end')
         self.ec_a_entry.config(state="normal")
-        self.ec_b_entry.delete(0, 'end')
+        self.ec_a_entry.delete(0, 'end')
         self.ec_b_entry.config(state="normal")
+        self.ec_b_entry.delete(0, 'end')
         self.ec_title.grid(row=2, column=0, sticky="W")
         self.ec_eq_text.set("")
         self.ec_ready_button.grid(row=5, column=0)
         self.ec_eq.grid(row=5, column=1)
-        self.ec_button_edit.grid_forget()
+        self.ec_edit_button.grid_forget()
+        self.elliptic_curve = None
 
-        self.g_clear()
+        self.g_clear_and_disable()
 
     def g_set(self):
         self.g_title.config(text="Step 2: choose generator point to be used by both Bob and Alice", state="disabled")
@@ -241,6 +242,9 @@ class Ecdh:
         self.g_label.config(textvariable=self.g_text)
         self.g_label.grid(row=9, column=1)
 
+        self.g_edit_button.config(text="Edit", command=lambda: self.g_clear())
+        self.g_edit_button.grid_forget()
+
     def g_ready(self):
         x_str = self.g_x_entry.get()
         y_str = self.g_y_entry.get()
@@ -256,8 +260,7 @@ class Ecdh:
                 self.g_text.set(text)
                 raise ValueError("Input must be numeric")
 
-            self.g.set_x(int(x_str))
-            self.g.set_y(int(y_str))
+            self.g = ec.Point(int(x_str), int(y_str))
             if not self.elliptic_curve.belongsToCurve(self.g):
                 text = "Point does not belong to curve"
                 self.g_text.set(text)
@@ -270,6 +273,12 @@ class Ecdh:
 
         text = "G = "+self.g.print()
         self.g_text.set(text)
+
+        self.g_x_entry.config(state="disabled")
+        self.g_y_entry.config(state="disabled")
+
+        self.g_ready_button.grid_forget()
+        self.g_edit_button.grid(row=9, column=0)
 
         self.step3_label.config(state="normal")
         self.bob_title.config(state="normal")
@@ -288,16 +297,33 @@ class Ecdh:
         self.bob_alice_button.config(state="normal")
 
     def g_clear(self):
+        self.g_x_entry.config(state="normal")
+        self.g_x_entry.delete(0, "end")
+        self.g_y_entry.config(state="normal")
+        self.g_y_entry.delete(0, "end")
+        self.g_ready_button.grid(row=9, column=0)
+        self.g_edit_button.grid_forget()
+        self.g_text.set("")
+        self.g = None
+
+    def g_clear_and_disable(self):
         self.g_title.config(state="disabled")
+
         self.g_x_label.config(state="disabled")
+        self.g_x_entry.config(state="normal")
         self.g_x_entry.delete(0, "end")
         self.g_x_entry.config(state="disabled")
+
         self.g_y_label.config(state="disabled")
+        self.g_y_entry.config(state="normal")
         self.g_y_entry.delete(0, "end")
         self.g_y_entry.config(state="disabled")
+
         self.g_ready_button.config(state="disabled")
+        self.g_ready_button.grid(row=9, column=0)
+        self.g_edit_button.grid_forget()
         self.g_text.set("")
-        self.g_label.grid_forget()
+        self.g = None
 
 
     def bob_alice_ready(self):
