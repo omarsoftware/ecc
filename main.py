@@ -19,25 +19,25 @@ class App:
 
         # Creating exit
         file_menu = tk.Menu(self.main_menu)
-        self.main_menu.add_cascade(label="File", menu=file_menu)
-        file_menu.add_command(label="Exit", command=self.root.quit)
+        self.main_menu.add_cascade(label="Archivo", menu=file_menu)
+        file_menu.add_command(label="Salir", command=self.root.quit)
 
         # Creating Analysis menu
         analysis_menu = tk.Menu(self.main_menu)
-        self.main_menu.add_cascade(label="Analysis", menu=analysis_menu)
-        analysis_menu.add_command(label="Point Operations", command=self.make_point_operations)
+        self.main_menu.add_cascade(label="Análisis", menu=analysis_menu)
+        analysis_menu.add_command(label="Operaciones de Puntos", command=self.make_point_operations)
 
         # Creating Encrypt menu
         encrypt_menu = tk.Menu(self.main_menu)
-        self.main_menu.add_cascade(label="Encrypt", menu=encrypt_menu)
-        encrypt_menu.add_command(label="Elliptic-Curve Diffie-Hellman (ECDH)",
+        self.main_menu.add_cascade(label="Cifrado", menu=encrypt_menu)
+        encrypt_menu.add_command(label="Diffie-Hellman con curva elíptica (ECDH)",
                                  command=self.make_ecdh)
-        encrypt_menu.add_command(label="Elliptic-Curve Digital Signature Algorithm (ECDSA)",
+        encrypt_menu.add_command(label="Firma Digital con curva elíptica (ECDSA)",
                                  command=self.make_ecdsa)
 
         self.frame.grid()
 
-        tk.Label(self.frame, text='Main page').grid()
+        tk.Label(self.frame, text='Página Principal').grid()
 
         self.point_operations = PointOperations(master=self.root, app=self)
         self.ecdh = Ecdh(master=self.root, app=self)
