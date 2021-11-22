@@ -16,13 +16,14 @@ class Point:
         return self.y
 
     def print(self):
-        return "("+str(round(self.x, 5))+", "+str(round(self.y, 5))+")"
+        return "("+str(self.x)+", "+str(self.y)+")"
 
 
 class EllipticCurve:
-    def __init__(self, a, b):
+    def __init__(self, a, b, q=None):
         self.a = a
         self.b = b
+        self.q = q
 
     def set_a(self, a):
         self.a = a
@@ -36,13 +37,24 @@ class EllipticCurve:
     def get_b(self):
         return self.b
 
+    def set_q(self, q):
+        self.q = q
+
+    def get_q(self):
+        return self.q
+
     def isNonSingular(self):
-        return (4*(self.a**3)+27*(self.b**2)) != 0
+        if self.q:
+            return (4*(self.a**3)+27*(self.b**2)) % self.q != 0
+        else:
+            return (4*(self.a**3)+27*(self.b**2)) != 0
+
 
     def belongsToCurve(self, point):
         return (point.get_y()**2) == ((point.get_x()**3)+self.a*point.get_x()+self.b)
 
     def point_addition(self, point_p, point_q):
+        '''
         alpha = (point_q.get_y() - point_p.get_y())/(point_q.get_x() - point_p.get_x())
 
         point_r = Point()
@@ -52,8 +64,23 @@ class EllipticCurve:
         point_pq = Point()
         point_pq.set_x(alpha**2 - point_p.get_x() - point_q.get_x())
         point_pq.set_y(alpha*(point_p.get_x() - point_r.get_x()) - point_p.get_y())
+        '''
 
-        return point_pq
+        if (point_p.get_x() == point_q.get_x()) and (point_p.get_x() == point_q.get_y()()):
+            slope = (3 * point_p.get_x() * point_p.get_x() + self.a) * self.inv(2 * point_p.get_y(), self.q) % self.q
+        else:
+            slope = (point_q.get_y() - point_p.get_y()) * self.inv(point_q.get_x() - point_p.get_x(), self.q) % self.q
+
+        point_r = Point()
+
+        x = (slope * slope - point_p.get_x() - point_q.get_x()) % self.q
+        # y = (point_p.get_y() + slope * (x - point_p.get_x())) % self.q
+        y = (slope * (point_p.get_x() - x) - point_p.get_y()) % self.q
+
+        point_r.set_x(x)
+        point_r.set_y(y)
+
+        return point_r
 
     def point_doubling(self, point):
         alpha = (3 * point.get_x() ** 2 + self.get_a()) / (2 * point.get_y())
@@ -74,16 +101,49 @@ class EllipticCurve:
     def print(self):
         text = "y\u00B2 = x\u00B3"
         if self.a > 0:
-            text += (" + " + str(self.a) + "x")
+            text += " + " + str(self.a) + "x"
         elif self.a < 0:
-            text += (" " + str(self.a) + "x")
+            text += " " + str(self.a) + "x"
 
         if self.b > 0:
-            text += (" + " + str(self.b))
+            text += " + " + str(self.b)
         elif self.b < 0:
-            text += (" "+str(self.b))
+            text += " "+str(self.b)
+
+        if self.q:
+            text += "(mod "+str(self.q)+")"
 
         return text
+
+    def egcd(self, a, b):
+        """extended GCD
+        returns: (s, t, gcd) as a*s + b*t == gcd
+        #>>> s, t, gcd = egcd(a, b)
+        #>>> assert a % gcd == 0 and b % gcd == 0
+        #>>> assert a * s + b * t == gcd
+        """
+        s0, s1, t0, t1 = 1, 0, 0, 1
+        while b > 0:
+            q, r = divmod(a, b)
+            a, b = b, r
+            s0, s1, t0, t1 = s1, s0 - q * s1, t1, t0 - q * t1
+            pass
+        return s0, t0, a
+
+    def inv(self, n, q):
+        """div on PN modulo a/b mod q as a * inv(b, q) mod q
+        # >>> assert n * inv(n, q) % q == 1
+        """
+        # n*inv % q = 1 => n*inv = q*m + 1 => n*inv + q*-m = 1
+        # => egcd(n, q) = (inv, -m, 1) => inv = egcd(n, q)[0] (mod q)
+        return self.egcd(n, q)[0] % q
+        # [ref] naive implementation
+        # for i in range(q):
+        #    if (n * i) % q == 1:
+        #        return i
+        #    pass
+        # assert False, "unreached"
+        # pass
 
 
 class User:

@@ -1,5 +1,6 @@
 import tkinter as tk
 import constants as cons
+import ecmath as ec
 from ecdh import Ecdh
 from ecdsa import Ecdsa
 from pointops import PointOperations
@@ -44,6 +45,17 @@ class App:
         self.ecdsa = Ecdsa(master=self.root, app=self)
 
         self.pages = [self.point_operations, self.ecdh, self.ecdsa]
+
+        # /////////////
+
+        curve = ec.EllipticCurve(10, 15, 23)
+        point_p = ec.Point(3, 7)
+        point_q = ec.Point(8, 3)
+        point_r = curve.point_addition(point_p, point_q)
+        print(point_r.print())
+
+        # ////////////
+
 
     def main_page(self):
         self.frame.grid()
