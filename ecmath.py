@@ -24,6 +24,7 @@ class EllipticCurve:
         self.a = a
         self.b = b
         self.q = q
+        self.zero = Point(0, 0)
 
     def set_a(self, a):
         self.a = a
@@ -51,7 +52,7 @@ class EllipticCurve:
 
 
     def belongsToCurve(self, point):
-        return (point.get_y()**2) == ((point.get_x()**3)+self.a*point.get_x()+self.b)
+        return (point.get_y()**2) % self.q == ((point.get_x()**3)+self.a*point.get_x()+self.b) % self.q
 
     def point_addition(self, point_p, point_q):
         '''
@@ -66,10 +67,21 @@ class EllipticCurve:
         point_pq.set_y(alpha*(point_p.get_x() - point_r.get_x()) - point_p.get_y())
         '''
 
-        if (point_p.get_x() == point_q.get_x()) and (point_p.get_x() == point_q.get_y()()):
+        if point_p.get_x() == 0 and point_p.get_y() == 0:
+            return point_q
+
+        if point_q.get_x() == 0 and point_q.get_y() == 0:
+            return point_p
+
+        if point_p.get_x() == point_q.get_x() and (point_p.get_y() != point_q.get_y() or point_p.get_y() == 0):
+            return self.zero
+
+        if point_p.get_x() == point_q.get_x():
             slope = (3 * point_p.get_x() * point_p.get_x() + self.a) * self.inv(2 * point_p.get_y(), self.q) % self.q
+            pass
         else:
             slope = (point_q.get_y() - point_p.get_y()) * self.inv(point_q.get_x() - point_p.get_x(), self.q) % self.q
+            pass
 
         point_r = Point()
 
@@ -92,11 +104,19 @@ class EllipticCurve:
         return point_r
 
     def point_mult(self, point, k):
+        '''
         point_r = self.point_doubling(point)
         for x in range(k-2):
             point_r = self.point_addition(point, point_r)
 
         return point_r
+        '''
+        point_r = self.zero
+        for x in range(k):
+            point_r = self.point_addition(point_r, point)
+
+        return point_r
+
 
     def print(self):
         text = "y\u00B2 = x\u00B3"

@@ -27,6 +27,8 @@ class Ecdh:
         self.ec_a_entry = tk.Entry(self.ec_frame)
         self.ec_b_label = tk.Label(self.ec_frame)
         self.ec_b_entry = tk.Entry(self.ec_frame)
+        self.ec_q_label = tk.Label(self.ec_frame)
+        self.ec_q_entry = tk.Entry(self.ec_frame)
         self.ec_ready_button = tk.Button(self.frame)
         self.ec_eq_text = tk.StringVar()
         self.ec_eq = tk.Label(self.frame)
@@ -122,7 +124,7 @@ class Ecdh:
         self.ec_title.config(text='Paso 1: elegir curva elíptica utilizada por Bob y Alicia')
         self.ec_title.grid(row=2, column=0, sticky="W")
 
-        self.ec_gen_eq.set("y\u00B2 = x\u00B3 + ax + b")
+        self.ec_gen_eq.set("y\u00B2 = x\u00B3 + ax + b mod q")
         self.ec_gen_eq_label.config(textvariable=self.ec_gen_eq)
         self.ec_gen_eq_label.grid(row=3, column=0)
 
@@ -133,8 +135,13 @@ class Ecdh:
 
         self.ec_b_label.config(text="b =")
         self.ec_b_label.pack(side="left")
-        self.ec_b_entry.pack(side="left")
         self.ec_b_entry.config(width=5)
+        self.ec_b_entry.pack(side="left")
+
+        self.ec_q_label.config(text="q =")
+        self.ec_q_label.pack(side="left")
+        self.ec_q_entry.config(width=5)
+        self.ec_q_entry.pack(side="left")
 
         self.ec_frame.grid(row=4, column=0)
 
@@ -152,9 +159,10 @@ class Ecdh:
         try:
             a_str = self.ec_a_entry.get()
             b_str = self.ec_b_entry.get()
+            q_str = self.ec_q_entry.get()
 
-            if a_str == '' or b_str == '':
-                text = "a o b están vacíos"
+            if a_str == '' or b_str == '' or q_str == '':
+                text = "a, b o q están vacíos"
                 self.ec_eq_text.set(text)
                 raise ValueError("Empty input")
 
@@ -163,9 +171,15 @@ class Ecdh:
                 self.ec_eq_text.set(text)
                 raise ValueError("Input must be numeric")
 
+            if not q_str.isdigit():
+                text = "q debe ser positivo"
+                self.ec_eq_text.set(text)
+                raise ValueError("Input must be numeric")
+
             a = int(a_str)
             b = int(b_str)
-            self.elliptic_curve = ec.EllipticCurve(a, b)
+            q = int(q_str)
+            self.elliptic_curve = ec.EllipticCurve(a, b, q)
             if not self.elliptic_curve.isNonSingular():
                 text = "curva elíptica singular"
                 self.ec_eq_text.set(text)
@@ -179,6 +193,8 @@ class Ecdh:
         self.ec_eq_text.set(self.elliptic_curve.print())
         self.ec_a_entry.config(state="disabled")
         self.ec_b_entry.config(state="disabled")
+        self.ec_q_entry.config(state="disabled")
+
         self.ec_ready_button.grid_forget()
         self.ec_edit_button.grid(row=5, column=0)
 
@@ -194,6 +210,8 @@ class Ecdh:
         self.ec_a_entry.delete(0, 'end')
         self.ec_b_entry.config(state="normal")
         self.ec_b_entry.delete(0, 'end')
+        self.ec_q_entry.config(state="normal")
+        self.ec_q_entry.delete(0, 'end')
         self.ec_title.grid(row=2, column=0, sticky="W")
         self.ec_eq_text.set("")
         self.ec_ready_button.grid(row=5, column=0)

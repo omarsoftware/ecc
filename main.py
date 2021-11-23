@@ -50,8 +50,8 @@ class App:
 
         curve = ec.EllipticCurve(10, 15, 23)
         point_p = ec.Point(3, 7)
-        point_q = ec.Point(8, 3)
-        point_r = curve.point_addition(point_p, point_q)
+        # point_q = ec.Point(3, 7)
+        point_r = curve.point_mult(point_p, 19)
         print(point_r.print())
 
         # ////////////
