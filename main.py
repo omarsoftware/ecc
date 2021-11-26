@@ -54,6 +54,7 @@ class App:
         point_r = curve.point_mult(point_p, 19)
         print(point_r.print())
 
+        # da (22, 2)
         # ////////////
 
 

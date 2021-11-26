@@ -20,10 +20,13 @@ class Point:
 
 
 class EllipticCurve:
-    def __init__(self, a, b, q=None):
+    def __init__(self, a, b, q=None, g=None, n=None, h=None):
         self.a = a
         self.b = b
         self.q = q
+        self.g = g
+        self.n = n
+        self.h = h
         self.zero = Point(0, 0)
 
     def set_a(self, a):
@@ -55,18 +58,6 @@ class EllipticCurve:
         return (point.get_y()**2) % self.q == ((point.get_x()**3)+self.a*point.get_x()+self.b) % self.q
 
     def point_addition(self, point_p, point_q):
-        '''
-        alpha = (point_q.get_y() - point_p.get_y())/(point_q.get_x() - point_p.get_x())
-
-        point_r = Point()
-        point_r.set_x(alpha**2 - point_p.get_x() - point_q.get_x())
-        point_r.set_y(alpha*(point_r.get_x() - point_p.get_x()) + point_p.get_y())
-
-        point_pq = Point()
-        point_pq.set_x(alpha**2 - point_p.get_x() - point_q.get_x())
-        point_pq.set_y(alpha*(point_p.get_x() - point_r.get_x()) - point_p.get_y())
-        '''
-
         if point_p.get_x() == 0 and point_p.get_y() == 0:
             return point_q
 
@@ -105,18 +96,22 @@ class EllipticCurve:
 
     def point_mult(self, point, k):
         '''
-        point_r = self.point_doubling(point)
-        for x in range(k-2):
-            point_r = self.point_addition(point, point_r)
-
-        return point_r
-        '''
         point_r = self.zero
         for x in range(k):
             point_r = self.point_addition(point_r, point)
 
         return point_r
+        '''
+        point_r = self.zero
+        m = point
 
+        while k > 0:
+            if k & 1 == 1:
+                point_r = self.point_addition(point_r, m)
+                pass
+            k, m = k >> 1, self.point_addition(m, m)
+            pass
+        return point_r
 
     def print(self):
         text = "y\u00B2 = x\u00B3"
