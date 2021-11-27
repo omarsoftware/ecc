@@ -52,10 +52,10 @@ class App:
         self.bob = ec.User()
         self.alice = ec.User()
 
-        self.bob.setPrivKey(0x6)
+        self.bob.setPrivKey(0x378394C3274253FD15531812)
         self.bob.setPubKey(self.elliptic_curve.point_mult(self.elliptic_curve.get_g(), self.bob.getPrivKey()))
 
-        self.alice.setPrivKey(0x8)
+        self.alice.setPrivKey(0x151FF34164E0A753BAE0B506)
         self.alice.setPubKey(self.elliptic_curve.point_mult(self.elliptic_curve.get_g(), self.alice.getPrivKey()))
 
         print("Clave privada de Bob:")

@@ -182,6 +182,8 @@ class EllipticCurve:
         # assert False, "unreached"
         # pass
 
+    def get_ec_parms(self, curve):
+        pass
 
 class User:
     def __init__(self):
@@ -204,8 +206,6 @@ class User:
 class ECDH:
     def __init__(self, elliptic_curve):
         self.ec = elliptic_curve
-        self.bob = User()
-        self.alice = User()
 
     def gen_priv(self, priv_key):
         # generates random priv_key
