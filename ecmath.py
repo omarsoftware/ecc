@@ -18,13 +18,17 @@ class Point:
     def print(self):
         return "("+str(self.x)+", "+str(self.y)+")"
 
+    def __eq__(self, other_point):
+        return self.get_x() == other_point.get_x() and self.get_y() == other_point.get_y()
+
 
 class EllipticCurve:
     def __init__(self, a, b, q=None, g=None, n=None, h=None):
         self.a = a
         self.b = b
         self.q = q
-        self.g = g
+        if g:
+            self.g = Point(g[0], g[1])
         self.n = n
         self.h = h
         self.zero = Point(0, 0)
@@ -46,6 +50,24 @@ class EllipticCurve:
 
     def get_q(self):
         return self.q
+
+    def set_g(self, g):
+        self.g = g
+
+    def get_g(self):
+        return self.g
+
+    def set_n(self, n):
+        self.n = n
+
+    def get_n(self):
+        return self.n
+
+    def set_h(self, h):
+        self.h = h
+
+    def get_h(self):
+        return self.h
 
     def isNonSingular(self):
         if self.q:
@@ -177,3 +199,20 @@ class User:
 
     def getPubKey(self):
         return self.pubKey
+
+
+class ECDH:
+    def __init__(self, elliptic_curve):
+        self.ec = elliptic_curve
+        self.bob = User()
+        self.alice = User()
+
+    def gen_priv(self, priv_key):
+        # generates random priv_key
+        pass
+
+    def gen_pub_key(self, priv_key):
+        return self.ec.point_mult(self.ec.get_g(), priv_key)
+
+    def calc_shared_key(self, priv, pub):
+        return self.ec.point_mult(pub, priv)

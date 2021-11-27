@@ -47,14 +47,31 @@ class App:
         self.pages = [self.point_operations, self.ecdh, self.ecdsa]
 
         # /////////////
+        curva = cons.EC_LIST["brainpoolP192r1"]
+        self.elliptic_curve = ec.EllipticCurve(curva["a"], curva["b"], curva["q"], curva["g"], curva["n"], curva["h"])
+        self.bob = ec.User()
+        self.alice = ec.User()
 
-        curve = ec.EllipticCurve(10, 15, 23)
-        point_p = ec.Point(3, 7)
-        # point_q = ec.Point(3, 7)
-        point_r = curve.point_mult(point_p, 19)
-        print(point_r.print())
+        self.bob.setPrivKey(0x6)
+        self.bob.setPubKey(self.elliptic_curve.point_mult(self.elliptic_curve.get_g(), self.bob.getPrivKey()))
 
-        # da (22, 2)
+        self.alice.setPrivKey(0x8)
+        self.alice.setPubKey(self.elliptic_curve.point_mult(self.elliptic_curve.get_g(), self.alice.getPrivKey()))
+
+        print("Clave privada de Bob:")
+        print(self.bob.getPrivKey())
+        print("Clave pública de Bob:")
+        print(self.bob.getPubKey())
+        print("///////////")
+        print("Clave privada de Alice:")
+        print(self.alice.getPrivKey())
+        print("Clave pública de Alice:")
+        print(self.alice.getPubKey())
+        print("///////////")
+        print("Clave SECRETA COMPARTIDA según Bob:")
+        print(self.elliptic_curve.point_mult(self.alice.getPubKey(), self.bob.getPrivKey()).print())
+        print("Clave SECRETA COMPARTIDA según Alice:")
+        print(self.elliptic_curve.point_mult(self.bob.getPubKey(), self.alice.getPrivKey()).print())
         # ////////////
 
 
