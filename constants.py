@@ -30,3 +30,11 @@ EC_LIST = {
         "h": 0x1
     }
 }
+
+
+def get_predef_curves_names():
+    return list(EC_LIST.keys())
+
+
+def get_curve(curve_name):
+    return EC_LIST[curve_name]

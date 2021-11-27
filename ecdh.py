@@ -2,6 +2,7 @@ import tkinter as tk
 import constants as cons
 import ecmath as ec
 
+
 class Ecdh:
     def __init__(self, master=None, app=None):
         self.master = master
@@ -14,6 +15,19 @@ class Ecdh:
 
         title = tk.Label(self.frame, text='Diffie-Hellman con curva elíptica')
         title.grid(row=0, column=0, sticky="W")
+
+        #/// begin dropdown
+        curves_list = cons.get_predef_curves_names()
+        self.dropdown_str = tk.StringVar()
+        self.dropdown_str.set(curves_list[0])
+        w = tk.OptionMenu(self.frame, self.dropdown_str, *curves_list)
+        w.grid(row=0, column=2)
+
+        self.button_chosen_curve = tk.Button(self.frame, text="Seleccionar", command=lambda: self.chosen_curve())
+        self.button_chosen_curve.grid(row=1, column=2)
+
+        #/// end dropdown
+
 
         blank1 = tk.Label(self.frame, text='       ')
         blank1.grid(row=1, column=0)
@@ -117,8 +131,10 @@ class Ecdh:
         self.shared_alice_label = tk.Label(self.frame, textvariable=self.shared_alice_text, state="disabled")
         self.shared_alice_label.grid(row=24, column=1)
 
-
         # ///////////// End Shared Calculations /////////////
+
+    def chosen_curve(self):
+        print("La curva seleccionada es: " + self.dropdown_str.get())
 
     def ec_set(self):
         self.ec_title.config(text='Paso 1: elegir curva elíptica utilizada por Bob y Alicia')
