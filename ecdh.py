@@ -1,6 +1,7 @@
 import tkinter as tk
 import constants as cons
 import ecmath as ec
+from PIL import Image, ImageTk
 
 
 class Ecdh:
@@ -13,163 +14,223 @@ class Ecdh:
         self.bob = None
         self.alice = None
 
-        title = tk.Label(self.frame, text='Diffie-Hellman con curva elíptica')
-        title.grid(row=0, column=0, sticky="W")
-
-        #/// begin dropdown
-        curves_list = cons.get_predef_curves_names()
-        self.dropdown_str = tk.StringVar()
-        self.dropdown_str.set(curves_list[0])
-        w = tk.OptionMenu(self.frame, self.dropdown_str, *curves_list)
-        w.grid(row=0, column=2)
-
-        self.button_chosen_curve = tk.Button(self.frame, text="Seleccionar", command=lambda: self.chosen_curve())
-        self.button_chosen_curve.grid(row=1, column=2)
-
-        #/// end dropdown
-
-
-        blank1 = tk.Label(self.frame, text='       ')
-        blank1.grid(row=1, column=0)
+        self.title = tk.Label(self.frame, text='Diffie-Hellman con Curva Elíptica', font='Helvetica 16 bold')
+        self.title.pack(fill="x")
 
         # ///////////// Begin Elliptic Curve /////////////
-        self.ec_title = tk.Label(self.frame)
-        self.ec_gen_eq = tk.StringVar()
-        self.ec_gen_eq_label = tk.Label(self.frame)
         self.ec_frame = tk.Frame(self.frame)
-        self.ec_a_label = tk.Label(self.ec_frame)
-        self.ec_a_entry = tk.Entry(self.ec_frame)
-        self.ec_b_label = tk.Label(self.ec_frame)
-        self.ec_b_entry = tk.Entry(self.ec_frame)
-        self.ec_q_label = tk.Label(self.ec_frame)
-        self.ec_q_entry = tk.Entry(self.ec_frame)
-        self.ec_ready_button = tk.Button(self.frame)
-        self.ec_eq_text = tk.StringVar()
-        self.ec_eq = tk.Label(self.frame)
-        self.ec_edit_button = tk.Button(self.frame)
+        self.ec_title = tk.Label(self.ec_frame)
+        self.ec_gen_eq = tk.StringVar()
+        self.ec_gen_eq_label = tk.Label(self.ec_frame)
+
+        # begin predfined curves dropdown
+        self.dropdown_frame = tk.Frame(self.frame)
+        self.predef_curve = None
+        self.curves_list = cons.get_predef_curves_names()
+        self.dropdown_str = tk.StringVar()
+        self.dropdown_str.set(self.curves_list[0])
+        self.predef_dropdown = tk.OptionMenu(self.dropdown_frame, self.dropdown_str, *self.curves_list)
+        self.button_chosen_curve = tk.Button(self.dropdown_frame, text="Seleccionar", command=lambda: self.chosen_curve())
+        # end predfined curves dropdown
+
+        self.ec_a_frame = tk.Frame(self.frame)
+        self.ec_a_label = tk.Label(self.ec_a_frame)
+        self.ec_a_entry = tk.Entry(self.ec_a_frame)
+
+        self.ec_b_frame = tk.Frame(self.frame)
+        self.ec_b_label = tk.Label(self.ec_b_frame)
+        self.ec_b_entry = tk.Entry(self.ec_b_frame)
+
+        self.ec_q_frame = tk.Frame(self.frame)
+        self.ec_q_label = tk.Label(self.ec_q_frame)
+        self.ec_q_entry = tk.Entry(self.ec_q_frame)
+
+        self.ec_ready_frame = tk.Frame(self.frame)
+        self.ec_ready_button = tk.Button(self.ec_ready_frame)
+        self.ec_edit_button = tk.Button(self.ec_ready_frame)
+        self.ec_load_ok = Image.open(cons.check_path)
+        self.ec_resized = self.ec_load_ok.resize((20, 20), Image.ANTIALIAS)
+        self.ec_new_pic_ok = ImageTk.PhotoImage(self.ec_resized)
+        self.ec_image_ok = tk.Label(self.ec_ready_frame, image=self.ec_new_pic_ok)
+
+        self.ec_error_frame = tk.Frame(self.frame)
+        self.ec_load_err = Image.open(cons.x_path)
+        self.ec_resized_err = self.ec_load_err.resize((20, 20), Image.ANTIALIAS)
+        self.ec_new_pic_err = ImageTk.PhotoImage(self.ec_resized_err)
+        self.ec_image_err = tk.Label(self.ec_error_frame, image=self.ec_new_pic_err)
+        self.ec_err_text = tk.StringVar()
+        self.ec_err_label = tk.Label(self.ec_error_frame)
+
         self.ec_set()
         # ///////////// End Elliptic Curve /////////////
 
         blank2 = tk.Label(self.frame, text='       ')
-        blank2.grid(row=6, column=0)
+        blank2.pack()
 
         # ///////////// Begin Generator Point /////////////
         self.g_title = tk.Label(self.frame)
-        self.g_frame = tk.Frame(self.frame)
-        self.g_x_label = tk.Label(self.g_frame)
-        self.g_x_entry = tk.Entry(self.g_frame)
-        self.g_y_label = tk.Label(self.g_frame)
-        self.g_y_entry = tk.Entry(self.g_frame)
-        self.g_ready_button = tk.Button(self.frame)
-        self.g_text = tk.StringVar()
-        self.g_label = tk.Label(self.frame)
-        self.g_edit_button = tk.Button(self.frame)
+
+        self.g_x_frame = tk.Frame(self.frame)
+        self.g_x_label = tk.Label(self.g_x_frame)
+        self.g_x_entry = tk.Entry(self.g_x_frame)
+
+        self.g_y_frame = tk.Frame(self.frame)
+        self.g_y_label = tk.Label(self.g_y_frame)
+        self.g_y_entry = tk.Entry(self.g_y_frame)
+
+        self.g_ready_frame = tk.Frame(self.frame)
+        self.g_ready_button = tk.Button(self.g_ready_frame)
+        self.g_edit_button = tk.Button(self.g_ready_frame)
+        self.g_load_ok = Image.open(cons.check_path)
+        self.g_resized = self.g_load_ok.resize((20, 20), Image.ANTIALIAS)
+        self.g_new_pic_ok = ImageTk.PhotoImage(self.g_resized)
+        self.g_image_ok = tk.Label(self.g_ready_frame, image=self.g_new_pic_ok)
+
+        self.g_error_frame = tk.Frame(self.frame)
+        self.g_label = tk.Label(self.g_error_frame)
+        self.g_err_txt = tk.StringVar()
+        self.g_err = tk.Label(self.g_error_frame)
+        self.g_load_err = Image.open(cons.x_path)
+        self.g_resized_err = self.g_load_err.resize((20, 20), Image.ANTIALIAS)
+        self.g_new_pic_err = ImageTk.PhotoImage(self.g_resized_err)
+        self.g_image_err = tk.Label(self.g_error_frame, image=self.g_new_pic_err)
+
         self.g_set()
         # ///////////// End Generator Point /////////////
 
         blank3 = tk.Label(self.frame, text='       ')
-        blank3.grid(row=11, column=0)
+        blank3.pack()
 
         # ///////////// Begin Key Generation /////////////
-        self.key_gen_label = tk.Label(self.frame, text="Paso 3: generación de claves públicas y privadas",state='disabled')
-        self.key_gen_label.grid(row=12, column=0)
+        self.key_gen_label = tk.Label(self.frame, text="Paso 3: generación de claves públicas y privadas", state='disabled', font='Helvetica 10 bold')
+        self.key_gen_label.pack()
 
         # ///////////// Begin Bob /////////////
+        self.bob_frame = tk.Frame(self.frame)
         self.bob_title = tk.Label(self.frame)
-        self.bob_priv_label = tk.Label(self.frame)
-        self.bob_priv_entry = tk.Entry(self.frame)
-        self.bob_pub_label = tk.Label(self.frame)
+
+        self.bob_priv_frame = tk.Frame(self.frame)
+        self.bob_priv_label = tk.Label(self.bob_priv_frame)
+        self.bob_priv_entry = tk.Entry(self.bob_priv_frame)
+
+        self.bob_pub_frame = tk.Frame(self.frame)
+        self.bob_pub_label = tk.Label(self.bob_pub_frame)
         self.bob_pub_text = tk.StringVar()
-        self.bob_label = tk.Label(self.frame)
+        self.bob_label = tk.Label(self.bob_pub_frame)
+
         self.bob_set()
         # ///////////// End Bob /////////////
 
-        blank4 = tk.Label(self.frame, text='       ')
-        blank4.grid(row=16, column=0)
-
         # ///////////// Begin Alice /////////////
         self.alice_title = tk.Label(self.frame)
-        self.alice_priv_label = tk.Label(self.frame)
-        self.alice_priv_entry = tk.Entry(self.frame)
-        self.alice_pub_label = tk.Label(self.frame)
+
+        self.alice_priv_frame = tk.Frame(self.frame)
+        self.alice_priv_label = tk.Label(self.alice_priv_frame)
+        self.alice_priv_entry = tk.Entry(self.alice_priv_frame)
+
+        self.alice_pub_frame = tk.Frame(self.frame)
+        self.alice_pub_label = tk.Label(self.alice_pub_frame)
         self.alice_pub_text = tk.StringVar()
-        self.alice_label = tk.Label(self.frame)
+        self.alice_label = tk.Label(self.alice_pub_frame)
+
         self.alice_set()
         # ///////////// End Alice /////////////
 
         self.bob_alice_ready_button = tk.Button(self.frame, text="Listo", command=lambda: self.bob_alice_ready(), state="disabled")
-        self.bob_alice_ready_button.grid(row=20, column=0)
+        self.bob_alice_ready_button.pack()
 
         self.bob_alice_text = tk.StringVar()
         self.bob_alice_label = tk.Label(self.frame, textvariable=self.bob_alice_text)
-        self.bob_alice_label.grid(row=20, column=1)
+        self.bob_alice_label.pack()
 
         # ///////////// End Alice /////////////
 
         self.bob_alice_edit_button = tk.Button(self.frame, text="Editar", command=lambda: self.bob_alice_clear())
-        self.bob_alice_edit_button.grid_forget()
+        self.bob_alice_edit_button.pack_forget()
 
         # ///////////// End Key Generation /////////////
 
-        blank5 = tk.Label(self.frame, text='       ')
-        blank5.grid(row=21, column=0)
-
         # ///////////// Begin Shared Calculations /////////////
         self.shared_title_label = tk.Label(self.frame, text="Paso 4: generación de clave compartida por Alicia y Bob",
-                                    state="disabled")
-        self.shared_title_label.grid(row=22, column=0)
+                                    state="disabled", font='Helvetica 10 bold')
+        self.shared_title_label.pack()
 
         self.shared_bob = tk.Label(self.frame, text="Clave compartida calculada por Bob: ", state="disabled")
-        self.shared_bob.grid(row=23, column=0)
+        self.shared_bob.pack()
         self.shared_bob_text = tk.StringVar()
         self.shared_bob_label = tk.Label(self.frame, textvariable=self.shared_bob_text)
-        self.shared_bob_label.grid(row=23, column=1)
+        self.shared_bob_label.pack()
 
         self.shared_alice = tk.Label(self.frame, text="Clave compartida calculada por Alicia: ", state="disabled")
-        self.shared_alice.grid(row=24, column=0)
+        self.shared_alice.pack()
         self.shared_alice_text = tk.StringVar()
         self.shared_alice_label = tk.Label(self.frame, textvariable=self.shared_alice_text, state="disabled")
-        self.shared_alice_label.grid(row=24, column=1)
+        self.shared_alice_label.pack()
 
         # ///////////// End Shared Calculations /////////////
 
     def chosen_curve(self):
-        print("La curva seleccionada es: " + self.dropdown_str.get())
+        self.predef_curve = cons.get_curve(self.dropdown_str.get())
+        self.ec_a_entry.delete(0, "end")
+        self.ec_a_entry.insert(0, self.predef_curve["a"])
+
+        self.ec_b_entry.delete(0, "end")
+        self.ec_b_entry.insert(0, self.predef_curve["b"])
+
+        self.ec_q_entry.delete(0, "end")
+        self.ec_q_entry.insert(0, self.predef_curve["q"])
+
+        self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"], self.predef_curve["q"],
+                                               self.predef_curve["g"], self.predef_curve["n"], self.predef_curve["h"])
+
+        self.elliptic_curve.setPreDefined(True)
 
     def ec_set(self):
-        self.ec_title.config(text='Paso 1: elegir curva elíptica utilizada por Bob y Alicia')
-        self.ec_title.grid(row=2, column=0, sticky="W")
-
-        self.ec_gen_eq.set("y\u00B2 = x\u00B3 + ax + b mod q")
+        self.ec_title.config(text='Paso 1: elegir curva elíptica utilizada y compartida por Bob y Alicia', font='Helvetica 10 bold')
+        self.ec_title.pack()
+        self.ec_gen_eq.set("y\u00B2 \u2261 x\u00B3 + ax + b mod q")
         self.ec_gen_eq_label.config(textvariable=self.ec_gen_eq)
-        self.ec_gen_eq_label.grid(row=3, column=0)
+        self.ec_gen_eq_label.pack()
+        self.ec_frame.pack()
+
+        self.predef_dropdown.pack(side="left")
+        self.button_chosen_curve.pack(side="left")
+        self.dropdown_frame.pack()
 
         self.ec_a_label.config(text="a =")
         self.ec_a_label.pack(side="left")
-        self.ec_a_entry.config(width=5)
+        self.ec_a_entry.config(width=80)
         self.ec_a_entry.pack(side="left")
+        self.ec_a_frame.pack()
 
         self.ec_b_label.config(text="b =")
         self.ec_b_label.pack(side="left")
-        self.ec_b_entry.config(width=5)
+        self.ec_b_entry.config(width=80)
         self.ec_b_entry.pack(side="left")
+        self.ec_b_frame.pack()
 
         self.ec_q_label.config(text="q =")
         self.ec_q_label.pack(side="left")
-        self.ec_q_entry.config(width=5)
+        self.ec_q_entry.config(width=80)
         self.ec_q_entry.pack(side="left")
-
-        self.ec_frame.grid(row=4, column=0)
+        self.ec_q_frame.pack()
 
         self.ec_ready_button.config(text="Listo", command=lambda: self.ec_ready())
-        self.ec_ready_button.grid(row=5, column=0)
-
-        self.ec_eq.grid(row=5, column=1)
-
-        self.ec_eq.config(textvariable=self.ec_eq_text)
-
+        self.ec_ready_button.pack()
         self.ec_edit_button.config(text="Editar", command=lambda: self.ec_clear())
-        self.ec_edit_button.grid_forget()
+        self.ec_edit_button.pack()
+        self.ec_edit_button.pack_forget()
+        self.ec_ready_button.pack(side="left")
+        self.ec_image_ok.pack(side="left")
+        self.ec_image_ok.pack_forget()
+        self.ec_ready_frame.pack()
+
+        self.ec_err_label.config(textvariable=self.ec_err_text)
+        self.ec_image_err.pack(side="left")
+        self.ec_image_err.pack_forget()
+        self.ec_err_label.pack(side="left")
+        self.ec_err_label.pack_forget()
+        self.ec_error_frame.pack()
 
     def ec_ready(self):
         try:
@@ -179,40 +240,61 @@ class Ecdh:
 
             if a_str == '' or b_str == '' or q_str == '':
                 text = "a, b o q están vacíos"
-                self.ec_eq_text.set(text)
+                self.ec_err_text.set(text)
+                self.ec_image_err.pack(side="left")
+                self.ec_err_label.pack(side="left")
+                self.ec_error_frame.pack()
                 raise ValueError("Empty input")
 
             if not a_str.lstrip('-').isnumeric() or not b_str.lstrip('-').isnumeric():
                 text = "a y b deben ser números"
-                self.ec_eq_text.set(text)
+                self.ec_err_text.set(text)
+                self.ec_image_err.pack(side="left")
+                self.ec_err_label.pack(side="left")
+                self.ec_error_frame.pack()
                 raise ValueError("Input must be numeric")
 
             if not q_str.isdigit():
                 text = "q debe ser positivo"
-                self.ec_eq_text.set(text)
+                self.ec_err_text.set(text)
+                self.ec_image_err.pack(side="left")
+                self.ec_err_label.pack(side="left")
+                self.ec_error_frame.pack()
                 raise ValueError("Input must be numeric")
 
             a = int(a_str)
             b = int(b_str)
             q = int(q_str)
-            self.elliptic_curve = ec.EllipticCurve(a, b, q)
+
+            if not self.elliptic_curve.isPreDefined():
+                self.elliptic_curve = ec.EllipticCurve(a, b, q)
+
             if not self.elliptic_curve.isNonSingular():
                 text = "curva elíptica singular"
-                self.ec_eq_text.set(text)
+                self.ec_err_text.set(text)
+                self.ec_image_err.pack(side="left")
+                self.ec_err_label.pack(side="left")
+                self.ec_error_frame.pack()
                 raise ValueError("elliptic-curve is singular")
 
         except TypeError:
             text = "Ingreso inválido"
-            self.ec_eq_text.set(text)
+            self.ec_err_text.set(text)
+            self.ec_image_err.pack(side="left")
+            self.ec_err_label.pack(side="left")
+            self.ec_error_frame.pack()
             raise ValueError("invalid input")
 
-        self.ec_eq_text.set(self.elliptic_curve.print())
         self.ec_a_entry.config(state="disabled")
         self.ec_b_entry.config(state="disabled")
         self.ec_q_entry.config(state="disabled")
 
-        self.ec_ready_button.grid_forget()
-        self.ec_edit_button.grid(row=5, column=0)
+        self.ec_ready_button.pack_forget()
+        self.ec_image_err.pack_forget()
+        self.ec_err_label.pack_forget()
+        self.ec_error_frame.configure(height=1)
+        self.ec_edit_button.pack(side="left")
+        self.ec_image_ok.pack(side="right")
 
         self.g_title.config(state='normal')
         self.g_x_label.config(state='normal')
@@ -221,6 +303,13 @@ class Ecdh:
         self.g_y_entry.config(state='normal')
         self.g_ready_button.config(state='normal')
 
+        if self.elliptic_curve.isPreDefined():
+            self.g_x_entry.delete(0, "end")
+            self.g_x_entry.insert(0, self.elliptic_curve.get_g().get_x())
+
+            self.g_y_entry.delete(0, "end")
+            self.g_y_entry.insert(0, self.elliptic_curve.get_g().get_y())
+
     def ec_clear(self):
         self.ec_a_entry.config(state="normal")
         self.ec_a_entry.delete(0, 'end')
@@ -228,75 +317,95 @@ class Ecdh:
         self.ec_b_entry.delete(0, 'end')
         self.ec_q_entry.config(state="normal")
         self.ec_q_entry.delete(0, 'end')
-        self.ec_title.grid(row=2, column=0, sticky="W")
-        self.ec_eq_text.set("")
-        self.ec_ready_button.grid(row=5, column=0)
-        self.ec_eq.grid(row=5, column=1)
-        self.ec_edit_button.grid_forget()
+        self.ec_title.pack()
+        self.ec_err_text.set("")
+        self.ec_ready_button.pack()
+        self.ec_image_ok.pack_forget()
+        self.ec_err_label.pack_forget()
+        self.ec_error_frame.configure(height=1)
+        self.ec_edit_button.pack_forget()
         self.elliptic_curve = None
 
         self.g_clear_and_disable()
         self.bob_alice_clear_and_disable()
 
     def g_set(self):
-        self.g_title.config(text="Paso 2: elegir punto generador utilizado por Bob y Alicia", state="disabled")
-        self.g_title.grid(row=7, column=0)
-
+        self.g_title.config(text="Paso 2: elegir punto generador utilizado y compartido por Bob y Alicia", state="disabled", font='Helvetica 10 bold')
+        self.g_title.pack()
+        
         self.g_x_label.config(text="x =", state="disabled")
         self.g_x_label.pack(side="left")
-        self.g_x_entry.config(width=5, state="disabled")
+        self.g_x_entry.config(width=80, state="disabled")
         self.g_x_entry.pack(side="left")
+        self.g_x_frame.pack()
 
         self.g_y_label.config(text="y =", state="disabled")
         self.g_y_label.pack(side="left")
-        self.g_y_entry.config(width=5, state="disabled")
+        self.g_y_entry.config(width=80, state="disabled")
         self.g_y_entry.pack(side="left")
-
-        self.g_frame.grid(row=8, column=0)
+        self.g_y_frame.pack()
 
         self.g_ready_button.config(text="Listo", state="disabled", command=lambda: self.g_ready())
-        self.g_ready_button.grid(row=9, column=0)
-
-        self.g_label.config(textvariable=self.g_text)
-        self.g_label.grid(row=9, column=1)
-
+        self.g_ready_button.pack()
         self.g_edit_button.config(text="Editar", command=lambda: self.g_clear())
-        self.g_edit_button.grid_forget()
+        self.g_edit_button.pack()
+        self.g_edit_button.pack_forget()
+        self.g_image_ok.pack()
+        self.g_image_ok.pack_forget()
+        self.g_ready_frame.pack()
+
+        self.g_err.config(textvariable=self.g_err_txt)
+        self.g_image_err.pack_forget()
+        self.g_err.pack(side="left")
+        self.g_err.pack_forget()
+        self.g_error_frame.pack()
 
     def g_ready(self):
         x_str = self.g_x_entry.get()
         y_str = self.g_y_entry.get()
         try:
-
             if x_str == '' or y_str == '':
                 text = "x o y están vacíos"
-                self.g_text.set(text)
+                self.g_err_txt.set(text)
+                self.g_image_err.pack(side="left")
+                self.g_err.pack(side="left")
+                self.g_error_frame.pack()
                 raise ValueError("Empty input")
 
             if not x_str.lstrip('-').isnumeric() or not y_str.lstrip('-').isnumeric():
                 text = "x e y deben ser números"
-                self.g_text.set(text)
+                self.g_err_txt.set(text)
+                self.g_image_err.pack(side="left")
+                self.g_err.pack(side="left")
+                self.g_error_frame.pack()
                 raise ValueError("Input must be numeric")
 
             self.g = ec.Point(int(x_str), int(y_str))
             if not self.elliptic_curve.belongsToCurve(self.g):
                 text = "El punto no pertenece a la curva"
-                self.g_text.set(text)
+                self.g_err_txt.set(text)
+                self.g_image_err.pack(side="left")
+                self.g_err.pack(side="left")
+                self.g_error_frame.pack()
                 raise ValueError("Point does not belong to curve")
 
         except TypeError:
             text = "Ingreso inválido"
-            self.g_text.set(text)
+            self.g_err_txt.set(text)
+            self.g_image_err.pack(side="left")
+            self.g_err.pack(side="left")
+            self.g_error_frame.pack()
             raise ValueError("invalid input")
-
-        text = "G = "+self.g.print()
-        self.g_text.set(text)
 
         self.g_x_entry.config(state="disabled")
         self.g_y_entry.config(state="disabled")
 
-        self.g_ready_button.grid_forget()
-        self.g_edit_button.grid(row=9, column=0)
+        self.g_ready_button.pack_forget()
+        self.g_edit_button.pack(side="left")
+        self.g_image_ok.pack(side="right")
+        self.g_err.pack_forget()
+        self.g_image_err.pack_forget()
+        self.g_error_frame.configure(height=1)
 
         self.key_gen_label.config(state="normal")
         self.bob_title.config(state="normal")
@@ -319,9 +428,13 @@ class Ecdh:
         self.g_x_entry.delete(0, "end")
         self.g_y_entry.config(state="normal")
         self.g_y_entry.delete(0, "end")
-        self.g_ready_button.grid(row=9, column=0)
-        self.g_edit_button.grid_forget()
-        self.g_text.set("")
+        self.g_edit_button.pack_forget()
+        self.g_image_ok.pack_forget()
+        self.g_ready_button.pack(side="left")
+        self.g_err_txt.set("")
+        self.g_image_err.pack_forget()
+        self.g_err.pack_forget()
+        self.g_error_frame.configure(height=1)
         self.g = None
 
         self.bob_alice_clear_and_disable()
@@ -337,34 +450,45 @@ class Ecdh:
         self.g_y_entry.delete(0, "end")
         self.g_y_entry.config(state="disabled")
         self.g_ready_button.config(state="disabled")
-        self.g_ready_button.grid(row=9, column=0)
-        self.g_edit_button.grid_forget()
-        self.g_text.set("")
+        self.g_ready_button.pack()
+        self.g_edit_button.pack_forget()
+        self.g_err_txt.set("")
+        self.g_image_err.pack_forget()
+        self.g_err.pack_forget()
+        self.g_error_frame.configure(height=1)
         self.g = None
 
     def bob_set(self):
         self.bob_title.config(text="Bob", state="disabled")
-        self.bob_title.grid(row=13, column=0)
-        self.bob_priv_label.config(text="Clave Privada:", state="disabled")
-        self.bob_priv_label.grid(row=14, column=0)
+        self.bob_title.pack()
+
+        self.bob_priv_label.config(text="Clave Privada (secreto de Bob):", state="disabled")
+        self.bob_priv_label.pack(side="left")
         self.bob_priv_entry.config(state="disabled")
-        self.bob_priv_entry.grid(row=14, column=1)
-        self.bob_pub_label.config(text="Clave Pública:", state="disabled")
-        self.bob_pub_label.grid(row=15, column=0)
+        self.bob_priv_entry.pack(side="left")
+        self.bob_priv_frame.pack()
+
+        self.bob_pub_label.config(text="Clave Pública (visible por todos):", state="disabled")
+        self.bob_pub_label.pack()
         self.bob_label.config(textvariable=self.bob_pub_text, state="disabled")
-        self.bob_label.grid(row=15, column=1)
+        self.bob_label.pack()
+        self.bob_pub_frame.pack()
 
     def alice_set(self):
         self.alice_title.config(text="Alicia", state="disabled")
-        self.alice_title.grid(row=17, column=0)
-        self.alice_priv_label.config(text="Clave Privada:", state="disabled")
-        self.alice_priv_label.grid(row=18, column=0)
+        self.alice_title.pack()
+
+        self.alice_priv_label.config(text="Clave Privada (secreto de Alice):", state="disabled")
+        self.alice_priv_label.pack(side="left")
         self.alice_priv_entry.config(state="disabled")
-        self.alice_priv_entry.grid(row=18, column=1)
-        self.alice_pub_label.config(text="Clave Pública:", state="disabled")
-        self.alice_pub_label.grid(row=19, column=0)
+        self.alice_priv_entry.pack(side="left")
+        self.alice_priv_frame.pack()
+
+        self.alice_pub_label.config(text="Clave Pública (visible por todos):", state="disabled")
+        self.alice_pub_label.pack()
         self.alice_label.config(textvariable=self.alice_pub_text, state="disabled")
-        self.alice_label.grid(row=19, column=1)
+        self.alice_label.pack()
+        self.alice_pub_frame.pack()
 
     def bob_alice_ready(self):
         self.bob_alice_text.set("")
@@ -408,8 +532,8 @@ class Ecdh:
 
         self.bob_priv_entry.config(state="disabled")
         self.alice_priv_entry.config(state="disabled")
-        self.bob_alice_ready_button.grid_forget()
-        self.bob_alice_edit_button.grid(row=20, column=0)
+        self.bob_alice_ready_button.pack_forget()
+        self.bob_alice_edit_button.pack()
         self.bob_alice_label.config(state="normal")
 
         self.shared_title_label.config(state="normal")
@@ -427,8 +551,8 @@ class Ecdh:
         self.alice_pub_text.set("")
         self.bob = None
         self.alice = None
-        self.bob_alice_edit_button.grid_forget()
-        self.bob_alice_ready_button.grid(row=20, column=0)
+        self.bob_alice_edit_button.pack_forget()
+        self.bob_alice_ready_button.pack()
         self.shared_bob_text.set("")
         self.shared_alice_text.set("")
 
@@ -447,9 +571,9 @@ class Ecdh:
         self.alice_priv_entry.config(state="normal")
         self.alice_priv_entry.delete(0, "end")
         self.alice_priv_entry.config(state="disabled")
-        self.bob_alice_edit_button.grid_forget()
+        self.bob_alice_edit_button.pack_forget()
         self.bob_alice_text.set("")
-        self.bob_alice_ready_button.grid(row=20, column=0)
+        self.bob_alice_ready_button.pack()
         self.bob_alice_ready_button.config(state="disabled")
         self.bob = None
         self.alice = None

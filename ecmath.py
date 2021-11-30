@@ -32,6 +32,7 @@ class EllipticCurve:
         self.n = n
         self.h = h
         self.zero = Point(0, 0)
+        self.predefined = False
 
     def set_a(self, a):
         self.a = a
@@ -68,6 +69,12 @@ class EllipticCurve:
 
     def get_h(self):
         return self.h
+
+    def isPreDefined(self):
+        return self.predefined
+
+    def setPreDefined(self, bool_val):
+        self.predefined = bool_val
 
     def isNonSingular(self):
         if self.q:
