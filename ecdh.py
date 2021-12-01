@@ -360,7 +360,8 @@ class Ecdh:
         self.bob_alice_clear_and_disable()
 
     def g_set(self):
-        self.g_title.config(text="Paso 2: elegir punto generador utilizado y compartido por Bob y Alicia", state="disabled", font='Helvetica 10 bold')
+        self.g_title.config(text="Paso 2: elegir punto generador utilizado y compartido por Bob y Alicia",
+                            state="disabled", font='Helvetica 10 bold')
         self.g_title.pack()
         
         self.g_x_label.config(text="x =", state="disabled")
@@ -485,6 +486,7 @@ class Ecdh:
         self.g_edit_button.pack_forget()
         self.g_err_txt.set("")
         self.g_image_err.pack_forget()
+        self.g_image_ok.pack_forget()
         self.g_err.pack_forget()
         self.g_error_frame.configure(height=1)
         self.g = None
@@ -669,29 +671,49 @@ class Ecdh:
     def bob_alice_clear_and_disable(self):
         self.key_gen_label.config(state="disabled")
         self.bob_alice_label.config(state="disabled")
+
         self.bob_title.config(state="disabled")
-        self.bob_label.config(state="disabled")
+        self.bob_pub_label.config(state="disabled")
         self.bob_priv_label.config(state="disabled")
         self.bob_priv_entry.config(state="normal")
         self.bob_priv_entry.delete(0, "end")
         self.bob_priv_entry.config(state="disabled")
+
+        self.bob_pub_x_label.config(state="disabled")
+        self.bob_pub_x_val_str.set("")
+        self.bob_pub_x_val_label.config(state="disabled")
+        self.bob_pub_y_label.config(state="disabled")
+        self.bob_pub_y_val_str.set("")
+        self.bob_pub_y_val_label.config(state="disabled")
+
         self.alice_title.config(state="disabled")
-        self.alice_label.config(state="disabled")
+        self.alice_pub_label.config(state="disabled")
         self.alice_priv_label.config(state="disabled")
         self.alice_priv_entry.config(state="normal")
         self.alice_priv_entry.delete(0, "end")
         self.alice_priv_entry.config(state="disabled")
+
+        self.alice_pub_x_label.config(state="disabled")
+        self.alice_pub_x_val_str.set("")
+        self.alice_pub_x_val_label.config(state="disabled")
+        self.alice_pub_y_label.config(state="disabled")
+        self.alice_pub_y_val_str.set("")
+        self.alice_pub_y_val_label.config(state="disabled")
+
         self.bob_alice_edit_button.pack_forget()
         self.bob_alice_text.set("")
+        self.bob_alice_image_ok.pack_forget()
+        self.bob_alice_err_txt.set("")
+        self.bob_alice_error_frame.config(height=1)
+        self.bob_alice_image_err.pack_forget()
         self.bob_alice_ready_button.pack()
         self.bob_alice_ready_button.config(state="disabled")
+
         self.bob = None
         self.alice = None
         self.shared_title_label.config(state="disabled")
         self.shared_bob.config(state="disabled")
         self.shared_alice.config(state="disabled")
-        self.bob_pub_text.set("")
-        self.alice_pub_text.set("")
         self.bob_label.config(state="disabled")
         self.alice_label.config(state="disabled")
         self.shared_bob_text.set("")
