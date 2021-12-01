@@ -29,6 +29,8 @@ class EllipticCurve:
         self.q = q
         if g:
             self.g = Point(g[0], g[1])
+        else:
+            self.g = g
         self.n = n
         self.h = h
         self.zero = Point(0, 0)
@@ -214,8 +216,10 @@ class ECDH:
     def __init__(self, elliptic_curve):
         self.ec = elliptic_curve
 
+    '''
+    TODO: agregar generación automática de clave privada
+    '''
     def gen_priv(self, priv_key):
-        # generates random priv_key
         pass
 
     def gen_pub_key(self, priv_key):

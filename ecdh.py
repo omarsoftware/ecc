@@ -13,6 +13,7 @@ class Ecdh:
         self.g = None
         self.bob = None
         self.alice = None
+        self.ecdh = None
 
         self.title = tk.Label(self.frame, text='Diffie-Hellman con Curva Elíptica', font='Helvetica 16 bold')
         self.title.pack(fill="x")
@@ -412,6 +413,7 @@ class Ecdh:
                 raise ValueError("Input must be numeric")
 
             self.g = ec.Point(int(x_str), int(y_str))
+
             if not self.elliptic_curve.belongsToCurve(self.g):
                 text = "El punto no pertenece a la curva"
                 self.g_err_txt.set(text)
@@ -427,6 +429,9 @@ class Ecdh:
             self.g_err.pack(side="left")
             self.g_error_frame.pack()
             raise ValueError("invalid input")
+
+        if not self.elliptic_curve.get_g():
+            self.elliptic_curve.set_g(self.g)
 
         self.g_x_entry.config(state="disabled")
         self.g_y_entry.config(state="disabled")
@@ -598,12 +603,14 @@ class Ecdh:
 
             self.bob = ec.User()
             self.alice = ec.User()
+            self.ecdh = ec.ECDH(self.elliptic_curve)
 
             bob_priv = int(bob_priv_str)
             alice_priv = int(alice_priv_str)
 
             self.bob.setPrivKey(bob_priv)
-            self.bob.setPubKey(self.elliptic_curve.point_mult(self.g, self.bob.getPrivKey()))
+            # self.bob.setPubKey(self.elliptic_curve.point_mult(self.g, self.bob.getPrivKey()))
+            self.bob.setPubKey(self.ecdh.gen_pub_key(self.bob.getPrivKey()))
             self.bob_pub_x_label.config(state="normal")
             self.bob_pub_x_val_str.set(self.bob.getPubKey().get_x())
             self.bob_pub_x_val_label.config(state="normal")
@@ -612,7 +619,8 @@ class Ecdh:
             self.bob_pub_y_val_label.config(state="normal")
 
             self.alice.setPrivKey(alice_priv)
-            self.alice.setPubKey(self.elliptic_curve.point_mult(self.g, self.alice.getPrivKey()))
+            # self.alice.setPubKey(self.elliptic_curve.point_mult(self.g, self.alice.getPrivKey()))
+            self.alice.setPubKey(self.ecdh.gen_pub_key(self.alice.getPrivKey()))
             self.alice_pub_x_label.config(state="normal")
             self.alice_pub_x_val_str.set(self.alice.getPubKey().get_x())
             self.alice_pub_x_val_label.config(state="normal")
@@ -621,9 +629,9 @@ class Ecdh:
             self.alice_pub_y_val_label.config(state="normal")
 
             self.shared_bob_text.set(
-                self.elliptic_curve.point_mult(self.alice.getPubKey(), self.bob.getPrivKey()).print())
+                self.ecdh.calc_shared_key(self.bob.getPrivKey(), self.alice.getPubKey()).print())
             self.shared_alice_text.set(
-                self.elliptic_curve.point_mult(self.bob.getPubKey(), self.alice.getPrivKey()).print())
+                self.ecdh.calc_shared_key(self.alice.getPrivKey(), self.bob.getPubKey()).print())
 
         except TypeError:
             text = "Ingreso inválido"
@@ -667,6 +675,11 @@ class Ecdh:
         self.bob_alice_ready_button.pack()
         self.shared_bob_text.set("")
         self.shared_alice_text.set("")
+        self.shared_title_label.config(state="disabled")
+        self.shared_bob.config(state="disabled")
+        self.shared_alice.config(state="disabled")
+        self.bob_label.config(state="disabled")
+        self.alice_label.config(state="disabled")
 
     def bob_alice_clear_and_disable(self):
         self.key_gen_label.config(state="disabled")
@@ -711,6 +724,7 @@ class Ecdh:
 
         self.bob = None
         self.alice = None
+        self.ecdh = None
         self.shared_title_label.config(state="disabled")
         self.shared_bob.config(state="disabled")
         self.shared_alice.config(state="disabled")
