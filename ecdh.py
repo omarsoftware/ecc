@@ -64,9 +64,6 @@ class Ecdh:
         self.ec_set()
         # ///////////// End Elliptic Curve /////////////
 
-        blank2 = tk.Label(self.frame, text='       ')
-        blank2.pack()
-
         # ///////////// Begin Generator Point /////////////
         self.g_title = tk.Label(self.frame)
 
@@ -98,15 +95,11 @@ class Ecdh:
         self.g_set()
         # ///////////// End Generator Point /////////////
 
-        blank3 = tk.Label(self.frame, text='       ')
-        blank3.pack()
-
         # ///////////// Begin Key Generation /////////////
         self.key_gen_label = tk.Label(self.frame, text="Paso 3: generación de claves públicas y privadas", state='disabled', font='Helvetica 10 bold')
         self.key_gen_label.pack()
 
         # ///////////// Begin Bob /////////////
-        self.bob_frame = tk.Frame(self.frame)
         self.bob_title = tk.Label(self.frame)
 
         self.bob_priv_frame = tk.Frame(self.frame)
@@ -115,8 +108,20 @@ class Ecdh:
 
         self.bob_pub_frame = tk.Frame(self.frame)
         self.bob_pub_label = tk.Label(self.bob_pub_frame)
-        self.bob_pub_text = tk.StringVar()
-        self.bob_label = tk.Label(self.bob_pub_frame)
+
+        self.bob_pub_x_frame = tk.Frame(self.bob_pub_frame)
+        self.bob_pub_x_str = tk.StringVar()
+        self.bob_pub_x_label = tk.Label(self.bob_pub_x_frame)
+        self.bob_pub_x_val_str = tk.StringVar()
+        self.bob_pub_x_val_label = tk.Label(self.bob_pub_x_frame)
+
+        self.bob_pub_y_frame = tk.Frame(self.bob_pub_frame)
+        self.bob_pub_y_str = tk.StringVar()
+        self.bob_pub_y_label = tk.Label(self.bob_pub_y_frame)
+        self.bob_pub_y_val_str = tk.StringVar()
+        self.bob_pub_y_val_label = tk.Label(self.bob_pub_y_frame)
+
+        self.bob_label = tk.Label(self.bob_pub_y_frame)
 
         self.bob_set()
         # ///////////// End Bob /////////////
@@ -130,23 +135,48 @@ class Ecdh:
 
         self.alice_pub_frame = tk.Frame(self.frame)
         self.alice_pub_label = tk.Label(self.alice_pub_frame)
-        self.alice_pub_text = tk.StringVar()
-        self.alice_label = tk.Label(self.alice_pub_frame)
+
+        self.alice_pub_x_frame = tk.Frame(self.alice_pub_frame)
+        self.alice_pub_x_str = tk.StringVar()
+        self.alice_pub_x_label = tk.Label(self.alice_pub_x_frame)
+        self.alice_pub_x_val_str = tk.StringVar()
+        self.alice_pub_x_val_label = tk.Label(self.alice_pub_x_frame)
+
+        self.alice_pub_y_frame = tk.Frame(self.alice_pub_frame)
+        self.alice_pub_y_str = tk.StringVar()
+        self.alice_pub_y_label = tk.Label(self.alice_pub_y_frame)
+        self.alice_pub_y_val_str = tk.StringVar()
+        self.alice_pub_y_val_label = tk.Label(self.alice_pub_y_frame)
+
+        self.alice_label = tk.Label(self.alice_pub_y_frame)
 
         self.alice_set()
         # ///////////// End Alice /////////////
 
-        self.bob_alice_ready_button = tk.Button(self.frame, text="Listo", command=lambda: self.bob_alice_ready(), state="disabled")
-        self.bob_alice_ready_button.pack()
-
+        # ///////////// Begin of End for Bob and Alice /////////////
         self.bob_alice_text = tk.StringVar()
         self.bob_alice_label = tk.Label(self.frame, textvariable=self.bob_alice_text)
         self.bob_alice_label.pack()
 
-        # ///////////// End Alice /////////////
+        self.bob_alice_ready_frame = tk.Frame(self.frame)
+        self.bob_alice_ready_button = tk.Button(self.bob_alice_ready_frame)
+        self.bob_alice_edit_button = tk.Button(self.bob_alice_ready_frame)
+        self.bob_alice_load_ok = Image.open(cons.check_path)
+        self.bob_alice_resized = self.bob_alice_load_ok.resize((20, 20), Image.ANTIALIAS)
+        self.bob_alice_new_pic_ok = ImageTk.PhotoImage(self.bob_alice_resized)
+        self.bob_alice_image_ok = tk.Label(self.bob_alice_ready_frame, image=self.bob_alice_new_pic_ok)
 
-        self.bob_alice_edit_button = tk.Button(self.frame, text="Editar", command=lambda: self.bob_alice_clear())
-        self.bob_alice_edit_button.pack_forget()
+        self.bob_alice_error_frame = tk.Frame(self.frame)
+        self.bob_alice_label = tk.Label(self.bob_alice_error_frame)
+        self.bob_alice_err_txt = tk.StringVar()
+        self.bob_alice_err = tk.Label(self.bob_alice_error_frame)
+        self.bob_alice_load_err = Image.open(cons.x_path)
+        self.bob_alice_resized_err = self.bob_alice_load_err.resize((20, 20), Image.ANTIALIAS)
+        self.bob_alice_new_pic_err = ImageTk.PhotoImage(self.bob_alice_resized_err)
+        self.bob_alice_image_err = tk.Label(self.bob_alice_error_frame, image=self.bob_alice_new_pic_err)
+
+        self.bob_alice_set()
+        # ///////////// Begin of End for Bob and Alice /////////////
 
         # ///////////// End Key Generation /////////////
 
@@ -266,7 +296,7 @@ class Ecdh:
             b = int(b_str)
             q = int(q_str)
 
-            if not self.elliptic_curve.isPreDefined():
+            if not self.elliptic_curve:
                 self.elliptic_curve = ec.EllipticCurve(a, b, q)
 
             if not self.elliptic_curve.isNonSingular():
@@ -408,6 +438,7 @@ class Ecdh:
         self.g_error_frame.configure(height=1)
 
         self.key_gen_label.config(state="normal")
+
         self.bob_title.config(state="normal")
         self.bob_priv_label.config(state="normal")
         self.bob_priv_entry.config(state="normal")
@@ -459,36 +490,80 @@ class Ecdh:
         self.g = None
 
     def bob_set(self):
-        self.bob_title.config(text="Bob", state="disabled")
+        self.bob_title.config(text="Bob", state="disabled", font='Helvetica 10 bold')
         self.bob_title.pack()
 
-        self.bob_priv_label.config(text="Clave Privada (secreto de Bob):", state="disabled")
-        self.bob_priv_label.pack(side="left")
-        self.bob_priv_entry.config(state="disabled")
+        self.bob_priv_label.config(text="Clave Privada (número secreto de Bob):", state="disabled")
+        self.bob_priv_label.pack()
+        self.bob_priv_entry.config(state="disabled", width=40)
         self.bob_priv_entry.pack(side="left")
         self.bob_priv_frame.pack()
 
-        self.bob_pub_label.config(text="Clave Pública (visible por todos):", state="disabled")
+        self.bob_pub_label.config(text="Clave Pública (punto visible por todos):", state="disabled")
         self.bob_pub_label.pack()
-        self.bob_label.config(textvariable=self.bob_pub_text, state="disabled")
-        self.bob_label.pack()
+
+        self.bob_pub_x_str.set("x = ")
+        self.bob_pub_x_label.config(textvariable=self.bob_pub_x_str, state="disabled")
+        self.bob_pub_x_label.pack(side="left")
+        self.bob_pub_x_val_label.config(textvariable=self.bob_pub_x_val_str, state="disabled")
+        self.bob_pub_x_val_label.pack(side="left")
+        self.bob_pub_x_frame.pack()
+
+        self.bob_pub_y_str.set("y = ")
+        self.bob_pub_y_label.config(textvariable=self.bob_pub_y_str, state="disabled")
+        self.bob_pub_y_label.pack(side="left")
+        self.bob_pub_y_val_label.config(textvariable=self.bob_pub_y_val_str, state="disabled")
+        self.bob_pub_y_val_label.pack(side="left")
+        self.bob_pub_y_frame.pack()
+
         self.bob_pub_frame.pack()
 
     def alice_set(self):
-        self.alice_title.config(text="Alicia", state="disabled")
+        self.alice_title.config(text="Alicia", state="disabled", font='Helvetica 10 bold')
         self.alice_title.pack()
 
-        self.alice_priv_label.config(text="Clave Privada (secreto de Alice):", state="disabled")
-        self.alice_priv_label.pack(side="left")
-        self.alice_priv_entry.config(state="disabled")
+        self.alice_priv_label.config(text="Clave Privada (número secreto de Alicia):", state="disabled")
+        self.alice_priv_label.pack()
+        self.alice_priv_entry.config(state="disabled", width=40)
         self.alice_priv_entry.pack(side="left")
         self.alice_priv_frame.pack()
 
-        self.alice_pub_label.config(text="Clave Pública (visible por todos):", state="disabled")
+        self.alice_pub_label.config(text="Clave Pública (punto visible por todos):", state="disabled")
         self.alice_pub_label.pack()
-        self.alice_label.config(textvariable=self.alice_pub_text, state="disabled")
+
+        self.alice_pub_x_str.set("x = ")
+        self.alice_pub_x_label.config(textvariable=self.alice_pub_x_str, state="disabled")
+        self.alice_pub_x_label.pack(side="left")
+        self.alice_pub_x_val_label.config(textvariable=self.alice_pub_x_val_str)
+        self.alice_pub_x_val_label.pack(side="left")
+        self.alice_pub_x_frame.pack()
+
+        self.alice_pub_y_str.set("y = ")
+        self.alice_pub_y_label.config(textvariable=self.alice_pub_y_str, state="disabled")
+        self.alice_pub_y_label.pack(side="left")
+        self.alice_pub_y_val_label.config(textvariable=self.alice_pub_y_val_str)
+        self.alice_pub_y_val_label.pack(side="left")
+        self.alice_pub_y_frame.pack()
+
         self.alice_label.pack()
         self.alice_pub_frame.pack()
+
+    def bob_alice_set(self):
+        self.bob_alice_ready_button.config(text="Listo", state="disabled", command=lambda: self.bob_alice_ready())
+        self.bob_alice_ready_button.pack()
+
+        self.bob_alice_edit_button.config(text="Editar", command=lambda: self.bob_alice_clear())
+        self.bob_alice_edit_button.pack()
+        self.bob_alice_edit_button.pack_forget()
+        self.bob_alice_image_ok.pack()
+        self.bob_alice_image_ok.pack_forget()
+        self.bob_alice_ready_frame.pack()
+
+        self.bob_alice_err.config(textvariable=self.bob_alice_err_txt)
+        self.bob_alice_image_err.pack_forget()
+        self.bob_alice_err.pack(side="left")
+        self.bob_alice_err.pack_forget()
+        self.bob_alice_error_frame.pack()
 
     def bob_alice_ready(self):
         self.bob_alice_text.set("")
@@ -498,13 +573,26 @@ class Ecdh:
         try:
             if bob_priv_str == '' or alice_priv_str == '':
                 text = "clave/s privada/s sin completar"
-                self.bob_alice_text.set(text)
+                self.bob_alice_err_txt.set(text)
+                self.bob_alice_image_err.pack(side="left")
+                self.bob_alice_err.pack(side="left")
+                self.bob_alice_error_frame.pack()
                 raise ValueError("Empty input")
 
             if not bob_priv_str.lstrip('-').isnumeric() or not alice_priv_str.lstrip('-').isnumeric():
                 text = "clave/s privada/s deben ser números"
-                self.bob_alice_text.set(text)
+                self.bob_alice_err_txt.set(text)
+                self.bob_alice_image_err.pack(side="left")
+                self.bob_alice_err.pack(side="left")
+                self.bob_alice_error_frame.pack()
                 raise ValueError("Input must be numeric")
+
+            self.bob_alice_ready_button.pack_forget()
+            self.bob_alice_edit_button.pack(side="left")
+            self.bob_alice_image_ok.pack(side="right")
+            self.bob_alice_err.pack_forget()
+            self.bob_alice_image_err.pack_forget()
+            self.bob_alice_error_frame.configure(height=1)
 
             self.bob = ec.User()
             self.alice = ec.User()
@@ -514,11 +602,21 @@ class Ecdh:
 
             self.bob.setPrivKey(bob_priv)
             self.bob.setPubKey(self.elliptic_curve.point_mult(self.g, self.bob.getPrivKey()))
-            self.bob_pub_text.set(self.bob.getPubKey().print())
+            self.bob_pub_x_label.config(state="normal")
+            self.bob_pub_x_val_str.set(self.bob.getPubKey().get_x())
+            self.bob_pub_x_val_label.config(state="normal")
+            self.bob_pub_y_label.config(state="normal")
+            self.bob_pub_y_val_str.set(self.bob.getPubKey().get_y())
+            self.bob_pub_y_val_label.config(state="normal")
 
             self.alice.setPrivKey(alice_priv)
             self.alice.setPubKey(self.elliptic_curve.point_mult(self.g, self.alice.getPrivKey()))
-            self.alice_pub_text.set(self.alice.getPubKey().print())
+            self.alice_pub_x_label.config(state="normal")
+            self.alice_pub_x_val_str.set(self.alice.getPubKey().get_x())
+            self.alice_pub_x_val_label.config(state="normal")
+            self.alice_pub_y_label.config(state="normal")
+            self.alice_pub_y_val_str.set(self.alice.getPubKey().get_y())
+            self.alice_pub_y_val_label.config(state="normal")
 
             self.shared_bob_text.set(
                 self.elliptic_curve.point_mult(self.alice.getPubKey(), self.bob.getPrivKey()).print())
@@ -527,7 +625,10 @@ class Ecdh:
 
         except TypeError:
             text = "Ingreso inválido"
-            self.g_text.set(text)
+            self.bob_alice_err_txt.set(text)
+            self.bob_alice_image_err.pack(side="left")
+            self.bob_alice_err.pack(side="left")
+            self.bob_alice_error_frame.pack()
             raise ValueError("invalid input")
 
         self.bob_priv_entry.config(state="disabled")
@@ -545,13 +646,22 @@ class Ecdh:
     def bob_alice_clear(self):
         self.bob_priv_entry.config(state="normal")
         self.bob_priv_entry.delete(0, "end")
-        self.bob_pub_text.set("")
+        self.bob_pub_x_label.config(state="disabled")
+        self.bob_pub_x_val_str.set("")
+        self.bob_pub_y_label.config(state="disabled")
+        self.bob_pub_y_val_str.set("")
+
         self.alice_priv_entry.config(state="normal")
         self.alice_priv_entry.delete(0, "end")
-        self.alice_pub_text.set("")
+        self.alice_pub_x_label.config(state="disabled")
+        self.alice_pub_x_val_str.set("")
+        self.alice_pub_y_label.config(state="disabled")
+        self.alice_pub_y_val_str.set("")
+
         self.bob = None
         self.alice = None
         self.bob_alice_edit_button.pack_forget()
+        self.bob_alice_image_ok.pack_forget()
         self.bob_alice_ready_button.pack()
         self.shared_bob_text.set("")
         self.shared_alice_text.set("")
@@ -598,57 +708,3 @@ class Ecdh:
 
     def get_frame(self):
         return self.frame
-
-'''
-class Ecdh:
-
-    def __init__(self, frame):
-        self.frame = frame
-
-    def display(self):
-        ecdh_label = Label(self.frame, text="Elliptic-Curve Diffie-Hellman algorithm").pack()
-        self.frame.pack(fill="both", expand=1)
-
-    def print(self):
-        print("Operaciones de Puntos:")
-        curve = EllipticCurve(-7, 10)
-        p = Point(1, 2)
-        # q = Point(3, 4)
-        r = curve.point_mult(p, 4)
-        print("-------")
-        print(r.get_x())
-        print("-------")
-        print(r.get_y())
-        print("////////////////////////")
-        print("ECDH:")
-        bob = User()
-        alice = User()
-        g = Point(1, 2)
-        print("El punto generador G es:")
-        print(g.print())
-        print("-------")
-
-        print("Clave PRIVADA de Alice:")
-        alice.setPrivKey(6)
-        print(alice.getPrivKey())
-        print("Clave PÚBLICA de Alice:")
-        alice.setPubKey(curve.point_mult(g, alice.getPrivKey()))
-        print(alice.getPubKey().print())
-        print("-------")
-
-        print("Clave PRIVADA de Bob:")
-        bob.setPrivKey(8)
-        print(bob.getPrivKey())
-        print("Clave PÚBLICA de Bob:")
-        bob.setPubKey(curve.point_mult(g, bob.getPrivKey()))
-        print(bob.getPubKey().print())
-        print("-------")
-
-        print("Clave COMPARTIDA calculada por ALICE:")
-        print(curve.point_mult(bob.getPubKey(), alice.getPrivKey()).print())
-        print("-------")
-
-        print("Clave COMPARTIDA calculada por BOB:")
-        print(curve.point_mult(alice.getPubKey(), bob.getPrivKey()).print())
-        print("-------")
-        '''
