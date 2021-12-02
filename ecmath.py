@@ -84,7 +84,6 @@ class EllipticCurve:
         else:
             return (4*(self.a**3)+27*(self.b**2)) != 0
 
-
     def belongsToCurve(self, point):
         return (point.get_y()**2) % self.q == ((point.get_x()**3)+self.a*point.get_x()+self.b) % self.q
 
@@ -191,6 +190,33 @@ class EllipticCurve:
         # assert False, "unreached"
         # pass
 
+    def sqrt(self, n, q):
+        """sqrt on PN modulo: returns two numbers or exception if not exist
+        >>> assert (sqrt(n, q)[0] ** 2) % q == n
+        >>> assert (sqrt(n, q)[1] ** 2) % q == n
+        """
+        assert n < q
+        for i in range(1, q):
+            if i * i % q == n:
+                return Point(i, q - i)
+            pass
+        raise Exception("not found")
+
+    def at(self, x):
+        """find points on curve at x
+        - x: int < q
+        - returns: ((x, y), (x,-y)) or not found exception
+        >>> a, ma = ec.at(x)
+        >>> assert a.x == ma.x and a.x == x
+        >>> assert a.x == ma.x and a.x == x
+        >>> assert ec.neg(a) == ma
+        >>> assert ec.is_valid(a) and ec.is_valid(ma)
+        """
+        assert x < self.q
+        ysq = (x ** 3 + self.a * x + self.b) % self.q
+        y, my = self.sqrt(ysq, self.q)
+        return Point(x, y), Point(x, my)
+
     def get_ec_parms(self, curve):
         pass
 
@@ -213,6 +239,7 @@ class User:
 
 
 class ECDH:
+
     def __init__(self, elliptic_curve):
         self.ec = elliptic_curve
 
@@ -227,3 +254,17 @@ class ECDH:
 
     def calc_shared_key(self, priv, pub):
         return self.ec.point_mult(pub, priv)
+
+
+class ECDSA:
+
+    def __init__(self, elliptic_curve):
+        self.ec = elliptic_curve
+
+    def sign(self, hashval, priv, r):
+        m = self.ec.point_mult(self.ec.get_g(), r)
+        p = Point(m.get_x(), self.inv(r, self.ec.get_n()) * (hashval + m.get_x() * priv) % self.ec.get_n())
+        return p
+
+    def verify(self):
+        pass

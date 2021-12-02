@@ -59,3 +59,24 @@ class TestECDH(unittest.TestCase):
 
         self.assertEqual(shared_secret_by_bob, shared_secret_by_alice)
         self.assertEqual(shared_secret_by_bob, point_r)
+
+
+class TestECDSA(unittest.TestCase):
+
+    def test_sign_1(self):
+        '''
+        elliptic_curve = ec.EllipticCurve(1, 18, 19)
+        g = elliptic_curve.at(7)
+
+        dsa = ec.DSA(elliptic_curve, g)
+
+        priv = 6
+        pub = ec.Point(1, 16)
+        hashval = 128
+        r = 7
+
+        # sig = dsa.sign(hashval, priv, r)
+        # assert dsa.validate(hashval, sig, pub)
+        '''
+        pass
+
