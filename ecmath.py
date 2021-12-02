@@ -27,10 +27,7 @@ class EllipticCurve:
         self.a = a
         self.b = b
         self.q = q
-        if g:
-            self.g = Point(g[0], g[1])
-        else:
-            self.g = g
+        self.g = g
         self.n = n
         self.h = h
         self.zero = Point(0, 0)

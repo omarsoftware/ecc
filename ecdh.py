@@ -202,6 +202,7 @@ class Ecdh:
 
     def chosen_curve(self):
         self.predef_curve = cons.get_curve(self.dropdown_str.get())
+
         self.ec_a_entry.delete(0, "end")
         self.ec_a_entry.insert(0, self.predef_curve["a"])
 
@@ -211,9 +212,7 @@ class Ecdh:
         self.ec_q_entry.delete(0, "end")
         self.ec_q_entry.insert(0, self.predef_curve["q"])
 
-        self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"], self.predef_curve["q"],
-                                               self.predef_curve["g"], self.predef_curve["n"], self.predef_curve["h"])
-
+        self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"], self.predef_curve["q"])
         self.elliptic_curve.setPreDefined(True)
 
     def ec_set(self):
@@ -297,7 +296,25 @@ class Ecdh:
             b = int(b_str)
             q = int(q_str)
 
-            if not self.elliptic_curve:
+            if a < 0 or a >= q:
+                text = "a debe ser mayor a 0 y menor a q"
+                self.ec_err_text.set(text)
+                self.ec_image_err.pack(side="left")
+                self.ec_err_label.pack(side="left")
+                self.ec_error_frame.pack()
+                raise ValueError("Input must be numeric")
+
+            if b < 0 or b >= q:
+                text = "b debe ser mayor a 0 y menor a q"
+                self.ec_err_text.set(text)
+                self.ec_image_err.pack(side="left")
+                self.ec_err_label.pack(side="left")
+                self.ec_error_frame.pack()
+                raise ValueError("Input must be numeric")
+
+            if self.elliptic_curve and self.elliptic_curve.isPreDefined():
+                self.elliptic_curve.set_g(ec.Point(self.predef_curve["g"][0], self.predef_curve["g"][1]))
+            else:
                 self.elliptic_curve = ec.EllipticCurve(a, b, q)
 
             if not self.elliptic_curve.isNonSingular():
@@ -334,12 +351,10 @@ class Ecdh:
         self.g_y_entry.config(state='normal')
         self.g_ready_button.config(state='normal')
 
-        if self.elliptic_curve.isPreDefined():
-            self.g_x_entry.delete(0, "end")
-            self.g_x_entry.insert(0, self.elliptic_curve.get_g().get_x())
-
-            self.g_y_entry.delete(0, "end")
-            self.g_y_entry.insert(0, self.elliptic_curve.get_g().get_y())
+        self.g_x_entry.delete(0, "end")
+        self.g_x_entry.insert(0, self.elliptic_curve.get_g().get_x())
+        self.g_y_entry.delete(0, "end")
+        self.g_y_entry.insert(0, self.elliptic_curve.get_g().get_y())
 
     def ec_clear(self):
         self.ec_a_entry.config(state="normal")
