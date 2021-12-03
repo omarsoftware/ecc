@@ -6,44 +6,35 @@ from ddt import ddt, data
 @ddt
 class TestEllipticCurve(unittest.TestCase):
 
-    def test_domain_params_are_not_blank(self):
-        try:
-            elliptic_curve = ec.EllipticCurve('', '', '')
-            self.assertTrue(1 != 1)
-        except AssertionError as e:
-            self.assertTrue("a, b o q están en blanco" in e.args)
-
-    @data(("3", "4", "5"), (3.3, 4.4, 5.5), ("hola", "como", "estas"))
+    @data(("3", "4", "5"), (3.3, 4.4, 5.5), ("hola", "como", "estas"), ("", "", ""))
     def test_domain_params_are_int(self, value):
-        try:
+        with self.assertRaises(AssertionError) as context:
             elliptic_curve = ec.EllipticCurve(*value)
-            self.assertTrue(1 != 1)
-        except AssertionError as e:
-            self.assertTrue("a, b y q deben ser números" in e.args)
+        self.assertTrue("a, b y q deben ser números" in str(context.exception))
 
     @data((-5, 15, 23), (0, 15, 23), (23, 15, 23), (24, 15, 23))
     def test_domain_a_range(self, value):
-        try:
+        with self.assertRaises(AssertionError) as context:
             elliptic_curve = ec.EllipticCurve(*value)
-            self.assertTrue(1 != 1)
-        except AssertionError as e:
-            self.assertTrue("a debe ser mayor a 0 y menor a q" in e.args)
+        self.assertTrue("a debe ser mayor a 0 y menor a q" in str(context.exception))
 
     @data((10, -15, 23), (10, 0, 23), (10, 23, 23), (10, 50, 23))
     def test_domain_b_range(self, value):
-        try:
+        with self.assertRaises(AssertionError) as context:
             elliptic_curve = ec.EllipticCurve(*value)
-            self.assertTrue(1 != 1)
-        except AssertionError as e:
-            self.assertTrue("b debe ser mayor a 0 y menor a q" in e.args)
+        self.assertTrue("b debe ser mayor a 0 y menor a q" in str(context.exception))
 
     @data((1, 1, 2))
     def test_domain_q_range(self, value):
-        try:
+        with self.assertRaises(AssertionError) as context:
             elliptic_curve = ec.EllipticCurve(*value)
-            self.assertTrue(1 != 1)
-        except AssertionError as e:
-            self.assertTrue("q debe ser mayor a 2" in e.args)
+        self.assertTrue("q debe ser mayor a 2" in str(context.exception))
+
+    @data((2, 3, 5))
+    def test_curve_non_singularity(self, value):
+        with self.assertRaises(AssertionError) as context:
+            elliptic_curve = ec.EllipticCurve(*value)
+        self.assertTrue("curva elíptica singular" in str(context.exception))
 
     def test_addition(self):
         curve = ec.EllipticCurve(10, 15, 23)

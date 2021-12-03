@@ -27,8 +27,6 @@ class Point:
 
 class EllipticCurve:
     def __init__(self, a, b, q=None, g=None, n=None, h=None):
-        if a == '' or b == '' or q == '':
-            raise AssertionError("a, b o q están en blanco")
 
         if not isinstance(a, int) or not isinstance(b, int) or not isinstance(q, int):
             raise AssertionError("a, b y q deben ser números")
@@ -41,6 +39,9 @@ class EllipticCurve:
 
         if not q > 2:
             raise AssertionError("q debe ser mayor a 2")
+
+        if not self.isNonSingular(a, b, q):
+            raise AssertionError("curva elíptica singular")
 
         self.a = a
         self.b = b
@@ -93,11 +94,11 @@ class EllipticCurve:
     def setPreDefined(self, bool_val):
         self.predefined = bool_val
 
-    def isNonSingular(self):
-        if self.q:
-            return (4 * (self.a ** 3) + 27 * (self.b ** 2)) % self.q != 0
+    def isNonSingular(self, a, b, q):
+        if q:
+            return (4 * (a ** 3) + 27 * (b ** 2)) % q != 0
         else:
-            return (4 * (self.a ** 3) + 27 * (self.b ** 2)) != 0
+            return (4 * (a ** 3) + 27 * (b ** 2)) != 0
 
     def belongsToCurve(self, point):
         return (point.get_y() ** 2) % self.q == ((point.get_x() ** 3) + self.a * point.get_x() + self.b) % self.q

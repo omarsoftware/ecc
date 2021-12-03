@@ -51,13 +51,13 @@ class Ecdh:
         self.ec_ready_button = tk.Button(self.ec_ready_frame)
         self.ec_edit_button = tk.Button(self.ec_ready_frame)
         self.ec_load_ok = Image.open(cons.check_path)
-        self.ec_resized = self.ec_load_ok.resize((20, 20), Image.ANTIALIAS)
+        self.ec_resized = self.ec_load_ok.resize(cons.x_and_check_size, Image.ANTIALIAS)
         self.ec_new_pic_ok = ImageTk.PhotoImage(self.ec_resized)
         self.ec_image_ok = tk.Label(self.ec_ready_frame, image=self.ec_new_pic_ok)
 
         self.ec_error_frame = tk.Frame(self.frame)
         self.ec_load_err = Image.open(cons.x_path)
-        self.ec_resized_err = self.ec_load_err.resize((20, 20), Image.ANTIALIAS)
+        self.ec_resized_err = self.ec_load_err.resize(cons.x_and_check_size, Image.ANTIALIAS)
         self.ec_new_pic_err = ImageTk.PhotoImage(self.ec_resized_err)
         self.ec_image_err = tk.Label(self.ec_error_frame, image=self.ec_new_pic_err)
         self.ec_err_text = tk.StringVar()
@@ -81,7 +81,7 @@ class Ecdh:
         self.g_ready_button = tk.Button(self.g_ready_frame)
         self.g_edit_button = tk.Button(self.g_ready_frame)
         self.g_load_ok = Image.open(cons.check_path)
-        self.g_resized = self.g_load_ok.resize((20, 20), Image.ANTIALIAS)
+        self.g_resized = self.g_load_ok.resize(cons.x_and_check_size, Image.ANTIALIAS)
         self.g_new_pic_ok = ImageTk.PhotoImage(self.g_resized)
         self.g_image_ok = tk.Label(self.g_ready_frame, image=self.g_new_pic_ok)
 
@@ -90,7 +90,7 @@ class Ecdh:
         self.g_err_txt = tk.StringVar()
         self.g_err = tk.Label(self.g_error_frame)
         self.g_load_err = Image.open(cons.x_path)
-        self.g_resized_err = self.g_load_err.resize((20, 20), Image.ANTIALIAS)
+        self.g_resized_err = self.g_load_err.resize(cons.x_and_check_size, Image.ANTIALIAS)
         self.g_new_pic_err = ImageTk.PhotoImage(self.g_resized_err)
         self.g_image_err = tk.Label(self.g_error_frame, image=self.g_new_pic_err)
 
@@ -164,7 +164,7 @@ class Ecdh:
         self.bob_alice_ready_button = tk.Button(self.bob_alice_ready_frame)
         self.bob_alice_edit_button = tk.Button(self.bob_alice_ready_frame)
         self.bob_alice_load_ok = Image.open(cons.check_path)
-        self.bob_alice_resized = self.bob_alice_load_ok.resize((20, 20), Image.ANTIALIAS)
+        self.bob_alice_resized = self.bob_alice_load_ok.resize(cons.x_and_check_size, Image.ANTIALIAS)
         self.bob_alice_new_pic_ok = ImageTk.PhotoImage(self.bob_alice_resized)
         self.bob_alice_image_ok = tk.Label(self.bob_alice_ready_frame, image=self.bob_alice_new_pic_ok)
 
@@ -173,7 +173,7 @@ class Ecdh:
         self.bob_alice_err_txt = tk.StringVar()
         self.bob_alice_err = tk.Label(self.bob_alice_error_frame)
         self.bob_alice_load_err = Image.open(cons.x_path)
-        self.bob_alice_resized_err = self.bob_alice_load_err.resize((20, 20), Image.ANTIALIAS)
+        self.bob_alice_resized_err = self.bob_alice_load_err.resize(cons.x_and_check_size, Image.ANTIALIAS)
         self.bob_alice_new_pic_err = ImageTk.PhotoImage(self.bob_alice_resized_err)
         self.bob_alice_image_err = tk.Label(self.bob_alice_error_frame, image=self.bob_alice_new_pic_err)
 
@@ -266,6 +266,16 @@ class Ecdh:
 
     def ec_ready(self):
         try:
+            a_str = self.ec_a_entry.get()
+            b_str = self.ec_b_entry.get()
+            q_str = self.ec_q_entry.get()
+
+            if a_str == '' or b_str == '' or q_str == '':
+                raise AssertionError("a, b o q están vacíos")
+
+            if not a_str.lstrip('-').isnumeric() or not b_str.lstrip('-').isnumeric() or not q_str.lstrip('-').isnumeric():
+                raise AssertionError("a, b y q deben ser números enteros")
+
             a = int(self.ec_a_entry.get())
             b = int(self.ec_b_entry.get())
             q = int(self.ec_q_entry.get())
@@ -276,14 +286,6 @@ class Ecdh:
                                                        ec.Point(self.predef_curve["g"][0], self.predef_curve["g"][1]))
             else:
                 self.elliptic_curve = ec.EllipticCurve(a, b, q)
-
-            if not self.elliptic_curve.isNonSingular():
-                text = "curva elíptica singular"
-                self.ec_err_text.set(text)
-                self.ec_image_err.pack(side="left")
-                self.ec_err_label.pack(side="left")
-                self.ec_error_frame.pack()
-                raise ValueError("elliptic-curve is singular")
 
             self.ec_a_entry.config(state="disabled")
             self.ec_b_entry.config(state="disabled")
@@ -310,13 +312,6 @@ class Ecdh:
 
         except Exception as msg:
             self.err_display(msg.args[0], self.ec_err_text, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
-            '''
-            text = msg.args[0]
-            self.ec_err_text.set(text)
-            self.ec_image_err.pack(side="left")
-            self.ec_err_label.pack(side="left")
-            self.ec_error_frame.pack()
-            '''
 
     def err_display(self, text, err_text, image_err, err_label, error_frame):
         err_text.set(text)
