@@ -1,9 +1,49 @@
 import unittest
 import constants as cons
 import ecmath as ec
+from ddt import ddt, data
 
-
+@ddt
 class TestEllipticCurve(unittest.TestCase):
+
+    def test_domain_params_are_not_blank(self):
+        try:
+            elliptic_curve = ec.EllipticCurve('', '', '')
+            self.assertTrue(1 != 1)
+        except AssertionError as e:
+            self.assertTrue("a, b o q están en blanco" in e.args)
+
+    @data(("3", "4", "5"), (3.3, 4.4, 5.5), ("hola", "como", "estas"))
+    def test_domain_params_are_int(self, value):
+        try:
+            elliptic_curve = ec.EllipticCurve(*value)
+            self.assertTrue(1 != 1)
+        except AssertionError as e:
+            self.assertTrue("a, b y q deben ser números" in e.args)
+
+    @data((-5, 15, 23), (0, 15, 23), (23, 15, 23), (24, 15, 23))
+    def test_domain_a_range(self, value):
+        try:
+            elliptic_curve = ec.EllipticCurve(*value)
+            self.assertTrue(1 != 1)
+        except AssertionError as e:
+            self.assertTrue("a debe ser mayor a 0 y menor a q" in e.args)
+
+    @data((10, -15, 23), (10, 0, 23), (10, 23, 23), (10, 50, 23))
+    def test_domain_b_range(self, value):
+        try:
+            elliptic_curve = ec.EllipticCurve(*value)
+            self.assertTrue(1 != 1)
+        except AssertionError as e:
+            self.assertTrue("b debe ser mayor a 0 y menor a q" in e.args)
+
+    @data((1, 1, 2))
+    def test_domain_q_range(self, value):
+        try:
+            elliptic_curve = ec.EllipticCurve(*value)
+            self.assertTrue(1 != 1)
+        except AssertionError as e:
+            self.assertTrue("q debe ser mayor a 2" in e.args)
 
     def test_addition(self):
         curve = ec.EllipticCurve(10, 15, 23)
@@ -25,7 +65,8 @@ class TestECDH(unittest.TestCase):
 
     def test_predifined_curve_1(self):
         curva = cons.EC_LIST["brainpoolP192r1"]
-        self.elliptic_curve = ec.EllipticCurve(curva["a"], curva["b"], curva["q"], curva["g"], curva["n"], curva["h"])
+        self.elliptic_curve = ec.EllipticCurve(curva["a"], curva["b"], curva["q"], ec.Point(curva["g"][0],
+                                               curva["g"][1]), curva["n"], curva["h"])
         self.bob = ec.User()
         self.alice = ec.User()
 
@@ -42,8 +83,9 @@ class TestECDH(unittest.TestCase):
 
     def test_predefined_curve_2(self):
         curva = cons.EC_LIST["brainpoolP192r1"]
-        elliptic_curve = ec.EllipticCurve(curva["a"], curva["b"], curva["q"], curva["g"], curva["n"], curva["h"])
-        ecdh = ec.ECDH(elliptic_curve)
+        self.elliptic_curve = ec.EllipticCurve(curva["a"], curva["b"], curva["q"], ec.Point(curva["g"][0],
+                                               curva["g"][1]), curva["n"], curva["h"])
+        ecdh = ec.ECDH(self.elliptic_curve)
         bob_priv_key = 0x378394C3274253FD15531812
         bob_pub_key = ecdh.gen_pub_key(bob_priv_key)
 

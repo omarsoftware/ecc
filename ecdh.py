@@ -14,6 +14,7 @@ class Ecdh:
         self.bob = None
         self.alice = None
         self.ecdh = None
+        self.isPredefined = False
 
         self.title = tk.Label(self.frame, text='Diffie-Hellman con Curva Elíptica', font='Helvetica 16 bold')
         self.title.pack(fill="x")
@@ -202,6 +203,7 @@ class Ecdh:
 
     def chosen_curve(self):
         self.predef_curve = cons.get_curve(self.dropdown_str.get())
+        self.isPredefined = True
 
         self.ec_a_entry.delete(0, "end")
         self.ec_a_entry.insert(0, self.predef_curve["a"])
@@ -212,8 +214,8 @@ class Ecdh:
         self.ec_q_entry.delete(0, "end")
         self.ec_q_entry.insert(0, self.predef_curve["q"])
 
-        self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"], self.predef_curve["q"])
-        self.elliptic_curve.setPreDefined(True)
+        # self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"], self.predef_curve["q"])
+
 
     def ec_set(self):
         self.ec_title.config(text='Paso 1: elegir curva elíptica utilizada y compartida por Bob y Alicia', font='Helvetica 10 bold')
@@ -264,56 +266,14 @@ class Ecdh:
 
     def ec_ready(self):
         try:
-            a_str = self.ec_a_entry.get()
-            b_str = self.ec_b_entry.get()
-            q_str = self.ec_q_entry.get()
+            a = int(self.ec_a_entry.get())
+            b = int(self.ec_b_entry.get())
+            q = int(self.ec_q_entry.get())
 
-            if a_str == '' or b_str == '' or q_str == '':
-                text = "a, b o q están vacíos"
-                self.ec_err_text.set(text)
-                self.ec_image_err.pack(side="left")
-                self.ec_err_label.pack(side="left")
-                self.ec_error_frame.pack()
-                raise ValueError("Empty input")
-
-            if not a_str.lstrip('-').isnumeric() or not b_str.lstrip('-').isnumeric():
-                text = "a y b deben ser números"
-                self.ec_err_text.set(text)
-                self.ec_image_err.pack(side="left")
-                self.ec_err_label.pack(side="left")
-                self.ec_error_frame.pack()
-                raise ValueError("Input must be numeric")
-
-            if not q_str.isdigit():
-                text = "q debe ser positivo"
-                self.ec_err_text.set(text)
-                self.ec_image_err.pack(side="left")
-                self.ec_err_label.pack(side="left")
-                self.ec_error_frame.pack()
-                raise ValueError("Input must be numeric")
-
-            a = int(a_str)
-            b = int(b_str)
-            q = int(q_str)
-
-            if a < 0 or a >= q:
-                text = "a debe ser mayor a 0 y menor a q"
-                self.ec_err_text.set(text)
-                self.ec_image_err.pack(side="left")
-                self.ec_err_label.pack(side="left")
-                self.ec_error_frame.pack()
-                raise ValueError("Input must be numeric")
-
-            if b < 0 or b >= q:
-                text = "b debe ser mayor a 0 y menor a q"
-                self.ec_err_text.set(text)
-                self.ec_image_err.pack(side="left")
-                self.ec_err_label.pack(side="left")
-                self.ec_error_frame.pack()
-                raise ValueError("Input must be numeric")
-
-            if self.elliptic_curve and self.elliptic_curve.isPreDefined():
-                self.elliptic_curve.set_g(ec.Point(self.predef_curve["g"][0], self.predef_curve["g"][1]))
+            if self.isPredefined:
+                self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"],
+                                                       self.predef_curve["q"],
+                                                       ec.Point(self.predef_curve["g"][0], self.predef_curve["g"][1]))
             else:
                 self.elliptic_curve = ec.EllipticCurve(a, b, q)
 
@@ -325,36 +285,44 @@ class Ecdh:
                 self.ec_error_frame.pack()
                 raise ValueError("elliptic-curve is singular")
 
-        except TypeError:
-            text = "Ingreso inválido"
+            self.ec_a_entry.config(state="disabled")
+            self.ec_b_entry.config(state="disabled")
+            self.ec_q_entry.config(state="disabled")
+
+            self.ec_ready_button.pack_forget()
+            self.ec_image_err.pack_forget()
+            self.ec_err_label.pack_forget()
+            self.ec_error_frame.configure(height=1)
+            self.ec_edit_button.pack(side="left")
+            self.ec_image_ok.pack(side="right")
+
+            self.g_title.config(state='normal')
+            self.g_x_label.config(state='normal')
+            self.g_y_label.config(state='normal')
+            self.g_x_entry.config(state='normal')
+            self.g_y_entry.config(state='normal')
+            self.g_ready_button.config(state='normal')
+
+            self.g_x_entry.delete(0, "end")
+            self.g_x_entry.insert(0, self.elliptic_curve.get_g().get_x())
+            self.g_y_entry.delete(0, "end")
+            self.g_y_entry.insert(0, self.elliptic_curve.get_g().get_y())
+
+        except Exception as msg:
+            self.err_display(msg.args[0], self.ec_err_text, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
+            '''
+            text = msg.args[0]
             self.ec_err_text.set(text)
             self.ec_image_err.pack(side="left")
             self.ec_err_label.pack(side="left")
             self.ec_error_frame.pack()
-            raise ValueError("invalid input")
+            '''
 
-        self.ec_a_entry.config(state="disabled")
-        self.ec_b_entry.config(state="disabled")
-        self.ec_q_entry.config(state="disabled")
-
-        self.ec_ready_button.pack_forget()
-        self.ec_image_err.pack_forget()
-        self.ec_err_label.pack_forget()
-        self.ec_error_frame.configure(height=1)
-        self.ec_edit_button.pack(side="left")
-        self.ec_image_ok.pack(side="right")
-
-        self.g_title.config(state='normal')
-        self.g_x_label.config(state='normal')
-        self.g_y_label.config(state='normal')
-        self.g_x_entry.config(state='normal')
-        self.g_y_entry.config(state='normal')
-        self.g_ready_button.config(state='normal')
-
-        self.g_x_entry.delete(0, "end")
-        self.g_x_entry.insert(0, self.elliptic_curve.get_g().get_x())
-        self.g_y_entry.delete(0, "end")
-        self.g_y_entry.insert(0, self.elliptic_curve.get_g().get_y())
+    def err_display(self, text, err_text, image_err, err_label, error_frame):
+        err_text.set(text)
+        image_err.pack(side="left")
+        err_label.pack(side="left")
+        error_frame.pack()
 
     def ec_clear(self):
         self.ec_a_entry.config(state="normal")

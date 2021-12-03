@@ -1,3 +1,6 @@
+import numbers as num
+
+
 class Point:
     def __init__(self, x=0, y=0):
         self.x = x
@@ -16,7 +19,7 @@ class Point:
         return self.y
 
     def print(self):
-        return "("+str(self.x)+", "+str(self.y)+")"
+        return "(" + str(self.x) + ", " + str(self.y) + ")"
 
     def __eq__(self, other_point):
         return self.get_x() == other_point.get_x() and self.get_y() == other_point.get_y()
@@ -24,6 +27,21 @@ class Point:
 
 class EllipticCurve:
     def __init__(self, a, b, q=None, g=None, n=None, h=None):
+        if a == '' or b == '' or q == '':
+            raise AssertionError("a, b o q están en blanco")
+
+        if not isinstance(a, int) or not isinstance(b, int) or not isinstance(q, int):
+            raise AssertionError("a, b y q deben ser números")
+
+        if not 0 < a < q:
+            raise AssertionError("a debe ser mayor a 0 y menor a q")
+
+        if not 0 < b < q:
+            raise AssertionError("b debe ser mayor a 0 y menor a q")
+
+        if not q > 2:
+            raise AssertionError("q debe ser mayor a 2")
+
         self.a = a
         self.b = b
         self.q = q
@@ -77,12 +95,12 @@ class EllipticCurve:
 
     def isNonSingular(self):
         if self.q:
-            return (4*(self.a**3)+27*(self.b**2)) % self.q != 0
+            return (4 * (self.a ** 3) + 27 * (self.b ** 2)) % self.q != 0
         else:
-            return (4*(self.a**3)+27*(self.b**2)) != 0
+            return (4 * (self.a ** 3) + 27 * (self.b ** 2)) != 0
 
     def belongsToCurve(self, point):
-        return (point.get_y()**2) % self.q == ((point.get_x()**3)+self.a*point.get_x()+self.b) % self.q
+        return (point.get_y() ** 2) % self.q == ((point.get_x() ** 3) + self.a * point.get_x() + self.b) % self.q
 
     def point_addition(self, point_p, point_q):
         if point_p.get_x() == 0 and point_p.get_y() == 0:
@@ -117,7 +135,7 @@ class EllipticCurve:
 
         point_r = Point()
         point_r.set_x(alpha ** 2 - 2 * point.get_x())
-        point_r.set_y(alpha*(point.get_x() - point_r.get_x()) - point.get_y())
+        point_r.set_y(alpha * (point.get_x() - point_r.get_x()) - point.get_y())
 
         return point_r
 
@@ -150,10 +168,10 @@ class EllipticCurve:
         if self.b > 0:
             text += " + " + str(self.b)
         elif self.b < 0:
-            text += " "+str(self.b)
+            text += " " + str(self.b)
 
         if self.q:
-            text += "(mod "+str(self.q)+")"
+            text += "(mod " + str(self.q) + ")"
 
         return text
 
@@ -217,6 +235,7 @@ class EllipticCurve:
     def get_ec_parms(self, curve):
         pass
 
+
 class User:
     def __init__(self):
         self.privKey = 0
@@ -243,6 +262,7 @@ class ECDH:
     '''
     TODO: agregar generación automática de clave privada
     '''
+
     def gen_priv(self, priv_key):
         pass
 
