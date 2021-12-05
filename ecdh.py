@@ -87,7 +87,7 @@ class Ecdh:
 
         self.g_error_frame = tk.Frame(self.frame)
         self.g_label = tk.Label(self.g_error_frame)
-        self.g_err_txt = tk.StringVar()
+        self.g_err_text = tk.StringVar()
         self.g_err = tk.Label(self.g_error_frame)
         self.g_load_err = Image.open(cons.x_path)
         self.g_resized_err = self.g_load_err.resize(cons.x_and_check_size, Image.ANTIALIAS)
@@ -364,7 +364,7 @@ class Ecdh:
         self.g_image_ok.pack_forget()
         self.g_ready_frame.pack()
 
-        self.g_err.config(textvariable=self.g_err_txt)
+        self.g_err.config(textvariable=self.g_err_text)
         self.g_image_err.pack_forget()
         self.g_err.pack(side="left")
         self.g_err.pack_forget()
@@ -375,68 +375,48 @@ class Ecdh:
         y_str = self.g_y_entry.get()
         try:
             if x_str == '' or y_str == '':
-                text = "x o y están vacíos"
-                self.g_err_txt.set(text)
-                self.g_image_err.pack(side="left")
-                self.g_err.pack(side="left")
-                self.g_error_frame.pack()
-                raise ValueError("Empty input")
+                raise AssertionError("x o y están vacíos")
 
             if not x_str.lstrip('-').isnumeric() or not y_str.lstrip('-').isnumeric():
-                text = "x e y deben ser números"
-                self.g_err_txt.set(text)
-                self.g_image_err.pack(side="left")
-                self.g_err.pack(side="left")
-                self.g_error_frame.pack()
-                raise ValueError("Input must be numeric")
+                raise AssertionError("x e y deben ser números")
 
             self.g = ec.Point(int(x_str), int(y_str))
 
             if not self.elliptic_curve.belongsToCurve(self.g):
-                text = "El punto no pertenece a la curva"
-                self.g_err_txt.set(text)
-                self.g_image_err.pack(side="left")
-                self.g_err.pack(side="left")
-                self.g_error_frame.pack()
-                raise ValueError("Point does not belong to curve")
+                raise AssertionError("El punto no pertenece a la curva")
 
-        except TypeError:
-            text = "Ingreso inválido"
-            self.g_err_txt.set(text)
-            self.g_image_err.pack(side="left")
-            self.g_err.pack(side="left")
-            self.g_error_frame.pack()
-            raise ValueError("invalid input")
+            if not self.elliptic_curve.get_g():
+                self.elliptic_curve.set_g(self.g)
 
-        if not self.elliptic_curve.get_g():
-            self.elliptic_curve.set_g(self.g)
+            self.g_x_entry.config(state="disabled")
+            self.g_y_entry.config(state="disabled")
 
-        self.g_x_entry.config(state="disabled")
-        self.g_y_entry.config(state="disabled")
+            self.g_ready_button.pack_forget()
+            self.g_edit_button.pack(side="left")
+            self.g_image_ok.pack(side="right")
+            self.g_err.pack_forget()
+            self.g_image_err.pack_forget()
+            self.g_error_frame.configure(height=1)
 
-        self.g_ready_button.pack_forget()
-        self.g_edit_button.pack(side="left")
-        self.g_image_ok.pack(side="right")
-        self.g_err.pack_forget()
-        self.g_image_err.pack_forget()
-        self.g_error_frame.configure(height=1)
+            self.key_gen_label.config(state="normal")
 
-        self.key_gen_label.config(state="normal")
+            self.bob_title.config(state="normal")
+            self.bob_priv_label.config(state="normal")
+            self.bob_priv_entry.config(state="normal")
+            self.bob_pub_label.config(state="normal")
+            self.bob_label.config(state="normal")
 
-        self.bob_title.config(state="normal")
-        self.bob_priv_label.config(state="normal")
-        self.bob_priv_entry.config(state="normal")
-        self.bob_pub_label.config(state="normal")
-        self.bob_label.config(state="normal")
+            self.alice_title.config(state="normal")
+            self.alice_priv_label.config(state="normal")
+            self.alice_priv_entry.config(state="normal")
+            self.alice_priv_label.config(state="normal")
+            self.alice_pub_label.config(state="normal")
+            self.alice_label.config(state="normal")
 
-        self.alice_title.config(state="normal")
-        self.alice_priv_label.config(state="normal")
-        self.alice_priv_entry.config(state="normal")
-        self.alice_priv_label.config(state="normal")
-        self.alice_pub_label.config(state="normal")
-        self.alice_label.config(state="normal")
+            self.bob_alice_ready_button.config(state="normal")
 
-        self.bob_alice_ready_button.config(state="normal")
+        except Exception as msg:
+            self.err_display(msg.args[0], self.g_err_text, self.g_image_err, self.g_err, self.g_error_frame)
 
     def g_clear(self):
         self.g_x_entry.config(state="normal")
@@ -446,7 +426,7 @@ class Ecdh:
         self.g_edit_button.pack_forget()
         self.g_image_ok.pack_forget()
         self.g_ready_button.pack(side="left")
-        self.g_err_txt.set("")
+        self.g_err_text.set("")
         self.g_image_err.pack_forget()
         self.g_err.pack_forget()
         self.g_error_frame.configure(height=1)
@@ -467,7 +447,7 @@ class Ecdh:
         self.g_ready_button.config(state="disabled")
         self.g_ready_button.pack()
         self.g_edit_button.pack_forget()
-        self.g_err_txt.set("")
+        self.g_err_text.set("")
         self.g_image_err.pack_forget()
         self.g_image_ok.pack_forget()
         self.g_err.pack_forget()
