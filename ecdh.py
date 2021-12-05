@@ -60,7 +60,7 @@ class Ecdh:
         self.ec_resized_err = self.ec_load_err.resize(cons.x_and_check_size, Image.ANTIALIAS)
         self.ec_new_pic_err = ImageTk.PhotoImage(self.ec_resized_err)
         self.ec_image_err = tk.Label(self.ec_error_frame, image=self.ec_new_pic_err)
-        self.ec_err_text = tk.StringVar()
+        self.ec_err_txt = tk.StringVar()
         self.ec_err_label = tk.Label(self.ec_error_frame)
 
         self.ec_set()
@@ -87,7 +87,7 @@ class Ecdh:
 
         self.g_error_frame = tk.Frame(self.frame)
         self.g_label = tk.Label(self.g_error_frame)
-        self.g_err_text = tk.StringVar()
+        self.g_err_txt = tk.StringVar()
         self.g_err = tk.Label(self.g_error_frame)
         self.g_load_err = Image.open(cons.x_path)
         self.g_resized_err = self.g_load_err.resize(cons.x_and_check_size, Image.ANTIALIAS)
@@ -156,8 +156,8 @@ class Ecdh:
         # ///////////// End Alice /////////////
 
         # ///////////// Begin of End for Bob and Alice /////////////
-        self.bob_alice_text = tk.StringVar()
-        self.bob_alice_label = tk.Label(self.frame, textvariable=self.bob_alice_text)
+        self.bob_alice_txt = tk.StringVar()
+        self.bob_alice_label = tk.Label(self.frame, textvariable=self.bob_alice_txt)
         self.bob_alice_label.pack()
 
         self.bob_alice_ready_frame = tk.Frame(self.frame)
@@ -189,14 +189,14 @@ class Ecdh:
 
         self.shared_bob = tk.Label(self.frame, text="Clave compartida calculada por Bob: ", state="disabled")
         self.shared_bob.pack()
-        self.shared_bob_text = tk.StringVar()
-        self.shared_bob_label = tk.Label(self.frame, textvariable=self.shared_bob_text)
+        self.shared_bob_txt = tk.StringVar()
+        self.shared_bob_label = tk.Label(self.frame, textvariable=self.shared_bob_txt)
         self.shared_bob_label.pack()
 
         self.shared_alice = tk.Label(self.frame, text="Clave compartida calculada por Alicia: ", state="disabled")
         self.shared_alice.pack()
-        self.shared_alice_text = tk.StringVar()
-        self.shared_alice_label = tk.Label(self.frame, textvariable=self.shared_alice_text, state="disabled")
+        self.shared_alice_txt = tk.StringVar()
+        self.shared_alice_label = tk.Label(self.frame, textvariable=self.shared_alice_txt, state="disabled")
         self.shared_alice_label.pack()
 
         # ///////////// End Shared Calculations /////////////
@@ -257,7 +257,7 @@ class Ecdh:
         self.ec_image_ok.pack_forget()
         self.ec_ready_frame.pack()
 
-        self.ec_err_label.config(textvariable=self.ec_err_text)
+        self.ec_err_label.config(textvariable=self.ec_err_txt)
         self.ec_image_err.pack(side="left")
         self.ec_image_err.pack_forget()
         self.ec_err_label.pack(side="left")
@@ -311,10 +311,10 @@ class Ecdh:
             self.g_y_entry.insert(0, self.elliptic_curve.get_g().get_y())
 
         except Exception as msg:
-            self.err_display(msg.args[0], self.ec_err_text, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
+            self.err_display(msg.args[0], self.ec_err_txt, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
 
-    def err_display(self, text, err_text, image_err, err_label, error_frame):
-        err_text.set(text)
+    def err_display(self, text, err_txt, image_err, err_label, error_frame):
+        err_txt.set(text)
         image_err.pack(side="left")
         err_label.pack(side="left")
         error_frame.pack()
@@ -327,7 +327,7 @@ class Ecdh:
         self.ec_q_entry.config(state="normal")
         self.ec_q_entry.delete(0, 'end')
         self.ec_title.pack()
-        self.ec_err_text.set("")
+        self.ec_err_txt.set("")
         self.ec_ready_button.pack()
         self.ec_image_ok.pack_forget()
         self.ec_err_label.pack_forget()
@@ -364,16 +364,17 @@ class Ecdh:
         self.g_image_ok.pack_forget()
         self.g_ready_frame.pack()
 
-        self.g_err.config(textvariable=self.g_err_text)
+        self.g_err.config(textvariable=self.g_err_txt)
         self.g_image_err.pack_forget()
         self.g_err.pack(side="left")
         self.g_err.pack_forget()
         self.g_error_frame.pack()
 
     def g_ready(self):
-        x_str = self.g_x_entry.get()
-        y_str = self.g_y_entry.get()
         try:
+            x_str = self.g_x_entry.get()
+            y_str = self.g_y_entry.get()
+            
             if x_str == '' or y_str == '':
                 raise AssertionError("x o y están vacíos")
 
@@ -416,7 +417,7 @@ class Ecdh:
             self.bob_alice_ready_button.config(state="normal")
 
         except Exception as msg:
-            self.err_display(msg.args[0], self.g_err_text, self.g_image_err, self.g_err, self.g_error_frame)
+            self.err_display(msg.args[0], self.g_err_txt, self.g_image_err, self.g_err, self.g_error_frame)
 
     def g_clear(self):
         self.g_x_entry.config(state="normal")
@@ -426,7 +427,7 @@ class Ecdh:
         self.g_edit_button.pack_forget()
         self.g_image_ok.pack_forget()
         self.g_ready_button.pack(side="left")
-        self.g_err_text.set("")
+        self.g_err_txt.set("")
         self.g_image_err.pack_forget()
         self.g_err.pack_forget()
         self.g_error_frame.configure(height=1)
@@ -447,7 +448,7 @@ class Ecdh:
         self.g_ready_button.config(state="disabled")
         self.g_ready_button.pack()
         self.g_edit_button.pack_forget()
-        self.g_err_text.set("")
+        self.g_err_txt.set("")
         self.g_image_err.pack_forget()
         self.g_image_ok.pack_forget()
         self.g_err.pack_forget()
@@ -531,26 +532,17 @@ class Ecdh:
         self.bob_alice_error_frame.pack()
 
     def bob_alice_ready(self):
-        self.bob_alice_text.set("")
-        bob_priv_str = self.bob_priv_entry.get()
-        alice_priv_str = self.alice_priv_entry.get()
+        self.bob_alice_txt.set("")
 
         try:
+            bob_priv_str = self.bob_priv_entry.get()
+            alice_priv_str = self.alice_priv_entry.get()
+
             if bob_priv_str == '' or alice_priv_str == '':
-                text = "clave/s privada/s sin completar"
-                self.bob_alice_err_txt.set(text)
-                self.bob_alice_image_err.pack(side="left")
-                self.bob_alice_err.pack(side="left")
-                self.bob_alice_error_frame.pack()
-                raise ValueError("Empty input")
+                raise AssertionError("clave/s privada/s sin completar")
 
             if not bob_priv_str.lstrip('-').isnumeric() or not alice_priv_str.lstrip('-').isnumeric():
-                text = "clave/s privada/s deben ser números"
-                self.bob_alice_err_txt.set(text)
-                self.bob_alice_image_err.pack(side="left")
-                self.bob_alice_err.pack(side="left")
-                self.bob_alice_error_frame.pack()
-                raise ValueError("Input must be numeric")
+                raise AssertionError("clave/s privada/s deben ser números")
 
             self.bob_alice_ready_button.pack_forget()
             self.bob_alice_edit_button.pack(side="left")
@@ -586,30 +578,26 @@ class Ecdh:
             self.alice_pub_y_val_str.set(self.alice.getPubKey().get_y())
             self.alice_pub_y_val_label.config(state="normal")
 
-            self.shared_bob_text.set(
+            self.shared_bob_txt.set(
                 self.ecdh.calc_shared_key(self.bob.getPrivKey(), self.alice.getPubKey()).print())
-            self.shared_alice_text.set(
+            self.shared_alice_txt.set(
                 self.ecdh.calc_shared_key(self.alice.getPrivKey(), self.bob.getPubKey()).print())
 
-        except TypeError:
-            text = "Ingreso inválido"
-            self.bob_alice_err_txt.set(text)
-            self.bob_alice_image_err.pack(side="left")
-            self.bob_alice_err.pack(side="left")
-            self.bob_alice_error_frame.pack()
-            raise ValueError("invalid input")
+            self.bob_priv_entry.config(state="disabled")
+            self.alice_priv_entry.config(state="disabled")
+            self.bob_alice_ready_button.pack_forget()
+            self.bob_alice_edit_button.pack()
+            self.bob_alice_label.config(state="normal")
 
-        self.bob_priv_entry.config(state="disabled")
-        self.alice_priv_entry.config(state="disabled")
-        self.bob_alice_ready_button.pack_forget()
-        self.bob_alice_edit_button.pack()
-        self.bob_alice_label.config(state="normal")
+            self.shared_title_label.config(state="normal")
+            self.shared_alice_label.config(state="normal")
+            self.shared_alice.config(state="normal")
+            self.shared_bob_label.config(state="normal")
+            self.shared_bob.config(state="normal")
 
-        self.shared_title_label.config(state="normal")
-        self.shared_alice_label.config(state="normal")
-        self.shared_alice.config(state="normal")
-        self.shared_bob_label.config(state="normal")
-        self.shared_bob.config(state="normal")        
+        except Exception as msg:
+            self.err_display(msg.args[0], self.bob_alice_err_txt, self.bob_alice_image_err,
+                             self.bob_alice_err, self.bob_alice_error_frame)
 
     def bob_alice_clear(self):
         self.bob_priv_entry.config(state="normal")
@@ -631,8 +619,8 @@ class Ecdh:
         self.bob_alice_edit_button.pack_forget()
         self.bob_alice_image_ok.pack_forget()
         self.bob_alice_ready_button.pack()
-        self.shared_bob_text.set("")
-        self.shared_alice_text.set("")
+        self.shared_bob_txt.set("")
+        self.shared_alice_txt.set("")
         self.shared_title_label.config(state="disabled")
         self.shared_bob.config(state="disabled")
         self.shared_alice.config(state="disabled")
@@ -672,7 +660,7 @@ class Ecdh:
         self.alice_pub_y_val_label.config(state="disabled")
 
         self.bob_alice_edit_button.pack_forget()
-        self.bob_alice_text.set("")
+        self.bob_alice_txt.set("")
         self.bob_alice_image_ok.pack_forget()
         self.bob_alice_err_txt.set("")
         self.bob_alice_error_frame.config(height=1)
@@ -688,8 +676,8 @@ class Ecdh:
         self.shared_alice.config(state="disabled")
         self.bob_label.config(state="disabled")
         self.alice_label.config(state="disabled")
-        self.shared_bob_text.set("")
-        self.shared_alice_text.set("")
+        self.shared_bob_txt.set("")
+        self.shared_alice_txt.set("")
         self.bob_pub_label.config(state="disabled")
         self.alice_pub_label.config(state="disabled")
 
