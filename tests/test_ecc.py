@@ -12,17 +12,17 @@ class TestEllipticCurve(unittest.TestCase):
             elliptic_curve = ec.EllipticCurve(*value)
         self.assertTrue("a, b y q deben ser números" in str(context.exception))
 
-    @data((-5, 15, 23), (0, 15, 23), (23, 15, 23), (24, 15, 23))
+    @data((-5, 15, 23), (23, 15, 23), (24, 15, 23))
     def test_domain_a_range(self, value):
         with self.assertRaises(AssertionError) as context:
             elliptic_curve = ec.EllipticCurve(*value)
-        self.assertTrue("a debe ser mayor a 0 y menor a q" in str(context.exception))
+        self.assertTrue("a debe ser mayor o igual a 0 y menor a q" in str(context.exception))
 
-    @data((10, -15, 23), (10, 0, 23), (10, 23, 23), (10, 50, 23))
+    @data((10, -15, 23), (10, 23, 23), (10, 50, 23))
     def test_domain_b_range(self, value):
         with self.assertRaises(AssertionError) as context:
             elliptic_curve = ec.EllipticCurve(*value)
-        self.assertTrue("b debe ser mayor a 0 y menor a q" in str(context.exception))
+        self.assertTrue("b debe ser mayor o igual a 0 y menor a q" in str(context.exception))
 
     @data((1, 1, 2))
     def test_domain_q_range(self, value):

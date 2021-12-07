@@ -1,5 +1,5 @@
 import numbers as num
-
+import random as rand
 
 class Point:
     def __init__(self, x=0, y=0):
@@ -31,11 +31,11 @@ class EllipticCurve:
         if not isinstance(a, int) or not isinstance(b, int) or not isinstance(q, int):
             raise AssertionError("a, b y q deben ser números")
 
-        if not 0 < a < q:
-            raise AssertionError("a debe ser mayor a 0 y menor a q")
+        if not 0 <= a < q:
+            raise AssertionError("a debe ser mayor o igual a 0 y menor a q")
 
-        if not 0 < b < q:
-            raise AssertionError("b debe ser mayor a 0 y menor a q")
+        if not 0 <= b < q:
+            raise AssertionError("b debe ser mayor o igual a 0 y menor a q")
 
         if not q > 2:
             raise AssertionError("q debe ser mayor a 2")
@@ -101,6 +101,9 @@ class EllipticCurve:
             return (4 * (a ** 3) + 27 * (b ** 2)) != 0
 
     def belongsToCurve(self, point):
+        if not isinstance(point, Point):
+            raise AssertionError("parámetro de tipo incorrecto")
+
         return (point.get_y() ** 2) % self.q == ((point.get_x() ** 3) + self.a * point.get_x() + self.b) % self.q
 
     def point_addition(self, point_p, point_q):
@@ -264,10 +267,13 @@ class ECDH:
     TODO: agregar generación automática de clave privada
     '''
 
-    def gen_priv(self, priv_key):
-        pass
+    def gen_priv(self, elliptic_curve):
+        return rand.randint(1, elliptic_curve.get_n())
 
     def gen_pub_key(self, priv_key):
+        if not 0 < priv_key < self.ec.get_n():
+            raise AssertionError("la clave pública debe ser mayor a 0 y menor a n")
+
         return self.ec.point_mult(self.ec.get_g(), priv_key)
 
     def calc_shared_key(self, priv, pub):

@@ -384,7 +384,7 @@ class Ecdh:
             self.g = ec.Point(int(x_str), int(y_str))
 
             if not self.elliptic_curve.belongsToCurve(self.g):
-                raise AssertionError("El punto no pertenece a la curva")
+                raise AssertionError("el punto no pertenece a la curva")
 
             if not self.elliptic_curve.get_g():
                 self.elliptic_curve.set_g(self.g)
