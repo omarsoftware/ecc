@@ -1,5 +1,5 @@
 # Global constants
-screen_size = "800x800"
+screen_size = "800x870"
 
 x_path = "img/x.png"
 check_path = "img/check.png"

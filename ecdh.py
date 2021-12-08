@@ -1,6 +1,7 @@
 import tkinter as tk
 import constants as cons
 import ecmath as ec
+import random as rand
 from PIL import Image, ImageTk
 
 
@@ -15,6 +16,8 @@ class Ecdh:
         self.alice = None
         self.ecdh = None
         self.isPredefined = False
+        self.bob_shared_key = None
+        self.alice_shared_key = None
 
         self.title = tk.Label(self.frame, text='Diffie-Hellman con Curva Elíptica', font='Helvetica 16 bold')
         self.title.pack(fill="x")
@@ -25,7 +28,7 @@ class Ecdh:
         self.ec_gen_eq = tk.StringVar()
         self.ec_gen_eq_label = tk.Label(self.ec_frame)
 
-        # begin predfined curves dropdown
+        # begin predefined curves dropdown
         self.dropdown_frame = tk.Frame(self.frame)
         self.predef_curve = None
         self.curves_list = cons.get_predef_curves_names()
@@ -33,7 +36,7 @@ class Ecdh:
         self.dropdown_str.set(self.curves_list[0])
         self.predef_dropdown = tk.OptionMenu(self.dropdown_frame, self.dropdown_str, *self.curves_list)
         self.button_chosen_curve = tk.Button(self.dropdown_frame, text="Seleccionar", command=lambda: self.chosen_curve())
-        # end predfined curves dropdown
+        # end predefined curves dropdown
 
         self.ec_a_frame = tk.Frame(self.frame)
         self.ec_a_label = tk.Label(self.ec_a_frame)
@@ -98,8 +101,18 @@ class Ecdh:
         # ///////////// End Generator Point /////////////
 
         # ///////////// Begin Key Generation /////////////
-        self.key_gen_label = tk.Label(self.frame, text="Paso 3: generación de claves públicas y privadas", state='disabled', font='Helvetica 10 bold')
+        self.key_gen_label = tk.Label(self.frame, text="Paso 3: generación de claves públicas y privadas",
+                                      state='disabled', font='Helvetica 10 bold')
         self.key_gen_label.pack()
+
+        # ///////////// Begin Private Key autogeneration /////////////
+        #self.privkey_autogen_frame = tk.Frame(self.frame)
+        self.privkey_autogen_btn = tk.Button(self.frame)
+        self.privkey_autogen_btn.config(text="Generación automática", state="disabled",
+                                        command=lambda: self.priv_key_autogen())
+        self.privkey_autogen_btn.pack()
+
+        # ///////////// End Private Key autogeneration /////////////
 
         # ///////////// Begin Bob /////////////
         self.bob_title = tk.Label(self.frame)
@@ -183,6 +196,42 @@ class Ecdh:
         # ///////////// End Key Generation /////////////
 
         # ///////////// Begin Shared Calculations /////////////
+        self.shared_title_label = tk.Label(self.frame)
+        self.shared_title_label.pack()
+
+        self.bob_shared_frame = tk.Frame(self.frame)
+        self.bob_shared_label = tk.Label(self.bob_shared_frame)
+
+        self.bob_shared_x_frame = tk.Frame(self.bob_shared_frame)
+        self.bob_shared_x_str = tk.StringVar()
+        self.bob_shared_x_label = tk.Label(self.bob_shared_x_frame)
+        self.bob_shared_x_val_str = tk.StringVar()
+        self.bob_shared_x_val_label = tk.Label(self.bob_shared_x_frame)
+
+        self.bob_shared_y_frame = tk.Frame(self.bob_shared_frame)
+        self.bob_shared_y_str = tk.StringVar()
+        self.bob_shared_y_label = tk.Label(self.bob_shared_y_frame)
+        self.bob_shared_y_val_str = tk.StringVar()
+        self.bob_shared_y_val_label = tk.Label(self.bob_shared_y_frame)
+
+        self.alice_shared_frame = tk.Frame(self.frame)
+        self.alice_shared_label = tk.Label(self.alice_shared_frame)
+
+        self.alice_shared_x_frame = tk.Frame(self.alice_shared_frame)
+        self.alice_shared_x_str = tk.StringVar()
+        self.alice_shared_x_label = tk.Label(self.alice_shared_x_frame)
+        self.alice_shared_x_val_str = tk.StringVar()
+        self.alice_shared_x_val_label = tk.Label(self.alice_shared_x_frame)
+
+        self.alice_shared_y_frame = tk.Frame(self.alice_shared_frame)
+        self.alice_shared_y_str = tk.StringVar()
+        self.alice_shared_y_label = tk.Label(self.alice_shared_y_frame)
+        self.alice_shared_y_val_str = tk.StringVar()
+        self.alice_shared_y_val_label = tk.Label(self.alice_shared_y_frame)
+
+        self.bob_alice_shared_set()
+
+        '''
         self.shared_title_label = tk.Label(self.frame, text="Paso 4: generación de clave compartida por Alicia y Bob",
                                     state="disabled", font='Helvetica 10 bold')
         self.shared_title_label.pack()
@@ -198,6 +247,7 @@ class Ecdh:
         self.shared_alice_txt = tk.StringVar()
         self.shared_alice_label = tk.Label(self.frame, textvariable=self.shared_alice_txt, state="disabled")
         self.shared_alice_label.pack()
+        '''
 
         # ///////////// End Shared Calculations /////////////
 
@@ -216,6 +266,12 @@ class Ecdh:
 
         # self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"], self.predef_curve["q"])
 
+    def priv_key_autogen(self):
+        self.bob_priv_entry.delete(0, "end")
+        self.bob_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()))
+
+        self.alice_priv_entry.delete(0, "end")
+        self.alice_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()))
 
     def ec_set(self):
         self.ec_title.config(text='Paso 1: elegir curva elíptica utilizada y compartida por Bob y Alicia', font='Helvetica 10 bold')
@@ -283,13 +339,16 @@ class Ecdh:
             if self.isPredefined:
                 self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"],
                                                        self.predef_curve["q"],
-                                                       ec.Point(self.predef_curve["g"][0], self.predef_curve["g"][1]))
+                                                       ec.Point(self.predef_curve["g"][0], self.predef_curve["g"][1]),
+                                                       self.predef_curve["n"], self.predef_curve["h"])
             else:
                 self.elliptic_curve = ec.EllipticCurve(a, b, q)
 
             self.ec_a_entry.config(state="disabled")
             self.ec_b_entry.config(state="disabled")
             self.ec_q_entry.config(state="disabled")
+            self.predef_dropdown.config(state="disabled")
+            self.button_chosen_curve.config(state="disabled")
 
             self.ec_ready_button.pack_forget()
             self.ec_image_err.pack_forget()
@@ -305,10 +364,11 @@ class Ecdh:
             self.g_y_entry.config(state='normal')
             self.g_ready_button.config(state='normal')
 
-            self.g_x_entry.delete(0, "end")
-            self.g_x_entry.insert(0, self.elliptic_curve.get_g().get_x())
-            self.g_y_entry.delete(0, "end")
-            self.g_y_entry.insert(0, self.elliptic_curve.get_g().get_y())
+            if self.isPredefined:
+                self.g_x_entry.delete(0, "end")
+                self.g_x_entry.insert(0, self.elliptic_curve.get_g().get_x())
+                self.g_y_entry.delete(0, "end")
+                self.g_y_entry.insert(0, self.elliptic_curve.get_g().get_y())
 
         except Exception as msg:
             self.err_display(msg.args[0], self.ec_err_txt, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
@@ -326,6 +386,8 @@ class Ecdh:
         self.ec_b_entry.delete(0, 'end')
         self.ec_q_entry.config(state="normal")
         self.ec_q_entry.delete(0, 'end')
+        self.predef_dropdown.config(state="normal")
+        self.button_chosen_curve.config(state="normal")
         self.ec_title.pack()
         self.ec_err_txt.set("")
         self.ec_ready_button.pack()
@@ -342,7 +404,7 @@ class Ecdh:
         self.g_title.config(text="Paso 2: elegir punto generador utilizado y compartido por Bob y Alicia",
                             state="disabled", font='Helvetica 10 bold')
         self.g_title.pack()
-        
+
         self.g_x_label.config(text="x =", state="disabled")
         self.g_x_label.pack(side="left")
         self.g_x_entry.config(width=80, state="disabled")
@@ -401,6 +463,8 @@ class Ecdh:
 
             self.key_gen_label.config(state="normal")
 
+            self.privkey_autogen_btn.config(state="normal")
+
             self.bob_title.config(state="normal")
             self.bob_priv_label.config(state="normal")
             self.bob_priv_entry.config(state="normal")
@@ -420,6 +484,7 @@ class Ecdh:
             self.err_display(msg.args[0], self.g_err_txt, self.g_image_err, self.g_err, self.g_error_frame)
 
     def g_clear(self):
+        self.privkey_autogen_btn.config(state="normal")
         self.g_x_entry.config(state="normal")
         self.g_x_entry.delete(0, "end")
         self.g_y_entry.config(state="normal")
@@ -531,6 +596,50 @@ class Ecdh:
         self.bob_alice_err.pack_forget()
         self.bob_alice_error_frame.pack()
 
+    def bob_alice_shared_set(self):
+
+        self.shared_title_label = tk.Label(self.frame, text="Paso 4: generación de clave compartida por Alicia y Bob",
+                                           state="disabled", font='Helvetica 10 bold')
+        self.shared_title_label.pack()
+
+        self.bob_shared_label.config(text="Clave Privada (punto) compartida según Bob:", state="disabled")
+        self.bob_shared_label.pack()
+
+        self.bob_shared_x_str.set("x =")
+        self.bob_shared_x_label.config(textvariable=self.bob_shared_x_str, state="disabled")
+        self.bob_shared_x_label.pack(side="left")
+        self.bob_shared_x_val_label.config(textvariable=self.bob_shared_x_val_str, state="disabled")
+        self.bob_shared_x_val_label.pack(side="left")
+        self.bob_shared_x_frame.pack()
+
+        self.bob_shared_y_str.set("y =")
+        self.bob_shared_y_label.config(textvariable=self.bob_shared_y_str, state="disabled")
+        self.bob_shared_y_label.pack(side="left")
+        self.bob_shared_y_val_label.config(textvariable=self.bob_shared_y_val_str, state="disabled")
+        self.bob_shared_y_val_label.pack(side="left")
+        self.bob_shared_y_frame.pack()
+
+        self.bob_shared_frame.pack()
+
+        self.alice_shared_label.config(text="Clave Privada (punto) compartida según Alice:", state="disabled")
+        self.alice_shared_label.pack()
+
+        self.alice_shared_x_str.set("x =")
+        self.alice_shared_x_label.config(textvariable=self.alice_shared_x_str, state="disabled")
+        self.alice_shared_x_label.pack(side="left")
+        self.alice_shared_x_val_label.config(textvariable=self.alice_shared_x_val_str, state="disabled")
+        self.alice_shared_x_val_label.pack(side="left")
+        self.alice_shared_x_frame.pack()
+
+        self.alice_shared_y_str.set("y =")
+        self.alice_shared_y_label.config(textvariable=self.alice_shared_y_str, state="disabled")
+        self.alice_shared_y_label.pack(side="left")
+        self.alice_shared_y_val_label.config(textvariable=self.alice_shared_y_val_str, state="disabled")
+        self.alice_shared_y_val_label.pack(side="left")
+        self.alice_shared_y_frame.pack()
+
+        self.alice_shared_frame.pack()
+
     def bob_alice_ready(self):
         self.bob_alice_txt.set("")
 
@@ -551,6 +660,8 @@ class Ecdh:
             self.bob_alice_image_err.pack_forget()
             self.bob_alice_error_frame.configure(height=1)
 
+            self.shared_title_label.configure(state="normal")
+
             self.bob = ec.User()
             self.alice = ec.User()
             self.ecdh = ec.ECDH(self.elliptic_curve)
@@ -558,9 +669,36 @@ class Ecdh:
             bob_priv = int(bob_priv_str)
             alice_priv = int(alice_priv_str)
 
+            self.privkey_autogen_btn.config(state="disabled")
+
             self.bob.setPrivKey(bob_priv)
-            # self.bob.setPubKey(self.elliptic_curve.point_mult(self.g, self.bob.getPrivKey()))
             self.bob.setPubKey(self.ecdh.gen_pub_key(self.bob.getPrivKey()))
+
+            self.alice.setPrivKey(alice_priv)
+            self.alice.setPubKey(self.ecdh.gen_pub_key(self.alice.getPrivKey()))
+
+            self.bob_shared_key = self.ecdh.calc_shared_key(self.bob.getPrivKey(), self.alice.getPubKey())
+            self.alice_shared_key = self.ecdh.calc_shared_key(self.alice.getPrivKey(), self.bob.getPubKey())
+
+            self.alice_shared_x_val_str.set(self.alice_shared_key.get_x())
+            self.alice_shared_y_val_str.set(self.alice_shared_key.get_y())
+
+            self.bob_shared_label.configure(state="normal")
+            self.bob_shared_x_label.config(state="normal")
+            self.bob_shared_x_val_str.set(self.bob_shared_key.get_x())
+            self.bob_shared_x_val_label.config(state="normal")
+            self.bob_shared_y_label.config(state="normal")
+            self.bob_shared_y_val_str.set(self.bob_shared_key.get_y())
+            self.bob_shared_y_val_label.config(state="normal")
+
+            self.alice_shared_label.configure(state="normal")
+            self.alice_shared_x_label.config(state="normal")
+            self.alice_shared_x_val_str.set(self.alice_shared_key.get_x())
+            self.alice_shared_x_val_label.config(state="normal")
+            self.alice_shared_y_label.config(state="normal")
+            self.alice_shared_y_val_str.set(self.alice_shared_key.get_y())
+            self.alice_shared_y_val_label.config(state="normal")
+
             self.bob_pub_x_label.config(state="normal")
             self.bob_pub_x_val_str.set(self.bob.getPubKey().get_x())
             self.bob_pub_x_val_label.config(state="normal")
@@ -569,7 +707,6 @@ class Ecdh:
             self.bob_pub_y_val_label.config(state="normal")
 
             self.alice.setPrivKey(alice_priv)
-            # self.alice.setPubKey(self.elliptic_curve.point_mult(self.g, self.alice.getPrivKey()))
             self.alice.setPubKey(self.ecdh.gen_pub_key(self.alice.getPrivKey()))
             self.alice_pub_x_label.config(state="normal")
             self.alice_pub_x_val_str.set(self.alice.getPubKey().get_x())
@@ -578,28 +715,19 @@ class Ecdh:
             self.alice_pub_y_val_str.set(self.alice.getPubKey().get_y())
             self.alice_pub_y_val_label.config(state="normal")
 
-            self.shared_bob_txt.set(
-                self.ecdh.calc_shared_key(self.bob.getPrivKey(), self.alice.getPubKey()).print())
-            self.shared_alice_txt.set(
-                self.ecdh.calc_shared_key(self.alice.getPrivKey(), self.bob.getPubKey()).print())
-
             self.bob_priv_entry.config(state="disabled")
             self.alice_priv_entry.config(state="disabled")
             self.bob_alice_ready_button.pack_forget()
             self.bob_alice_edit_button.pack()
             self.bob_alice_label.config(state="normal")
 
-            self.shared_title_label.config(state="normal")
-            self.shared_alice_label.config(state="normal")
-            self.shared_alice.config(state="normal")
-            self.shared_bob_label.config(state="normal")
-            self.shared_bob.config(state="normal")
-
         except Exception as msg:
             self.err_display(msg.args[0], self.bob_alice_err_txt, self.bob_alice_image_err,
                              self.bob_alice_err, self.bob_alice_error_frame)
 
     def bob_alice_clear(self):
+        self.privkey_autogen_btn.config(state="normal")
+
         self.bob_priv_entry.config(state="normal")
         self.bob_priv_entry.delete(0, "end")
         self.bob_pub_x_label.config(state="disabled")
@@ -619,13 +747,26 @@ class Ecdh:
         self.bob_alice_edit_button.pack_forget()
         self.bob_alice_image_ok.pack_forget()
         self.bob_alice_ready_button.pack()
-        self.shared_bob_txt.set("")
-        self.shared_alice_txt.set("")
-        self.shared_title_label.config(state="disabled")
-        self.shared_bob.config(state="disabled")
-        self.shared_alice.config(state="disabled")
+
         self.bob_label.config(state="disabled")
         self.alice_label.config(state="disabled")
+        self.shared_title_label.config(state="disabled")
+
+        self.bob_shared_x_val_str.set("")
+        self.bob_shared_y_val_str.set("")
+        self.bob_shared_label.configure(state="disabled")
+        self.bob_shared_x_label.config(state="disabled")
+        self.bob_shared_x_val_label.config(state="disabled")
+        self.bob_shared_y_label.config(state="disabled")
+        self.bob_shared_y_val_label.config(state="disabled")
+
+        self.alice_shared_x_val_str.set("")
+        self.alice_shared_y_val_str.set("")
+        self.alice_shared_label.configure(state="disabled")
+        self.alice_shared_x_label.config(state="disabled")
+        self.alice_shared_x_val_label.config(state="disabled")
+        self.alice_shared_y_label.config(state="disabled")
+        self.alice_shared_y_val_label.config(state="disabled")
 
     def bob_alice_clear_and_disable(self):
         self.key_gen_label.config(state="disabled")
@@ -671,15 +812,31 @@ class Ecdh:
         self.bob = None
         self.alice = None
         self.ecdh = None
-        self.shared_title_label.config(state="disabled")
-        self.shared_bob.config(state="disabled")
-        self.shared_alice.config(state="disabled")
+        self.bob_alice_edit_button.pack_forget()
+        self.bob_alice_image_ok.pack_forget()
+        self.bob_alice_ready_button.pack()
+
+        self.privkey_autogen_btn.config(state="disabled")
+
         self.bob_label.config(state="disabled")
         self.alice_label.config(state="disabled")
-        self.shared_bob_txt.set("")
-        self.shared_alice_txt.set("")
-        self.bob_pub_label.config(state="disabled")
-        self.alice_pub_label.config(state="disabled")
+        self.shared_title_label.config(state="disabled")
+
+        self.bob_shared_x_val_str.set("")
+        self.bob_shared_y_val_str.set("")
+        self.bob_shared_label.configure(state="disabled")
+        self.bob_shared_x_label.config(state="disabled")
+        self.bob_shared_x_val_label.config(state="disabled")
+        self.bob_shared_y_label.config(state="disabled")
+        self.bob_shared_y_val_label.config(state="disabled")
+
+        self.alice_shared_x_val_str.set("")
+        self.alice_shared_y_val_str.set("")
+        self.alice_shared_label.configure(state="disabled")
+        self.alice_shared_x_label.config(state="disabled")
+        self.alice_shared_x_val_label.config(state="disabled")
+        self.alice_shared_y_label.config(state="disabled")
+        self.alice_shared_y_val_label.config(state="disabled")
 
     def start_page(self):
         self.frame.grid(column=0, row=0, sticky="NWES")

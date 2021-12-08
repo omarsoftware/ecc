@@ -272,7 +272,7 @@ class ECDH:
 
     def gen_pub_key(self, priv_key):
         if not 0 < priv_key < self.ec.get_n():
-            raise AssertionError("la clave pública debe ser mayor a 0 y menor a n")
+            raise AssertionError("la clave privada debe ser mayor a 0 y menor a n")
 
         return self.ec.point_mult(self.ec.get_g(), priv_key)
 
