@@ -15,9 +15,10 @@ class Commutativity:
         self.title.pack(fill="x")
 
         self.elliptic_curve = None
-        self.g = None
         self.p = None
         self.q = None
+        self.p_q_addition = None
+        self.q_p_addition = None
         self.isPredefined = False
 
         # ///////////// Begin Elliptic Curve /////////////
@@ -67,37 +68,6 @@ class Commutativity:
 
         self.ec_set()
         # ///////////// End Elliptic Curve /////////////
-
-        # ///////////// Begin Generator Point /////////////
-        self.g_title = tk.Label(self.frame)
-
-        self.g_x_frame = tk.Frame(self.frame)
-        self.g_x_label = tk.Label(self.g_x_frame)
-        self.g_x_entry = tk.Entry(self.g_x_frame)
-
-        self.g_y_frame = tk.Frame(self.frame)
-        self.g_y_label = tk.Label(self.g_y_frame)
-        self.g_y_entry = tk.Entry(self.g_y_frame)
-
-        self.g_ready_frame = tk.Frame(self.frame)
-        self.g_ready_button = tk.Button(self.g_ready_frame)
-        self.g_edit_button = tk.Button(self.g_ready_frame)
-        self.g_load_ok = Image.open(cons.check_path)
-        self.g_resized = self.g_load_ok.resize(cons.x_and_check_size, Image.ANTIALIAS)
-        self.g_new_pic_ok = ImageTk.PhotoImage(self.g_resized)
-        self.g_image_ok = tk.Label(self.g_ready_frame, image=self.g_new_pic_ok)
-
-        self.g_error_frame = tk.Frame(self.frame)
-        self.g_label = tk.Label(self.g_error_frame)
-        self.g_err_txt = tk.StringVar()
-        self.g_err = tk.Label(self.g_error_frame)
-        self.g_load_err = Image.open(cons.x_path)
-        self.g_resized_err = self.g_load_err.resize(cons.x_and_check_size, Image.ANTIALIAS)
-        self.g_new_pic_err = ImageTk.PhotoImage(self.g_resized_err)
-        self.g_image_err = tk.Label(self.g_error_frame, image=self.g_new_pic_err)
-
-        self.g_set()
-        # ///////////// End Generator Point /////////////
 
         # //////////// Begin points P and Q /////////////
         self.p_q_title = tk.Label(self.frame)
@@ -169,19 +139,6 @@ class Commutativity:
 
         self.calc_set()
         # //////////// Begin Calculations /////////////
-
-    def chosen_curve(self):
-        self.predef_curve = cons.get_curve(self.dropdown_str.get())
-        self.isPredefined = True
-
-        self.ec_a_entry.delete(0, "end")
-        self.ec_a_entry.insert(0, self.predef_curve["a"])
-
-        self.ec_b_entry.delete(0, "end")
-        self.ec_b_entry.insert(0, self.predef_curve["b"])
-
-        self.ec_q_entry.delete(0, "end")
-        self.ec_q_entry.insert(0, self.predef_curve["q"])
 
     def ec_set(self):
         self.ec_title.config(text='Paso 1: elegir la curva elíptica a utilizar', font='Helvetica 10 bold')
@@ -268,18 +225,19 @@ class Commutativity:
             self.ec_edit_button.pack(side="left")
             self.ec_image_ok.pack(side="right")
 
-            self.g_title.config(state='normal')
-            self.g_x_label.config(state='normal')
-            self.g_y_label.config(state='normal')
-            self.g_x_entry.config(state='normal')
-            self.g_y_entry.config(state='normal')
-            self.g_ready_button.config(state='normal')
+            self.p_q_title.configure(state="normal")
 
-            if self.isPredefined:
-                self.g_x_entry.delete(0, "end")
-                self.g_x_entry.insert(0, self.elliptic_curve.get_g().get_x())
-                self.g_y_entry.delete(0, "end")
-                self.g_y_entry.insert(0, self.elliptic_curve.get_g().get_y())
+            self.p_x_label.configure(state="normal")
+            self.p_x_entry.configure(state="normal")
+            self.p_y_label.configure(state="normal")
+            self.p_y_entry.configure(state="normal")
+
+            self.q_x_label.configure(state="normal")
+            self.q_x_entry.configure(state="normal")
+            self.q_y_label.configure(state="normal")
+            self.q_y_entry.configure(state="normal")
+
+            self.p_q_ready_button.config(state='normal')
 
         except Exception as msg:
             self.err_display(msg.args[0], self.ec_err_txt, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
@@ -302,102 +260,11 @@ class Commutativity:
         self.ec_edit_button.pack_forget()
         self.elliptic_curve = None
 
-        # self.g_clear_and_disable()
-        # self.bob_alice_clear_and_disable()
-
-    def g_set(self):
-        self.g_title.config(text="Paso 2: elegir punto generador utilizado y compartido por Bob y Alicia",
-                            state="disabled", font='Helvetica 10 bold')
-        self.g_title.pack()
-
-        self.g_x_label.config(text="Gx =", state="disabled")
-        self.g_x_label.pack(side="left")
-        self.g_x_entry.config(width=80, state="disabled")
-        self.g_x_entry.pack(side="left")
-        self.g_x_frame.pack()
-
-        self.g_y_label.config(text="Gy =", state="disabled")
-        self.g_y_label.pack(side="left")
-        self.g_y_entry.config(width=80, state="disabled")
-        self.g_y_entry.pack(side="left")
-        self.g_y_frame.pack()
-
-        self.g_ready_button.config(text="Listo", state="disabled", command=lambda: self.g_ready())
-        self.g_ready_button.pack()
-        self.g_edit_button.config(text="Editar", command=lambda: self.g_clear())
-        self.g_edit_button.pack()
-        self.g_edit_button.pack_forget()
-        self.g_image_ok.pack()
-        self.g_image_ok.pack_forget()
-        self.g_ready_frame.pack()
-
-        self.g_err.config(textvariable=self.g_err_txt)
-        self.g_image_err.pack_forget()
-        self.g_err.pack(side="left")
-        self.g_err.pack_forget()
-        self.g_error_frame.pack()
-
-    def g_ready(self):
-        try:
-            x_str = self.g_x_entry.get()
-            y_str = self.g_y_entry.get()
-
-            if x_str == '' or y_str == '':
-                raise AssertionError("x o y están vacíos")
-
-            if not x_str.lstrip('-').isnumeric() or not y_str.lstrip('-').isnumeric():
-                raise AssertionError("x e y deben ser números")
-
-            self.g = ec.Point(int(x_str), int(y_str))
-
-            if not self.elliptic_curve.belongsToCurve(self.g):
-                raise AssertionError("el punto no pertenece a la curva")
-
-            if not self.elliptic_curve.get_g():
-                self.elliptic_curve.set_g(self.g)
-
-            self.g_x_entry.config(state="disabled")
-            self.g_y_entry.config(state="disabled")
-
-            self.g_ready_button.pack_forget()
-            self.g_edit_button.pack(side="left")
-            self.g_image_ok.pack(side="right")
-            self.g_err.pack_forget()
-            self.g_image_err.pack_forget()
-            self.g_error_frame.configure(height=1)
-
-            self.p_x_label.configure(state="normal")
-            self.p_x_entry.configure(state="normal")
-            self.p_y_label.configure(state="normal")
-            self.p_y_entry.configure(state="normal")
-
-            self.q_x_label.configure(state="normal")
-            self.q_x_entry.configure(state="normal")
-            self.q_y_label.configure(state="normal")
-            self.q_y_entry.configure(state="normal")
-
-        except Exception as msg:
-            self.err_display(msg.args[0], self.g_err_txt, self.g_image_err, self.g_err, self.g_error_frame)
-
-    def g_clear(self):
-        # self.privkey_autogen_btn.config(state="normal")
-        self.g_x_entry.config(state="normal")
-        self.g_x_entry.delete(0, "end")
-        self.g_y_entry.config(state="normal")
-        self.g_y_entry.delete(0, "end")
-        self.g_edit_button.pack_forget()
-        self.g_image_ok.pack_forget()
-        self.g_ready_button.pack(side="left")
-        self.g_err_txt.set("")
-        self.g_image_err.pack_forget()
-        self.g_err.pack_forget()
-        self.g_error_frame.configure(height=1)
-        self.g = None
-
-        # self.bob_alice_clear_and_disable()
+        self.p_q_clear_and_disable()
+        self.calc_clear_and_disable()
 
     def p_q_set(self):
-        self.p_q_title.config(text="Paso 3: elegir dos puntos P y Q para sumarlos",
+        self.p_q_title.config(text="Paso 2: elegir dos puntos P y Q para sumarlos",
                               state="disabled", font='Helvetica 10 bold')
         self.p_q_title.pack()
 
@@ -429,7 +296,7 @@ class Commutativity:
 
         self.p_q_frame.pack()
 
-        self.p_q_ready_button.config(text="Listo", command=lambda: self.p_q_ready())
+        self.p_q_ready_button.config(text="Listo", command=lambda: self.p_q_ready(), state="disabled")
         self.p_q_ready_button.pack()
         self.p_q_edit_button.config(text="Editar", command=lambda: self.p_q_clear())
         self.p_q_edit_button.pack()
@@ -469,11 +336,8 @@ class Commutativity:
             if not self.elliptic_curve.belongsToCurve(self.q):
                 raise AssertionError("el punto Q no pertenece a la curva")
 
-            if not self.elliptic_curve.get_g():
-                self.elliptic_curve.set_g(self.g)
-
-            p_q_addition = self.elliptic_curve.point_addition(self.p, self.q)
-            q_p_addition = self.elliptic_curve.point_addition(self.p, self.q)
+            self.p_q_addition = self.elliptic_curve.point_addition(self.p, self.q)
+            self.q_p_addition = self.elliptic_curve.point_addition(self.p, self.q)
 
             self.p_x_entry.config(state="disabled")
             self.p_y_entry.config(state="disabled")
@@ -490,28 +354,87 @@ class Commutativity:
             self.calc_title.config(state="normal")
             self.p_plus_q_title.config(state="normal")
             self.p_plus_q_x_label.config(state="normal")
-            self.p_plus_q_x_str.set(p_q_addition.get_x())
+            self.p_plus_q_x_str.set(self.p_q_addition.get_x())
             self.p_plus_q_x_val_label.config(state="normal")
             self.p_plus_q_y_label.config(state="normal")
-            self.p_plus_q_y_str.set(p_q_addition.get_y())
+            self.p_plus_q_y_str.set(self.p_q_addition.get_y())
             self.p_plus_q_y_val_label.config(state="normal")
 
             self.q_plus_p_title.config(state="normal")
             self.q_plus_p_x_label.config(state="normal")
-            self.q_plus_p_x_str.set(q_p_addition.get_x())
+            self.q_plus_p_x_str.set(self.q_p_addition.get_x())
             self.q_plus_p_x_val_label.config(state="normal")
             self.q_plus_p_y_label.config(state="normal")
-            self.q_plus_p_y_str.set(q_p_addition.get_y())
+            self.q_plus_p_y_str.set(self.q_p_addition.get_y())
             self.q_plus_p_y_val_label.config(state="normal")
 
         except Exception as msg:
             self.err_display(msg.args[0], self.p_q_err_txt, self.p_q_image_err, self.p_q_err_label, self.p_q_error_frame)
 
     def p_q_clear(self):
-        pass
+        self.p_x_entry.config(state="normal")
+        self.p_x_entry.delete(0, "end")
+        self.p_y_entry.config(state="normal")
+        self.p_y_entry.delete(0, "end")
+        self.q_x_entry.config(state="normal")
+        self.q_x_entry.delete(0, "end")
+        self.q_y_entry.config(state="normal")
+        self.q_y_entry.delete(0, "end")
+        self.p_q_edit_button.pack_forget()
+        self.p_q_image_ok.pack_forget()
+        self.p_q_ready_button.pack(side="left")
+        self.p_q_err_txt.set("")
+        self.p_q_image_err.pack_forget()
+        self.p_q_err_label.pack_forget()
+        self.p_q_error_frame.configure(height=1)
+        self.p = None
+        self.q = None
+
+        self.calc_clear_and_disable()
+
+    def p_q_clear_and_disable(self):
+        self.p_q_title.configure(state="disabled")
+
+        self.p_x_label.configure(state="disabled")
+        self.p_x_entry.configure(state="normal")
+        self.p_x_entry.delete(0, "end")
+        self.p_x_entry.config(state="disabled")
+        self.p_y_label.configure(state="disabled")
+        self.p_y_entry.config(state="normal")
+        self.p_y_entry.delete(0, "end")
+        self.p_y_entry.config(state="disabled")
+
+        self.q_x_label.configure(state="disabled")
+        self.q_x_entry.configure(state="normal")
+        self.q_x_entry.delete(0, "end")
+        self.q_x_entry.config(state="disabled")
+        self.q_y_label.configure(state="disabled")
+        self.q_y_entry.configure(state="disabled")
+        self.q_y_entry.configure(state="normal")
+        self.q_y_entry.delete(0, "end")
+        self.q_y_entry.config(state="disabled")
+
+        self.p_q_edit_button.pack_forget()
+        self.p_q_image_ok.pack_forget()
+        self.p_q_ready_button.pack(side="left")
+        self.p_q_err_txt.set("")
+        self.p_q_image_err.pack_forget()
+        self.p_q_err_label.pack_forget()
+        self.p_q_error_frame.configure(height=1)
+        self.p = None
+        self.q = None
+
+        self.p_q_ready_button.config(state="disabled")
+        self.p_q_ready_button.pack()
+        self.p_q_edit_button.pack_forget()
+        self.p_q_err_txt.set("")
+        self.p_q_image_err.pack_forget()
+        self.p_q_image_ok.pack_forget()
+        self.p_q_err_label.pack_forget()
+        self.p_q_error_frame.configure(height=1)
 
     def calc_set(self):
-        self.calc_title.config(text="Paso 4: comprobar que P + Q = Q + P", state="disabled", font='Helvetica 10 bold')
+        self.calc_title.config(text="Paso 3: comprobar que P + Q = Q + P", state="disabled", font='Helvetica 10 bold')
         self.calc_title.pack()
 
         self.p_plus_q_title.config(text="P + Q:", state="disabled")
@@ -550,11 +473,48 @@ class Commutativity:
 
         self.calc_frame.pack()
 
+    def calc_clear_and_disable(self):
+        self.calc_title.configure(state="disabled")
+        self.p_plus_q_title.configure(state="disabled")
+
+        self.p_plus_q_x_label.configure(state="disabled")
+        self.p_plus_q_x_str.set("")
+        self.p_plus_q_x_val_label.configure(state="disabled")
+
+        self.p_plus_q_y_label.configure(state="disabled")
+        self.p_plus_q_y_str.set("")
+        self.p_plus_q_y_val_label.configure(state="disabled")
+
+        self.q_plus_p_title.configure(state="disabled")
+        self.q_plus_p_x_label.configure(state="disabled")
+        self.q_plus_p_x_str.set("")
+        self.q_plus_p_x_val_label.configure(state="disabled")
+
+        self.q_plus_p_y_label.configure(state="disabled")
+        self.q_plus_p_y_str.set("")
+        self.q_plus_p_y_val_label.configure(state="disabled")
+
+        self.p_q_addition = None
+        self.q_p_addition = None
+
     def err_display(self, text, err_txt, image_err, err_label, error_frame):
         err_txt.set(text)
         image_err.pack(side="left")
         err_label.pack(side="left")
         error_frame.pack()
+
+    def chosen_curve(self):
+        self.predef_curve = cons.get_curve(self.dropdown_str.get())
+        self.isPredefined = True
+
+        self.ec_a_entry.delete(0, "end")
+        self.ec_a_entry.insert(0, self.predef_curve["a"])
+
+        self.ec_b_entry.delete(0, "end")
+        self.ec_b_entry.insert(0, self.predef_curve["b"])
+
+        self.ec_q_entry.delete(0, "end")
+        self.ec_q_entry.insert(0, self.predef_curve["q"])
 
     def start_page(self):
         self.frame.grid(column=0, row=0, sticky="NWES")
