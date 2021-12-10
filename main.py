@@ -4,6 +4,7 @@ import ecmath as ec
 from ecdh import Ecdh
 from ecdsa import Ecdsa
 from pointops import PointOperations
+from associativity import Associativity
 
 
 class App:
@@ -23,6 +24,11 @@ class App:
         self.main_menu.add_cascade(label="Archivo", menu=file_menu)
         file_menu.add_command(label="Salir", command=self.root.quit)
 
+        # Creating Properties menu
+        properties_menu = tk.Menu(self.main_menu)
+        self.main_menu.add_cascade(label="Propiedades", menu=properties_menu)
+        properties_menu.add_command(label="Asociatividad", command=self.make_associativity)
+
         # Creating Analysis menu
         analysis_menu = tk.Menu(self.main_menu)
         self.main_menu.add_cascade(label="Análisis", menu=analysis_menu)
@@ -40,11 +46,12 @@ class App:
 
         tk.Label(self.frame, text='Página Principal').grid()
 
+        self.associativity = Associativity(master=self.root, app=self)
         self.point_operations = PointOperations(master=self.root, app=self)
         self.ecdh = Ecdh(master=self.root, app=self)
         self.ecdsa = Ecdsa(master=self.root, app=self)
 
-        self.pages = [self.point_operations, self.ecdh, self.ecdsa]
+        self.pages = [self.associativity, self.point_operations, self.ecdh, self.ecdsa]
 
     def main_page(self):
         self.frame.grid()
@@ -63,6 +70,11 @@ class App:
         self.frame.grid_forget()
         self.hide_all_frames()
         self.point_operations.start_page()
+
+    def make_associativity(self):
+        self.frame.grid_forget()
+        self.hide_all_frames()
+        self.associativity.start_page()
 
     def hide_all_frames(self):
         for page in self.pages:
