@@ -103,6 +103,9 @@ class Commutativity:
         self.p_q_err_txt = tk.StringVar()
         self.p_q_err_label = tk.Label(self.p_q_error_frame)
 
+        self.space = tk.Label(self.frame, text=" ")
+        self.space.pack()
+
         self.p_q_set()
         # //////////// End points P and Q /////////////
 
@@ -136,6 +139,9 @@ class Commutativity:
         self.q_plus_p_y_label = tk.Label(self.q_plus_p_y_frame)
         self.q_plus_p_y_str = tk.StringVar()
         self.q_plus_p_y_val_label = tk.Label(self.q_plus_p_y_frame, textvariable=self.q_plus_p_y_str)
+
+        self.space2 = tk.Label(self.frame, text=" ")
+        self.space2.pack()
 
         self.calc_set()
         # //////////// Begin Calculations /////////////
