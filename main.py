@@ -4,7 +4,7 @@ import ecmath as ec
 from ecdh import Ecdh
 from ecdsa import Ecdsa
 from pointops import PointOperations
-from associativity import Associativity
+from commutativity import Commutativity
 
 
 class App:
@@ -24,34 +24,37 @@ class App:
         self.main_menu.add_cascade(label="Archivo", menu=file_menu)
         file_menu.add_command(label="Salir", command=self.root.quit)
 
+        # Creating Operations menu
+        analysis_menu = tk.Menu(self.main_menu)
+        self.main_menu.add_cascade(label="Operaciones", menu=analysis_menu)
+        analysis_menu.add_command(label="Suma")
+        #analysis_menu.add_command(label="Multiplicación", command=self.make_multiplication)
+
         # Creating Properties menu
         properties_menu = tk.Menu(self.main_menu)
         self.main_menu.add_cascade(label="Propiedades", menu=properties_menu)
-        properties_menu.add_command(label="Asociatividad", command=self.make_associativity)
-
-        # Creating Analysis menu
-        analysis_menu = tk.Menu(self.main_menu)
-        self.main_menu.add_cascade(label="Análisis", menu=analysis_menu)
-        analysis_menu.add_command(label="Operaciones de Puntos", command=self.make_point_operations)
+        properties_menu.add_command(label="Conmutatividad", command=self.make_commutativity)
 
         # Creating Encrypt menu
         encrypt_menu = tk.Menu(self.main_menu)
         self.main_menu.add_cascade(label="Cifrado", menu=encrypt_menu)
         encrypt_menu.add_command(label="Diffie-Hellman con curva elíptica (ECDH)",
                                  command=self.make_ecdh)
-        encrypt_menu.add_command(label="Firma Digital con curva elíptica (ECDSA)",
-                                 command=self.make_ecdsa)
+        #encrypt_menu.add_command(label="Firma Digital con curva elíptica (ECDSA)",
+        #                         command=self.make_ecdsa)
 
         self.frame.grid()
 
         tk.Label(self.frame, text='Página Principal').grid()
 
-        self.associativity = Associativity(master=self.root, app=self)
+        # self.addition = Addition(master=self.root, app=self)
+        # self.addition = Multiplication(master=self.root, app=self)
+        self.commutativity = Commutativity(master=self.root, app=self)
         self.point_operations = PointOperations(master=self.root, app=self)
         self.ecdh = Ecdh(master=self.root, app=self)
         self.ecdsa = Ecdsa(master=self.root, app=self)
 
-        self.pages = [self.associativity, self.point_operations, self.ecdh, self.ecdsa]
+        self.pages = [self.commutativity, self.point_operations, self.ecdh, self.ecdsa]
 
     def main_page(self):
         self.frame.grid()
@@ -61,20 +64,22 @@ class App:
         self.hide_all_frames()
         self.ecdh.start_page()
 
+    '''
     def make_ecdsa(self):
         self.frame.grid_forget()
         self.hide_all_frames()
         self.ecdsa.start_page()
+    '''
 
     def make_point_operations(self):
         self.frame.grid_forget()
         self.hide_all_frames()
         self.point_operations.start_page()
 
-    def make_associativity(self):
+    def make_commutativity(self):
         self.frame.grid_forget()
         self.hide_all_frames()
-        self.associativity.start_page()
+        self.commutativity.start_page()
 
     def hide_all_frames(self):
         for page in self.pages:

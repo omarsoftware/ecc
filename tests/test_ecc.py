@@ -44,6 +44,14 @@ class TestEllipticCurve(unittest.TestCase):
         point_r2 = curve.point_addition(point_p, point_q)
         self.assertEqual(point_r1, point_r2)
 
+    def test_commutativity(self):
+        curve = ec.EllipticCurve(10, 15, 23)
+        point_p = ec.Point(8, 20)
+        point_q = ec.Point(9, 11)
+        point_p_plus_q = curve.point_addition(point_p, point_q)
+        point_q_plus_p = curve.point_addition(point_q, point_p)
+        self.assertEqual(point_p_plus_q, point_q_plus_p)
+
     def test_multiplication(self):
         curve = ec.EllipticCurve(10, 15, 23)
         point_p = ec.Point(3, 7)
