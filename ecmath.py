@@ -104,7 +104,8 @@ class EllipticCurve:
         if not isinstance(point, Point):
             raise AssertionError("parámetro de tipo incorrecto")
 
-        return (point.get_y() ** 2) % self.q == ((point.get_x() ** 3) + self.a * point.get_x() + self.b) % self.q
+        return (point.get_y() ** 2) % self.q == \
+               ((point.get_x() ** 3) + self.a * point.get_x() + self.b) % self.q
 
     def point_addition(self, point_p, point_q):
         if point_p.get_x() == 0 and point_p.get_y() == 0:
@@ -113,20 +114,22 @@ class EllipticCurve:
         if point_q.get_x() == 0 and point_q.get_y() == 0:
             return point_p
 
-        if point_p.get_x() == point_q.get_x() and (point_p.get_y() != point_q.get_y() or point_p.get_y() == 0):
+        if point_p.get_x() == point_q.get_x() and \
+           (point_p.get_y() != point_q.get_y() or point_p.get_y() == 0):
             return self.zero
 
         if point_p.get_x() == point_q.get_x():
-            slope = (3 * point_p.get_x() * point_p.get_x() + self.a) * self.inv(2 * point_p.get_y(), self.q) % self.q
+            slope = (3 * point_p.get_x() * point_p.get_x() + self.a) * \
+                    self.inv(2 * point_p.get_y(), self.q) % self.q
             pass
         else:
-            slope = (point_q.get_y() - point_p.get_y()) * self.inv(point_q.get_x() - point_p.get_x(), self.q) % self.q
+            slope = (point_q.get_y() - point_p.get_y()) * \
+                    self.inv(point_q.get_x() - point_p.get_x(), self.q) % self.q
             pass
 
         point_r = Point()
 
         x = (slope * slope - point_p.get_x() - point_q.get_x()) % self.q
-        # y = (point_p.get_y() + slope * (x - point_p.get_x())) % self.q
         y = (slope * (point_p.get_x() - x) - point_p.get_y()) % self.q
 
         point_r.set_x(x)
@@ -242,8 +245,8 @@ class EllipticCurve:
 
 class User:
     def __init__(self):
-        self.privKey = 0
-        self.pubKey = 0
+        self.privKey = None
+        self.pubKey = None
 
     def setPrivKey(self, privKey):
         self.privKey = privKey
@@ -262,10 +265,6 @@ class ECDH:
 
     def __init__(self, elliptic_curve):
         self.ec = elliptic_curve
-
-    '''
-    TODO: agregar generación automática de clave privada
-    '''
 
     def gen_priv(self, elliptic_curve):
         return rand.randint(1, elliptic_curve.get_n())
