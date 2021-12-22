@@ -5,6 +5,7 @@ from ecdh import Ecdh
 from ecdsa import Ecdsa
 from pointops import PointOperations
 from commutativity import Commutativity
+from point_addition import PointAddition
 
 
 class App:
@@ -27,7 +28,7 @@ class App:
         # Creating Operations menu
         analysis_menu = tk.Menu(self.main_menu)
         self.main_menu.add_cascade(label="Operaciones", menu=analysis_menu)
-        analysis_menu.add_command(label="Suma")
+        analysis_menu.add_command(label="Suma", command=self.make_point_addition)
         #analysis_menu.add_command(label="Multiplicación", command=self.make_multiplication)
 
         # Creating Properties menu
@@ -49,12 +50,13 @@ class App:
 
         # self.addition = Addition(master=self.root, app=self)
         # self.addition = Multiplication(master=self.root, app=self)
+        self.point_addition = PointAddition(master=self.root, app=self)
         self.commutativity = Commutativity(master=self.root, app=self)
         self.point_operations = PointOperations(master=self.root, app=self)
         self.ecdh = Ecdh(master=self.root, app=self)
         self.ecdsa = Ecdsa(master=self.root, app=self)
 
-        self.pages = [self.commutativity, self.point_operations, self.ecdh, self.ecdsa]
+        self.pages = [self.point_addition, self.commutativity, self.point_operations, self.ecdh, self.ecdsa]
 
     def main_page(self):
         self.frame.grid()
@@ -70,6 +72,11 @@ class App:
         self.hide_all_frames()
         self.ecdsa.start_page()
     '''
+
+    def make_point_addition(self):
+        self.frame.grid_forget()
+        self.hide_all_frames()
+        self.point_addition.start_page()
 
     def make_point_operations(self):
         self.frame.grid_forget()
