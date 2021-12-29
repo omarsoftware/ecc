@@ -27,8 +27,8 @@ class AnnoteFinder(object):
     connect('button_press_event', af)
     """
 
-    def __init__(self, xdata, ydata, annotes, ax=None, xtol=None, ytol=None):
-        self.data = list(zip(xdata, ydata, annotes))
+    def __init__(self, xdata, ydata, ax=None, xtol=None, ytol=None):
+        self.data = list(zip(xdata, ydata))
         if xtol is None:
             xtol = ((max(xdata) - min(xdata)) / float(len(xdata))) / 2
         if ytol is None:
@@ -58,19 +58,48 @@ class AnnoteFinder(object):
             if (self.ax is None) or (self.ax is event.inaxes):
                 annotes = []
                 # print(event.xdata, event.ydata)
-                for x, y, a in self.data:
+                for x, y in self.data:
                     # print(x, y, a)
                     if ((clickX - self.xtol < x < clickX + self.xtol) and
                             (clickY - self.ytol < y < clickY + self.ytol)):
                         annotes.append(
-                            (self.distance(x, clickX, y, clickY), x, y, a))
+                            (self.distance(x, clickX, y, clickY), x, y))
                 if annotes:
-                    annotes.sort()
-                    distance, x, y, annote = annotes[0]
-                    self.drawAnnote(event.inaxes, x, y, annote)
-                    for l in self.links:
-                        l.drawSpecificAnnote(annote)
-                    self.selected_points.append((x, y))
+                    distance, x, y = annotes[0]
+
+                    if len(self.drawnAnnotations) == 2:
+                        if (x, y) in self.drawnAnnotations:
+                            self.drawAnnote(event.inaxes, x, y, '')
+                    else:
+                        if len(self.drawnAnnotations) == 1:
+                            if (x, y) in self.drawnAnnotations:
+                                self.drawAnnote(event.inaxes, x, y, '')
+                            else:
+                                keys = list(self.drawnAnnotations.keys())
+                                point = self.drawnAnnotations[keys[0]]
+                                if point[2] == 'P':
+                                    self.drawAnnote(event.inaxes, x, y, 'Q')
+                                if point[2] == 'Q':
+                                    self.drawAnnote(event.inaxes, x, y, 'P')
+                        else:
+                            if not self.drawnAnnotations:
+                                self.drawAnnote(event.inaxes, x, y, 'P')
+
+
+
+
+                    '''
+                    distance, x, y = annotes[0]
+                    if self.drawnAnnotations:
+                        if len(self.drawnAnnotations) == 2 and (x, y) in self.drawnAnnotations:
+                            self.drawAnnote(event.inaxes, x, y, 'Q')
+                        else:
+                            if len(self.drawnAnnotations) == 1:
+                                self.drawAnnote(event.inaxes, x, y, 'Q')
+                    else:
+                        self.drawAnnote(event.inaxes, x, y, 'P')
+                    '''
+
 
     def get_selected_points(self):
         return self.selected_points
@@ -82,18 +111,22 @@ class AnnoteFinder(object):
         if (x, y) in self.drawnAnnotations:
             markers = self.drawnAnnotations[(x, y)]
             for m in markers:
-                m.set_visible(not m.get_visible())
+                if not type(m) == str:
+                    m.set_visible(not m.get_visible())
+            del self.drawnAnnotations[(x, y)]
             self.ax.figure.canvas.draw_idle()
         else:
-            t = ax.text(x, y, " - %s" % (annote), )
+            t = ax.text(x, y, " %s" % (annote), )
             m = ax.scatter([x], [y], marker='d', c='r', zorder=100)
-            self.drawnAnnotations[(x, y)] = (t, m)
+            self.drawnAnnotations[(x, y)] = (t, m, annote)
             self.ax.figure.canvas.draw_idle()
 
+    '''
     def drawSpecificAnnote(self, annote):
         annotesToDraw = [(x, y, a) for x, y, a in self.data if a == annote]
         for x, y, a in annotesToDraw:
             self.drawAnnote(self.ax, x, y, a)
+    '''
 
 class PointAddition:
     def __init__(self, master=None, app=None):
@@ -122,11 +155,11 @@ class PointAddition:
     def plot(self):
         x = (1, 2, 3, 4)
         y = (1, 2, 3, 4)
-        annotes = ['a', 'b', 'c', 'd']
+        # annotes = ['a', 'b', 'c', 'd']
 
         fig, ax = plt.subplots()
         ax.scatter(x, y)
-        af = AnnoteFinder(x, y, annotes, ax=ax)
+        af = AnnoteFinder(x, y, ax=ax)
         fig.canvas.mpl_connect('button_press_event', af)
 
         plt.show()
