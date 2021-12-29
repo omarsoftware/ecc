@@ -41,6 +41,7 @@ class AnnoteFinder(object):
             self.ax = ax
         self.drawnAnnotations = {}
         self.links = []
+        self.selected_points = []
 
     def distance(self, x1, x2, y1, y2):
         """
@@ -69,6 +70,10 @@ class AnnoteFinder(object):
                     self.drawAnnote(event.inaxes, x, y, annote)
                     for l in self.links:
                         l.drawSpecificAnnote(annote)
+                    self.selected_points.append((x, y))
+
+    def get_selected_points(self):
+        return self.selected_points
 
     def drawAnnote(self, ax, x, y, annote):
         """
@@ -110,6 +115,7 @@ class PointAddition:
         # in main window
         plot_button.pack()
 
+
     # plot function is created for
     # plotting the graph in
     # tkinter window
@@ -122,39 +128,9 @@ class PointAddition:
         ax.scatter(x, y)
         af = AnnoteFinder(x, y, annotes, ax=ax)
         fig.canvas.mpl_connect('button_press_event', af)
+
         plt.show()
-
-        '''
-        # the figure that will contain the plot
-        fig = Figure(figsize=(5, 5),
-                     dpi=100)
-
-        # list of squares
-        y = [i ** 2 for i in range(101)]
-
-        # adding the subplot
-        plot1 = fig.add_subplot(111)
-
-        # plotting the graph
-        plot1.plot(y)
-
-        # creating the Tkinter canvas
-        # containing the Matplotlib figure
-        canvas = FigureCanvasTkAgg(fig,
-                                   master=self.frame)
-        canvas.draw()
-
-        # placing the canvas on the Tkinter window
-        canvas.get_tk_widget().pack()
-
-        # creating the Matplotlib toolbar
-        toolbar = NavigationToolbar2Tk(canvas,
-                                       self.frame)
-        toolbar.update()
-
-        # placing the toolbar on the Tkinter window
-        canvas.get_tk_widget().pack()
-        '''
+        print(af.get_selected_points())
 
     def start_page(self):
         self.frame.grid(column=0, row=0, sticky="NWES")
