@@ -36,6 +36,13 @@ class TestEllipticCurve(unittest.TestCase):
             elliptic_curve = ec.EllipticCurve(*value)
         self.assertTrue("curva elíptica singular" in str(context.exception))
 
+    @data((1, 6, 11, [(2, 4), (2, 7), (3, 5), (3, 6), (5, 2), (5, 9), (7, 2), (7, 9), (8, 3), (8, 8), (10, 2), (10, 9)]),
+          (10, 15, 23, [(1, 7), (1, 16), (3, 7), (3, 16), (4, 2), (4, 21), (5, 11), (5, 12), (8, 3), (8, 20), (9, 11), (9, 12), (12, 0), (14, 1), (14, 22), (16, 4), (16, 19), (18, 1), (18, 22), (19, 7), (19, 16), (20, 2), (20, 21), (22, 2), (22, 21)]))
+    def test_points_over_curve(self, value):
+        curve = ec.EllipticCurve(value[0], value[1], value[2])
+        points = curve.getPoints()
+        self.assertEqual(points, value[3])
+
     def test_addition(self):
         curve = ec.EllipticCurve(10, 15, 23)
         point_p = ec.Point(3, 7)
@@ -62,7 +69,7 @@ class TestEllipticCurve(unittest.TestCase):
 
 class TestECDH(unittest.TestCase):
 
-    def test_predifined_curve_1(self):
+    def test_predefined_curve_1(self):
         curva = cons.EC_LIST["brainpoolP192r1"]
         self.elliptic_curve = ec.EllipticCurve(curva["a"], curva["b"], curva["q"], ec.Point(curva["g"][0],
                                                curva["g"][1]), curva["n"], curva["h"])
@@ -100,24 +107,3 @@ class TestECDH(unittest.TestCase):
 
         self.assertEqual(shared_secret_by_bob, shared_secret_by_alice)
         self.assertEqual(shared_secret_by_bob, point_r)
-
-
-class TestECDSA(unittest.TestCase):
-
-    def test_sign_1(self):
-        '''
-        elliptic_curve = ec.EllipticCurve(1, 18, 19)
-        g = elliptic_curve.at(7)
-
-        dsa = ec.DSA(elliptic_curve, g)
-
-        priv = 6
-        pub = ec.Point(1, 16)
-        hashval = 128
-        r = 7
-
-        # sig = dsa.sign(hashval, priv, r)
-        # assert dsa.validate(hashval, sig, pub)
-        '''
-        pass
-

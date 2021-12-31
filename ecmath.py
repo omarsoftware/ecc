@@ -107,6 +107,24 @@ class EllipticCurve:
         return (point.get_y() ** 2) % self.q == \
                ((point.get_x() ** 3) + self.a * point.get_x() + self.b) % self.q
 
+    def getPoints(self):
+        left_side = []
+        right_side = []
+        points = []
+
+        for x in range(self.q):
+            left_side.append((x, (x**2) % self.q))
+            right_side.append((x, ((x**3)+(self.a*x)+self.b) % self.q))
+
+        for val_l in left_side:
+            for val_r in right_side:
+                if val_l[1] == val_r[1]:
+                    points.append((val_r[0], val_l[0]))
+
+        points.sort(key=lambda y: y[0])
+
+        return points
+
     def point_addition(self, point_p, point_q):
         if point_p.get_x() == 0 and point_p.get_y() == 0:
             return point_q
