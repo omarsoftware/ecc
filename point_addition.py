@@ -61,7 +61,7 @@ class PointAddition:
         self.space1 = tk.Label(self.frame, text=" ")
         self.space1.pack()
 
-        # ///////////// Begin Plot1 ///////////
+        # ///////////// Begin Plot1 /////////////
         self.plot1_frame = tk.Frame(self.frame)
         self.plot1_title = tk.Label(self.plot1_frame)
 
@@ -72,12 +72,12 @@ class PointAddition:
                                       width=20,
                                       text="Seleccionar Puntos")
 
-        self.plot1_p_frame = tk.Frame(self.frame)
+        self.plot1_p_frame = tk.Frame(self.plot1_frame)
         self.plot1_p_label = tk.Label(self.plot1_p_frame)
         self.plot1_p_val_str = tk.StringVar()
         self.plot1_p_val_label = tk.Label(self.plot1_p_frame, textvariable=self.plot1_p_val_str)
 
-        self.plot1_q_frame = tk.Frame(self.frame)
+        self.plot1_q_frame = tk.Frame(self.plot1_frame)
         self.plot1_q_label = tk.Label(self.plot1_q_frame)
         self.plot1_q_val_str = tk.StringVar()
         self.plot1_q_val_label = tk.Label(self.plot1_q_frame, textvariable=self.plot1_q_val_str)
@@ -101,6 +101,33 @@ class PointAddition:
         self.plot1_set()
         # //////////// End Plot1 ///////////
 
+        self.space2 = tk.Label(self.frame, text=" ")
+        self.space2.pack()
+
+        # ///////////// Begin Addition /////////////
+        self.addition_frame = tk.Frame(self.frame)
+        self.addition_title = tk.Label(self.addition_frame)
+
+        self.intro1 = "Como P y Q son distintos, tenemos"
+        self.intro2 = "Como P y Q son distintos, tenemos"
+        self.slope1_str = "v = (3 Px\u00B2 + a) * inv(2Py, q) mod q"
+        self.slope2_str = "v = (Qy - Py) * inv(Qx - Px, q) mod q"
+        self.rx_str = "Rx = (v\u00B2 - Px - Qx) mod q"
+        self.ry_str = "Ry = (v * (Px - Rx) - Py) mod q"
+        self.p_q_eq_str = tk.StringVar()
+        self.p_q_different_eq_label = tk.Label(self.addition_frame, textvariable=self.p_q_different_eq_str)
+
+        self.addition_set()
+
+        '''
+        self.plot2_graph_frame = tk.Frame(self.plot1_frame)
+        self.plot1_button = tk.Button(master=self.plot1_graph_frame,
+                                      command=self.plot1_graph,
+                                      height=2,
+                                      width=20,
+                                      text="Seleccionar Puntos")
+        '''
+        # ///////////// End Addition /////////////
 
     def ec_set(self):
         self.ec_title.config(text='Paso 1: elegir la curva elíptica a utilizar', font='Helvetica 10 bold')
@@ -177,7 +204,6 @@ class PointAddition:
 
             self.plot1_title.config(state="normal")
             self.plot1_button.config(state="normal")
-            self.plot1_ready_button.config(state="normal")
 
         except Exception as msg:
             self.err_display(msg.args[0], self.ec_err_txt, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
@@ -207,16 +233,6 @@ class PointAddition:
         self.plot1_button.pack()
         self.plot1_graph_frame.pack()
 
-        self.plot1_ready_button.config(text="Listo", command=lambda: self.plot1_ready(), state="disabled")
-        self.plot1_ready_button.pack()
-        self.plot1_edit_button.config(text="Editar", command=lambda: self.plot1_clear(), state="disabled")
-        self.plot1_edit_button.pack()
-        self.plot1_edit_button.pack_forget()
-        self.plot1_ready_button.pack(side="left")
-        self.plot1_image_ok.pack(side="left")
-        self.plot1_image_ok.pack_forget()
-        self.plot1_ready_frame.pack()
-
         self.plot1_p_label.config(text="P = ", state="disabled")
         self.plot1_p_label.pack(side="left")
         self.plot1_p_val_label.pack(side="left")
@@ -226,6 +242,16 @@ class PointAddition:
         self.plot1_q_label.pack(side="left")
         self.plot1_q_val_label.pack(side="left")
         self.plot1_q_frame.pack()
+
+        self.plot1_ready_button.config(text="Listo", command=lambda: self.plot1_ready(), state="disabled")
+        self.plot1_ready_button.pack()
+        self.plot1_edit_button.config(text="Editar", command=lambda: self.plot1_clear(), state="disabled")
+        self.plot1_edit_button.pack()
+        self.plot1_edit_button.pack_forget()
+        self.plot1_ready_button.pack(side="left")
+        self.plot1_image_ok.pack(side="left")
+        self.plot1_image_ok.pack_forget()
+        self.plot1_ready_frame.pack()
 
         self.plot1_err_label.config(textvariable=self.plot1_err_txt)
         self.plot1_image_err.pack(side="left")
@@ -275,7 +301,19 @@ class PointAddition:
         self.plot1_p_val_label.config(state="normal")
         self.plot1_q_label.config(state="normal")
         self.plot1_q_val_label.config(state="normal")
+        self.plot1_ready_button.config(state="normal")
 
+    def addition_set(self):
+        self.addition_title.config(text='Paso 3: se realiza la suma', font='Helvetica 10 bold', state="disabled")
+        self.addition_title.pack()
+        self.addition_frame.pack()
+
+        # self.ec_gen_eq.set("y\u00B2 \u2261 x\u00B3 + ax + b mod q")
+
+        self.p_q_eq_dict
+
+        self.p_q_different_eq_str.set("v = (3 Px\u00B2 + a) * inv(2Py, q) mod q")
+        self.p_q_different_eq_label.pack()
 
     def err_display(self, text, err_txt, image_err, err_label, error_frame):
         err_txt.set(text)
