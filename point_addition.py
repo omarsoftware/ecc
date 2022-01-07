@@ -19,6 +19,7 @@ class PointAddition:
         self.elliptic_curve = None
         self.p = None
         self.q = None
+        self.r = None
         self.selected_points = None
 
         # ///////////// Begin Elliptic Curve /////////////
@@ -108,14 +109,19 @@ class PointAddition:
         self.addition_frame = tk.Frame(self.frame)
         self.addition_title = tk.Label(self.addition_frame)
 
-        self.intro1 = "Como P y Q son distintos, tenemos"
-        self.intro2 = "Como P y Q son distintos, tenemos"
+        self.intro1 = "Como P y Q son distintos, tenemos: "
+        self.intro2 = "Como P y Q son iguales (el mismo punto), tenemos: "
+        self.intro3 = "Como P y Q se encuentran en el mismo eje, tenemos: "
         self.slope1_str = "v = (3 Px\u00B2 + a) * inv(2Py, q) mod q"
         self.slope2_str = "v = (Qy - Py) * inv(Qx - Px, q) mod q"
         self.rx_str = "Rx = (v\u00B2 - Px - Qx) mod q"
         self.ry_str = "Ry = (v * (Px - Rx) - Py) mod q"
-        self.p_q_eq_str = tk.StringVar()
-        self.p_q_different_eq_label = tk.Label(self.addition_frame, textvariable=self.p_q_different_eq_str)
+        self.addition_eq_title_str = tk.StringVar()
+        self.addition_eq_title_label = tk.Label(self.addition_frame, textvariable=self.addition_eq_title_str)
+        self.addition_eq_str = tk.StringVar()
+        self.addition_eq_label = tk.Label(self.addition_frame, textvariable=self.addition_eq_str)
+        self.addition_point_str = tk.StringVar()
+        self.addition_point_label = tk.Label(self.addition_frame, textvariable=self.addition_point_str)
 
         self.addition_set()
 
@@ -297,23 +303,49 @@ class PointAddition:
         self.plot1_p_val_str.set(self.p.print())
         self.plot1_q_val_str.set(self.q.print())
 
+        self.r = self.elliptic_curve.point_addition(self.p, self.q)
+        self.addition_point_str.set("R = " + self.r.print())
+
+        if self.p.get_x() == self.q.get_x():
+            self.addition_eq_title_str.set(self.intro3 + "\n")
+            self.addition_eq_str.set("")
+        else:
+            if self.p != self.q:
+                self.addition_eq_title_str.set(self.intro1+"\n")
+                self.addition_eq_str.set(self.slope1_str+"\n"+self.rx_str+"\n"+self.ry_str+"\n")
+            else:
+                self.addition_eq_title_str.set(self.intro2+"\n")
+                self.addition_eq_str.set(self.slope2_str + "\n" + self.rx_str + "\n" + self.ry_str+"\n")
+
+        self.addition_title.config(state="normal")
         self.plot1_p_label.config(state="normal")
         self.plot1_p_val_label.config(state="normal")
         self.plot1_q_label.config(state="normal")
         self.plot1_q_val_label.config(state="normal")
         self.plot1_ready_button.config(state="normal")
+        self.addition_eq_title_label.config(state="normal")
+        self.addition_eq_label.config(state="normal")
+        self.addition_point_label.config(state="normal")
+
+        fig2, ax2 = plt.subplots()
+        ax2.scatter(x_coords, y_coords)
+        draw_points = [(self.p, 'P'), (self.q, 'Q'), (self.r, 'R')]
+        af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
+        # fig.canvas.mpl_connect('button_press_event', af2)
+        plt.show()
 
     def addition_set(self):
         self.addition_title.config(text='Paso 3: se realiza la suma', font='Helvetica 10 bold', state="disabled")
         self.addition_title.pack()
         self.addition_frame.pack()
 
-        # self.ec_gen_eq.set("y\u00B2 \u2261 x\u00B3 + ax + b mod q")
+        self.addition_eq_title_label.config(state="disabled")
+        self.addition_eq_title_label.pack()
+        self.addition_eq_label.config(state="disabled")
+        self.addition_eq_label.pack()
+        self.addition_point_label.config(state="disabled")
+        self.addition_point_label.pack()
 
-        self.p_q_eq_dict
-
-        self.p_q_different_eq_str.set("v = (3 Px\u00B2 + a) * inv(2Py, q) mod q")
-        self.p_q_different_eq_label.pack()
 
     def err_display(self, text, err_txt, image_err, err_label, error_frame):
         err_txt.set(text)

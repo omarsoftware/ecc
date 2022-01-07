@@ -2,9 +2,10 @@ import numbers as num
 import random as rand
 
 class Point:
-    def __init__(self, x=0, y=0):
+    def __init__(self, x=0, y=0, infinity=False):
         self.x = x
         self.y = y
+        self.infinity = infinity
 
     def set_x(self, x):
         self.x = x
@@ -18,10 +19,24 @@ class Point:
     def get_y(self):
         return self.y
 
+    def is_infinity(self):
+        return self.infinity
+
     def print(self):
-        return "(" + str(self.x) + ", " + str(self.y) + ")"
+        str_print = ""
+        if self.infinity:
+            str_print = "punto en el infinito"
+        else:
+            str_print = "(" + str(self.x) + ", " + str(self.y) + ")"
+        return str_print
 
     def __eq__(self, other_point):
+        '''
+        if other_point.is_infinity() and self.is_infinity():
+            return True
+        if (not other_point.is_infinity() and self.is_infinity()) or (other_point.is_infinity() and not self.is_infinity()):
+            return False
+        '''
         return self.get_x() == other_point.get_x() and self.get_y() == other_point.get_y()
 
 
@@ -49,7 +64,7 @@ class EllipticCurve:
         self.g = g
         self.n = n
         self.h = h
-        self.zero = Point(0, 0)
+        self.infinity = Point(0, 0, True)
         self.predefined = False
 
     def set_a(self, a):
@@ -126,15 +141,26 @@ class EllipticCurve:
         return points
 
     def point_addition(self, point_p, point_q):
+        '''
         if point_p.get_x() == 0 and point_p.get_y() == 0:
             return point_q
 
         if point_q.get_x() == 0 and point_q.get_y() == 0:
             return point_p
+        '''
+
+        if point_p.is_infinity() and point_q.is_infinity():
+            return self.infinity
+
+        if point_p.is_infinity() and not point_q.is_infinity():
+            return point_q
+
+        if point_q.is_infinity() and not point_p.is_infinity():
+            return point_p
 
         if point_p.get_x() == point_q.get_x() and \
            (point_p.get_y() != point_q.get_y() or point_p.get_y() == 0):
-            return self.zero
+            return self.infinity
 
         if point_p.get_x() == point_q.get_x():
             slope = (3 * point_p.get_x() * point_p.get_x() + self.a) * \
@@ -166,13 +192,13 @@ class EllipticCurve:
 
     def point_mult(self, point, k):
         '''
-        point_r = self.zero
+        point_r = self.infinity
         for x in range(k):
             point_r = self.point_addition(point_r, point)
 
         return point_r
         '''
-        point_r = self.zero
+        point_r = self.infinity
         m = point
 
         while k > 0:
@@ -295,17 +321,3 @@ class ECDH:
 
     def calc_shared_key(self, priv, pub):
         return self.ec.point_mult(pub, priv)
-
-
-class ECDSA:
-
-    def __init__(self, elliptic_curve):
-        self.ec = elliptic_curve
-
-    def sign(self, hashval, priv, r):
-        m = self.ec.point_mult(self.ec.get_g(), r)
-        p = Point(m.get_x(), self.inv(r, self.ec.get_n()) * (hashval + m.get_x() * priv) % self.ec.get_n())
-        return p
-
-    def verify(self):
-        pass

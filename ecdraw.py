@@ -95,3 +95,23 @@ class AnnoteFinder(object):
             m = ax.scatter([x], [y], marker='d', c='r', zorder=100)
             self.drawnAnnotations[(x, y)] = (t, m, annote)
             self.ax.figure.canvas.draw_idle()
+
+class DrawOnly(object):
+    def __init__(self, xdata, ydata, draw_points, ax=None):
+        self.data = list(zip(xdata, ydata, ''))
+
+        if ax is None:
+            self.ax = plt.gca()
+        else:
+            self.ax = ax
+
+        for d in draw_points:
+            self.drawAnnote(ax, d[0].get_x(), d[0].get_y(), d[1])
+
+    def drawAnnote(self, ax, x, y, annote):
+        """
+        Draw the annotation on the plot
+        """
+        t = ax.text(x, y, " %s" % (annote), )
+        m = ax.scatter([x], [y], marker='d', c='r', zorder=100)
+        self.ax.figure.canvas.draw_idle()
