@@ -59,6 +59,33 @@ class AnnoteFinder(object):
                             self.drawAnnote(event.inaxes, x, y, '')
                     else:
                         if len(self.drawnAnnotations) == 1:
+
+                            keys = list(self.drawnAnnotations.keys())
+                            point = self.drawnAnnotations[keys[0]]
+
+                            if (x, y) in self.drawnAnnotations:
+                                if point[2] == 'P = Q':
+                                    self.drawAnnote(event.inaxes, x, y, '')
+                                else:
+                                    self.drawAnnote(event.inaxes, x, y, '')
+                                    self.drawAnnote(event.inaxes, x, y, 'P = Q')
+                            else:
+                                if point[2] != 'P + Q':
+                                    if point[2] == 'P':
+                                        self.drawAnnote(event.inaxes, x, y, 'Q')
+                                    if point[2] == 'Q':
+                                        self.drawAnnote(event.inaxes, x, y, 'P')
+                        else:
+                            if not self.drawnAnnotations:
+                                self.drawAnnote(event.inaxes, x, y, 'P')
+
+
+                    '''
+                    if len(self.drawnAnnotations) == 2:
+                        if (x, y) in self.drawnAnnotations:
+                            self.drawAnnote(event.inaxes, x, y, '')
+                    else:
+                        if len(self.drawnAnnotations) == 1:
                             if (x, y) in self.drawnAnnotations:
                                 self.drawAnnote(event.inaxes, x, y, '')
                             else:
@@ -71,11 +98,15 @@ class AnnoteFinder(object):
                         else:
                             if not self.drawnAnnotations:
                                 self.drawAnnote(event.inaxes, x, y, 'P')
+                    '''
 
     def get_selected_points(self):
         points_dict = {}
         for key in self.drawnAnnotations:
             points_dict[self.drawnAnnotations[key][2]] = key
+
+        if 'P = Q' in points_dict:
+            points_dict = {'P': points_dict['P = Q'], 'Q': points_dict['P = Q']}
 
         return points_dict
 

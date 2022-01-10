@@ -306,16 +306,17 @@ class PointAddition:
         self.r = self.elliptic_curve.point_addition(self.p, self.q)
         self.addition_point_str.set("R = " + self.r.print())
 
-        if self.p.get_x() == self.q.get_x():
-            self.addition_eq_title_str.set(self.intro3 + "\n")
-            self.addition_eq_str.set("")
+        if self.p == self.q:
+            self.addition_eq_title_str.set(self.intro2 + "\n")
+            self.addition_eq_str.set(self.slope2_str + "\n" + self.rx_str + "\n" + self.ry_str + "\n")
         else:
-            if self.p != self.q:
-                self.addition_eq_title_str.set(self.intro1+"\n")
-                self.addition_eq_str.set(self.slope1_str+"\n"+self.rx_str+"\n"+self.ry_str+"\n")
+            if self.p.get_x() == self.q.get_x():
+                self.addition_eq_title_str.set(self.intro3 + "\n")
+                self.addition_eq_str.set("")
             else:
-                self.addition_eq_title_str.set(self.intro2+"\n")
-                self.addition_eq_str.set(self.slope2_str + "\n" + self.rx_str + "\n" + self.ry_str+"\n")
+                if self.p != self.q:
+                    self.addition_eq_title_str.set(self.intro1+"\n")
+                    self.addition_eq_str.set(self.slope1_str+"\n"+self.rx_str+"\n"+self.ry_str+"\n")
 
         self.addition_title.config(state="normal")
         self.plot1_p_label.config(state="normal")
