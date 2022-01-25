@@ -6,6 +6,7 @@ from ecdsa import Ecdsa
 from pointops import PointOperations
 from commutativity import Commutativity
 from point_addition import PointAddition
+from point_multiplication import PointMultiplication
 
 
 class App:
@@ -29,7 +30,7 @@ class App:
         analysis_menu = tk.Menu(self.main_menu)
         self.main_menu.add_cascade(label="Operaciones", menu=analysis_menu)
         analysis_menu.add_command(label="Suma", command=self.make_point_addition)
-        #analysis_menu.add_command(label="Multiplicación", command=self.make_multiplication)
+        analysis_menu.add_command(label="Multiplicación", command=self.make_point_multiplication)
 
         # Creating Properties menu
         properties_menu = tk.Menu(self.main_menu)
@@ -51,6 +52,7 @@ class App:
         # self.addition = Addition(master=self.root, app=self)
         # self.addition = Multiplication(master=self.root, app=self)
         self.point_addition = PointAddition(master=self.root, app=self)
+        self.point_multiplication = PointMultiplication(master=self.root, app=self)
         self.commutativity = Commutativity(master=self.root, app=self)
         self.point_operations = PointOperations(master=self.root, app=self)
         self.ecdh = Ecdh(master=self.root, app=self)
@@ -77,6 +79,11 @@ class App:
         self.frame.grid_forget()
         self.hide_all_frames()
         self.point_addition.start_page()
+
+    def make_point_multiplication(self):
+        self.frame.grid_forget()
+        self.hide_all_frames()
+        self.point_multiplication.start_page()
 
     def make_point_operations(self):
         self.frame.grid_forget()
