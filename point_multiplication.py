@@ -4,6 +4,8 @@ import constants as cons
 import ecmath as ec
 import matplotlib.pyplot as plt
 import numpy as np; np.random.seed(1)
+import time
+import decimal
 from PIL import Image, ImageTk
 
 
@@ -19,7 +21,8 @@ class PointMultiplication:
         self.elliptic_curve = None
         self.p = None
         self.q = None
-        self.r = None
+        self.r_1 = None
+        self.r_2 = None
         self.selected_points = None
 
         # ///////////// Begin Elliptic Curve /////////////
@@ -78,13 +81,7 @@ class PointMultiplication:
         self.plot1_p_val_str = tk.StringVar()
         self.plot1_p_val_label = tk.Label(self.plot1_p_frame, textvariable=self.plot1_p_val_str)
 
-        self.plot1_q_frame = tk.Frame(self.plot1_frame)
-        self.plot1_q_label = tk.Label(self.plot1_q_frame)
-        self.plot1_q_val_str = tk.StringVar()
-        self.plot1_q_val_label = tk.Label(self.plot1_q_frame, textvariable=self.plot1_q_val_str)
-
         self.plot1_ready_frame = tk.Frame(self.plot1_frame)
-        self.plot1_ready_button = tk.Button(self.plot1_ready_frame)
         self.plot1_edit_button = tk.Button(self.plot1_ready_frame)
         self.plot1_load_ok = Image.open(cons.check_path)
         self.plot1_resized = self.plot1_load_ok.resize(cons.x_and_check_size, Image.ANTIALIAS)
@@ -105,35 +102,28 @@ class PointMultiplication:
         self.space2 = tk.Label(self.frame, text=" ")
         self.space2.pack()
 
-        # ///////////// Begin Addition /////////////
-        self.addition_frame = tk.Frame(self.frame)
-        self.addition_title = tk.Label(self.addition_frame)
+        # ///////////// Begin Multiplication /////////////
+        self.mult_frame = tk.Frame(self.frame)
+        self.mult_title = tk.Label(self.mult_frame)
 
-        self.intro1 = "Como P y Q son distintos, tenemos: "
-        self.intro2 = "Como P y Q son iguales (el mismo punto), tenemos: "
-        self.intro3 = "Como P y Q se encuentran en el mismo eje, tenemos: "
-        self.slope1_str = "v = (3 Px\u00B2 + a) * inv(2Py, q) mod q"
-        self.slope2_str = "v = (Qy - Py) * inv(Qx - Px, q) mod q"
-        self.rx_str = "Rx = (v\u00B2 - Px - Qx) mod q"
-        self.ry_str = "Ry = (v * (Px - Rx) - Py) mod q"
-        self.addition_eq_title_str = tk.StringVar()
-        self.addition_eq_title_label = tk.Label(self.addition_frame, textvariable=self.addition_eq_title_str)
-        self.addition_eq_str = tk.StringVar()
-        self.addition_eq_label = tk.Label(self.addition_frame, textvariable=self.addition_eq_str)
-        self.addition_point_str = tk.StringVar()
-        self.addition_point_label = tk.Label(self.addition_frame, textvariable=self.addition_point_str)
+        self.mult_result_point_frame = tk.Frame(self.mult_frame)
+        self.mult_result_point_title_lbl = tk.Label(self.mult_result_point_frame)
+        self.mult_result_point_str = tk.StringVar()
+        self.mult_result_point_lbl = tk.Label(self.mult_result_point_frame, textvariable=self.mult_result_point_str)
 
-        self.addition_set()
+        self.mult_direct_frame = tk.Frame(self.mult_frame)
+        self.mult_direct_title_lbl = tk.Label(self.mult_direct_frame)
+        self.mult_direct_result_str = tk.StringVar()
+        self.mult_direct_result_lbl = tk.Label(self.mult_direct_frame, textvariable=self.mult_direct_result_str)
 
-        '''
-        self.plot2_graph_frame = tk.Frame(self.plot1_frame)
-        self.plot1_button = tk.Button(master=self.plot1_graph_frame,
-                                      command=self.plot1_graph,
-                                      height=2,
-                                      width=20,
-                                      text="Seleccionar Puntos")
-        '''
-        # ///////////// End Addition /////////////
+        self.mult_d_a_a_frame = tk.Frame(self.mult_frame)
+        self.mult_d_a_a_title_lbl = tk.Label(self.mult_d_a_a_frame)
+        self.mult_d_a_a_result_str = tk.StringVar()
+        self.mult_d_a_a_result_lbl = tk.Label(self.mult_d_a_a_frame, textvariable=self.mult_d_a_a_result_str)
+
+        self.mult_set()
+
+        # ///////////// End Multiplication /////////////
 
     def ec_set(self):
         self.ec_title.config(text='Paso 1: elegir la curva elíptica a utilizar', font='Helvetica 10 bold')
@@ -244,17 +234,9 @@ class PointMultiplication:
         self.plot1_p_val_label.pack(side="left")
         self.plot1_p_frame.pack()
 
-        self.plot1_q_label.config(text="Q = ", state="disabled")
-        self.plot1_q_label.pack(side="left")
-        self.plot1_q_val_label.pack(side="left")
-        self.plot1_q_frame.pack()
-
-        self.plot1_ready_button.config(text="Listo", command=lambda: self.plot1_ready(), state="disabled")
-        self.plot1_ready_button.pack()
         self.plot1_edit_button.config(text="Editar", command=lambda: self.plot1_clear(), state="disabled")
         self.plot1_edit_button.pack()
         self.plot1_edit_button.pack_forget()
-        self.plot1_ready_button.pack(side="left")
         self.plot1_image_ok.pack(side="left")
         self.plot1_image_ok.pack_forget()
         self.plot1_ready_frame.pack()
@@ -298,54 +280,52 @@ class PointMultiplication:
         self.selected_points = af.get_selected_points()
 
         self.p = ec.Point(self.selected_points['P'][0], self.selected_points['P'][1])
-        self.q = ec.Point(self.selected_points['Q'][0], self.selected_points['Q'][1])
 
         self.plot1_p_val_str.set(self.p.print())
-        self.plot1_q_val_str.set(self.q.print())
 
-        self.r = self.elliptic_curve.point_addition(self.p, self.q)
-        self.addition_point_str.set("R = " + self.r.print())
+        start_1 = time.process_time()
+        self.r_1 = self.elliptic_curve.point_mult_2(self.p, 500000)
+        end_1 = time.process_time() - start_1
+        self.mult_direct_result_str.set(end_1)
 
-        if self.p == self.q:
-            self.addition_eq_title_str.set(self.intro2 + "\n")
-            self.addition_eq_str.set(self.slope2_str + "\n" + self.rx_str + "\n" + self.ry_str + "\n")
-        else:
-            if self.p.get_x() == self.q.get_x():
-                self.addition_eq_title_str.set(self.intro3 + "\n")
-                self.addition_eq_str.set("")
-            else:
-                if self.p != self.q:
-                    self.addition_eq_title_str.set(self.intro1+"\n")
-                    self.addition_eq_str.set(self.slope1_str+"\n"+self.rx_str+"\n"+self.ry_str+"\n")
+        start_2 = time.process_time()
+        self.r_2 = self.elliptic_curve.point_mult(self.p, 500000)
+        end_2 = time.process_time() - start_2
+        self.mult_d_a_a_result_str.set(decimal.Decimal(end_2))
 
-        self.addition_title.config(state="normal")
+        self.mult_result_point_str.set("R = " + self.r_1.print())
+
+        self.mult_title.config(state="normal")
         self.plot1_p_label.config(state="normal")
         self.plot1_p_val_label.config(state="normal")
-        self.plot1_q_label.config(state="normal")
-        self.plot1_q_val_label.config(state="normal")
-        self.plot1_ready_button.config(state="normal")
-        self.addition_eq_title_label.config(state="normal")
-        self.addition_eq_label.config(state="normal")
-        self.addition_point_label.config(state="normal")
+        self.mult_direct_title_lbl.config(state="normal")
+        self.mult_d_a_a_result_lbl.config(state="normal")
 
         fig2, ax2 = plt.subplots()
         ax2.scatter(x_coords, y_coords)
-        draw_points = [(self.p, 'P'), (self.q, 'Q'), (self.r, 'R')]
+        draw_points = [(self.p, 'P'), (self.r_1, 'R')]
         af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
         # fig.canvas.mpl_connect('button_press_event', af2)
         plt.show()
 
-    def addition_set(self):
-        self.addition_title.config(text='Paso 3: se realiza la suma', font='Helvetica 10 bold', state="disabled")
-        self.addition_title.pack()
-        self.addition_frame.pack()
+    def mult_set(self):
+        self.mult_title.config(text='Paso 3: se realiza la multiplicación', font='Helvetica 10 bold', state="disabled")
+        self.mult_title.pack()
+        self.mult_frame.pack()
 
-        self.addition_eq_title_label.config(state="disabled")
-        self.addition_eq_title_label.pack()
-        self.addition_eq_label.config(state="disabled")
-        self.addition_eq_label.pack()
-        self.addition_point_label.config(state="disabled")
-        self.addition_point_label.pack()
+        self.mult_direct_title_lbl.config(text="Método directo: ", state="disabled")
+        self.mult_direct_title_lbl.pack()
+        self.mult_direct_result_str.set("")
+        self.mult_direct_result_lbl.config(state="disabled")
+        self.mult_direct_result_lbl.pack()
+        self.mult_direct_frame.pack()
+
+        self.mult_d_a_a_title_lbl.config(text="Método double-and-add: ", state="disabled")
+        self.mult_d_a_a_title_lbl.pack()
+        self.mult_d_a_a_result_str.set("")
+        self.mult_d_a_a_result_lbl.config(state="disabled")
+        self.mult_d_a_a_result_lbl.pack()
+        self.mult_d_a_a_frame.pack()
 
 
     def err_display(self, text, err_txt, image_err, err_label, error_frame):

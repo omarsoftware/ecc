@@ -190,14 +190,14 @@ class EllipticCurve:
 
         return point_r
 
-    def point_mult(self, point, k):
-        '''
+    def point_mult_2(self, point, k):
         point_r = self.infinity
         for x in range(k):
             point_r = self.point_addition(point_r, point)
 
         return point_r
-        '''
+
+    def point_mult(self, point, k):
         point_r = self.infinity
         m = point
 
