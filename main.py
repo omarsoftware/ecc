@@ -2,7 +2,6 @@ import tkinter as tk
 import constants as cons
 import ecmath as ec
 from ecdh import Ecdh
-from ecdsa import Ecdsa
 from pointops import PointOperations
 from commutativity import Commutativity
 from point_addition import PointAddition
@@ -37,13 +36,11 @@ class App:
         self.main_menu.add_cascade(label="Propiedades", menu=properties_menu)
         properties_menu.add_command(label="Conmutatividad", command=self.make_commutativity)
 
-        # Creating Encrypt menu
+        # Creating Algorithms menu
         encrypt_menu = tk.Menu(self.main_menu)
-        self.main_menu.add_cascade(label="Cifrado", menu=encrypt_menu)
+        self.main_menu.add_cascade(label="Algoritmos", menu=encrypt_menu)
         encrypt_menu.add_command(label="Diffie-Hellman con curva elíptica (ECDH)",
                                  command=self.make_ecdh)
-        #encrypt_menu.add_command(label="Firma Digital con curva elíptica (ECDSA)",
-        #                         command=self.make_ecdsa)
 
         self.frame.grid()
 
@@ -56,9 +53,8 @@ class App:
         self.commutativity = Commutativity(master=self.root, app=self)
         self.point_operations = PointOperations(master=self.root, app=self)
         self.ecdh = Ecdh(master=self.root, app=self)
-        self.ecdsa = Ecdsa(master=self.root, app=self)
 
-        self.pages = [self.point_addition, self.commutativity, self.point_operations, self.ecdh, self.ecdsa]
+        self.pages = [self.point_addition, self.point_multiplication, self.commutativity, self.point_operations, self.ecdh]
 
     def main_page(self):
         self.frame.grid()
@@ -67,13 +63,6 @@ class App:
         self.frame.grid_forget()
         self.hide_all_frames()
         self.ecdh.start_page()
-
-    '''
-    def make_ecdsa(self):
-        self.frame.grid_forget()
-        self.hide_all_frames()
-        self.ecdsa.start_page()
-    '''
 
     def make_point_addition(self):
         self.frame.grid_forget()

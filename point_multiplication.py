@@ -520,7 +520,8 @@ class PointMultiplication:
 
     def mult_clear_and_disable(self):
         self.mult_title.config(state="disable")
-        self.r = None
+        self.r_1 = None
+        self.r_2 = None
         self.mult_direct_title_lbl.config(state="disable")
         self.mult_direct_result_str.set("")
         self.mult_direct_result_lbl.config(state="disable")
