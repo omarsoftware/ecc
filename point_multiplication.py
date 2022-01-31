@@ -31,6 +31,9 @@ class PointMultiplication:
         self.ec_gen_eq = tk.StringVar()
         self.ec_gen_eq_label = tk.Label(self.ec_frame)
 
+        self.ec_auto_sel_frame = tk.Frame(self.frame)
+        self.ec_auto_sel_btn = tk.Button(self.ec_auto_sel_frame)
+
         self.ec_a_frame = tk.Frame(self.frame)
         self.ec_a_label = tk.Label(self.ec_a_frame)
         self.ec_a_entry = tk.Entry(self.ec_a_frame)
@@ -82,6 +85,7 @@ class PointMultiplication:
         self.plot1_p_val_label = tk.Label(self.plot1_p_frame, textvariable=self.plot1_p_val_str)
 
         self.plot1_ready_frame = tk.Frame(self.plot1_frame)
+        self.plot1_ready_button = tk.Button(self.plot1_ready_frame)
         self.plot1_edit_button = tk.Button(self.plot1_ready_frame)
         self.plot1_load_ok = Image.open(cons.check_path)
         self.plot1_resized = self.plot1_load_ok.resize(cons.x_and_check_size, Image.ANTIALIAS)
@@ -101,6 +105,37 @@ class PointMultiplication:
 
         self.space2 = tk.Label(self.frame, text=" ")
         self.space2.pack()
+
+        # //////////// Begin scalar number ///////////
+        self.scalar_frame = tk.Frame(self.frame)
+        self.scalar_title = tk.Label(self.scalar_frame)
+
+        self.scalar_n_frame = tk.Frame(self.frame)
+        self.scalar_n_label = tk.Label(self.scalar_n_frame)
+        self.scalar_n_entry = tk.Entry(self.scalar_n_frame)
+
+        self.scalar_ready_frame = tk.Frame(self.frame)
+        self.scalar_ready_button = tk.Button(self.scalar_ready_frame)
+        self.scalar_edit_button = tk.Button(self.scalar_ready_frame)
+        self.scalar_load_ok = Image.open(cons.check_path)
+        self.scalar_resized = self.scalar_load_ok.resize(cons.x_and_check_size, Image.ANTIALIAS)
+        self.scalar_new_pic_ok = ImageTk.PhotoImage(self.scalar_resized)
+        self.scalar_image_ok = tk.Label(self.scalar_ready_frame, image=self.scalar_new_pic_ok)
+
+        self.scalar_error_frame = tk.Frame(self.frame)
+        self.scalar_load_err = Image.open(cons.x_path)
+        self.scalar_resized_err = self.scalar_load_err.resize(cons.x_and_check_size, Image.ANTIALIAS)
+        self.scalar_new_pic_err = ImageTk.PhotoImage(self.scalar_resized_err)
+        self.scalar_image_err = tk.Label(self.scalar_error_frame, image=self.scalar_new_pic_err)
+        self.scalar_err_txt = tk.StringVar()
+        self.scalar_err_label = tk.Label(self.scalar_error_frame)
+
+        self.scalar_set()
+
+        # //////////// End scalar number ///////////
+
+        self.space3 = tk.Label(self.frame, text=" ")
+        self.space3.pack()
 
         # ///////////// Begin Multiplication /////////////
         self.mult_frame = tk.Frame(self.frame)
@@ -132,6 +167,10 @@ class PointMultiplication:
         self.ec_gen_eq_label.config(textvariable=self.ec_gen_eq)
         self.ec_gen_eq_label.pack()
         self.ec_frame.pack()
+
+        self.ec_auto_sel_btn.config(text="Autocompletar", command=lambda: self.ec_auto_selection())
+        self.ec_auto_sel_btn.pack()
+        self.ec_auto_sel_frame.pack()
 
         self.ec_a_label.config(text="a =")
         self.ec_a_label.pack(side="left")
@@ -187,6 +226,8 @@ class PointMultiplication:
 
             self.elliptic_curve = ec.EllipticCurve(a, b, q)
 
+            self.ec_auto_sel_btn.config(state="disabled")
+
             self.ec_a_entry.config(state="disabled")
             self.ec_b_entry.config(state="disabled")
             self.ec_q_entry.config(state="disabled")
@@ -205,6 +246,7 @@ class PointMultiplication:
             self.err_display(msg.args[0], self.ec_err_txt, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
 
     def ec_clear(self):
+        self.ec_auto_sel_btn.config(state="normal")
         self.ec_a_entry.config(state="normal")
         self.ec_a_entry.delete(0, 'end')
         self.ec_b_entry.config(state="normal")
@@ -220,8 +262,22 @@ class PointMultiplication:
         self.ec_edit_button.pack_forget()
         self.elliptic_curve = None
 
+        self.plot1_clear_and_disable()
+        self.scalar_clear_and_disable()
+        self.mult_clear_and_disable()
+
+    def ec_auto_selection(self):
+        self.ec_a_entry.delete(0, "end")
+        self.ec_a_entry.insert(0, 10)
+
+        self.ec_b_entry.delete(0, "end")
+        self.ec_b_entry.insert(0, 15)
+
+        self.ec_q_entry.delete(0, "end")
+        self.ec_q_entry.insert(0, 23)
+
     def plot1_set(self):
-        self.plot1_title.config(text='Paso 2: elegir puntos P y Q a sumar', font='Helvetica 10 bold', state="disabled")
+        self.plot1_title.config(text='Paso 2: elegir punto P a multiplicar', font='Helvetica 10 bold', state="disabled")
         self.plot1_title.pack()
         self.plot1_frame.pack()
 
@@ -231,10 +287,14 @@ class PointMultiplication:
 
         self.plot1_p_label.config(text="P = ", state="disabled")
         self.plot1_p_label.pack(side="left")
+        self.plot1_p_val_label.config(state="disabled")
         self.plot1_p_val_label.pack(side="left")
         self.plot1_p_frame.pack()
 
-        self.plot1_edit_button.config(text="Editar", command=lambda: self.plot1_clear(), state="disabled")
+        self.plot1_ready_button.config(text="Listo", command=lambda: self.plot1_ready(), state="disabled")
+        self.plot1_ready_button.pack()
+
+        self.plot1_edit_button.config(text="Editar", command=lambda: self.plot1_clear())
         self.plot1_edit_button.pack()
         self.plot1_edit_button.pack_forget()
         self.plot1_image_ok.pack(side="left")
@@ -249,10 +309,52 @@ class PointMultiplication:
         self.plot1_error_frame.pack()
 
     def plot1_ready(self):
-        pass
+
+        self.plot1_button.config(state="disabled")
+        self.plot1_p_label.config(state="disabled")
+        self.plot1_p_val_label.config(state="disabled")
+
+        self.plot1_ready_button.pack_forget()
+        self.plot1_image_err.pack_forget()
+        self.plot1_err_label.pack_forget()
+        self.plot1_error_frame.configure(height=1)
+        self.plot1_edit_button.pack(side="left")
+        self.plot1_image_ok.pack(side="right")
+
+        self.scalar_title.config(state="normal")
+        self.scalar_n_label.config(state="normal")
+        self.scalar_n_entry.config(state="normal")
+        self.scalar_ready_button.config(state="normal")
 
     def plot1_clear(self):
-        pass
+        self.plot1_button.config(state="normal")
+        self.plot1_p_val_str.set("")
+        self.plot1_p_label.config(state="disable")
+        self.plot1_p_val_label.config(state="disable")
+        self.plot1_err_txt.set("")
+        self.plot1_ready_button.config(state="disable")
+        self.plot1_ready_button.pack()
+        self.plot1_image_ok.pack_forget()
+        self.plot1_err_label.pack_forget()
+        self.plot1_error_frame.configure(height=1)
+        self.plot1_edit_button.pack_forget()
+
+        self.scalar_clear_and_disable()
+        self.mult_clear_and_disable()
+
+    def plot1_clear_and_disable(self):
+        self.plot1_title.config(state="disable")
+        self.plot1_p_val_str.set("")
+        self.plot1_button.config(state="disable")
+        self.plot1_p_label.config(state="disable")
+        self.plot1_p_val_label.config(state="disable")
+        self.plot1_err_txt.set("")
+        self.plot1_ready_button.config(state="disable")
+        self.plot1_ready_button.pack()
+        self.plot1_image_ok.pack_forget()
+        self.plot1_err_label.pack_forget()
+        self.plot1_error_frame.configure(height=1)
+        self.plot1_edit_button.pack_forget()
 
     def plot1_graph(self):
 
@@ -267,10 +369,6 @@ class PointMultiplication:
             x_coords = x_coords + (point[0],)
             y_coords = y_coords + (point[1],)
 
-        # x = (1, 2, 3, 4)
-        # y = (1, 2, 3, 4)
-        # annotes = ['a', 'b', 'c', 'd']
-
         fig, ax = plt.subplots()
         ax.scatter(x_coords, y_coords)
         af = draw.DrawMultiplication(x_coords, y_coords, ax=ax)
@@ -278,54 +376,157 @@ class PointMultiplication:
 
         plt.show()
         self.selected_points = af.get_selected_points()
-
         self.p = ec.Point(self.selected_points['P'][0], self.selected_points['P'][1])
-
         self.plot1_p_val_str.set(self.p.print())
 
-        start_1 = time.process_time()
-        self.r_1 = self.elliptic_curve.point_mult_2(self.p, 500000)
-        end_1 = time.process_time() - start_1
-        self.mult_direct_result_str.set(end_1)
-
-        start_2 = time.process_time()
-        self.r_2 = self.elliptic_curve.point_mult(self.p, 500000)
-        end_2 = time.process_time() - start_2
-        self.mult_d_a_a_result_str.set(decimal.Decimal(end_2))
-
-        self.mult_result_point_str.set("R = " + self.r_1.print())
-
-        self.mult_title.config(state="normal")
         self.plot1_p_label.config(state="normal")
         self.plot1_p_val_label.config(state="normal")
-        self.mult_direct_title_lbl.config(state="normal")
-        self.mult_d_a_a_result_lbl.config(state="normal")
+        self.plot1_ready_button.config(state="normal")
 
-        fig2, ax2 = plt.subplots()
-        ax2.scatter(x_coords, y_coords)
-        draw_points = [(self.p, 'P'), (self.r_1, 'R')]
-        af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
-        # fig.canvas.mpl_connect('button_press_event', af2)
-        plt.show()
+    def scalar_set(self):
+        self.scalar_title.config(text='Paso 3: elegir escalar n para luego calcular R = n * P', font='Helvetica 10 bold', state="disabled")
+        self.scalar_title.pack()
+        self.scalar_frame.pack()
+
+        self.scalar_n_label.config(text="n =", state="disabled")
+        self.scalar_n_label.pack(side="left")
+        self.scalar_n_entry.config(width=20, state="disabled")
+        self.scalar_n_entry.pack(side="left")
+        self.scalar_n_frame.pack()
+
+        self.scalar_ready_button.config(text="Listo", command=lambda: self.scalar_ready(), state="disabled")
+        self.scalar_ready_button.pack()
+        self.scalar_edit_button.config(text="Editar", command=lambda: self.scalar_clear())
+        self.scalar_edit_button.pack()
+        self.scalar_edit_button.pack_forget()
+        self.scalar_ready_button.pack(side="left")
+        self.scalar_image_ok.pack(side="left")
+        self.scalar_image_ok.pack_forget()
+        self.scalar_ready_frame.pack()
+
+        self.scalar_err_label.config(textvariable=self.ec_err_txt)
+        self.scalar_image_err.pack(side="left")
+        self.scalar_image_err.pack_forget()
+        self.scalar_err_label.pack(side="left")
+        self.scalar_err_label.pack_forget()
+        self.scalar_error_frame.pack()
+
+    def scalar_ready(self):
+        try:
+            n_str = self.scalar_n_entry.get()
+
+            if n_str == '':
+                raise AssertionError("n está vacío")
+
+            if not n_str.lstrip('-').isnumeric():
+                raise AssertionError("n debe ser un número entero")
+
+            n = int(self.scalar_n_entry.get())
+
+            start_1 = time.process_time()
+            self.r_1 = self.elliptic_curve.point_mult_2(self.p, n)
+            end_1 = time.process_time() - start_1
+            self.mult_direct_result_str.set(decimal.Decimal(end_1))
+
+            start_2 = time.process_time()
+            self.r_2 = self.elliptic_curve.point_mult(self.p, n)
+            end_2 = time.process_time() - start_2
+            self.mult_d_a_a_result_str.set(decimal.Decimal(end_2))
+
+            self.mult_result_point_str.set("R = " + self.r_1.print())
+
+            self.scalar_n_label.config(state="disable")
+            self.scalar_n_entry.config(state="disable")
+
+            self.scalar_ready_button.pack_forget()
+            self.scalar_image_err.pack_forget()
+            self.scalar_err_label.pack_forget()
+            self.scalar_error_frame.configure(height=1)
+            self.scalar_edit_button.pack(side="left")
+            self.scalar_image_ok.pack(side="right")
+
+            self.mult_title.config(state="normal")
+            self.mult_direct_title_lbl.config(state="normal")
+            self.mult_direct_result_lbl.config(state="normal")
+            self.mult_d_a_a_title_lbl.config(state="normal")
+            self.mult_d_a_a_result_lbl.config(state="normal")
+
+            points = self.elliptic_curve.getPoints()
+            x_coords = ()
+            y_coords = ()
+
+            for point in points:
+                x_coords = x_coords + (point[0],)
+                y_coords = y_coords + (point[1],)
+
+            fig2, ax2 = plt.subplots()
+            ax2.scatter(x_coords, y_coords)
+            draw_points = [(self.p, 'P'), (self.r_1, 'R')]
+            af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
+            # fig.canvas.mpl_connect('button_press_event', af2)
+            plt.show()
+
+        except Exception as msg:
+            self.err_display(msg.args[0], self.scalar_err_txt, self.scalar_image_err, self.scalar_err_label, self.scalar_error_frame)
+
+    def scalar_clear(self):
+        self.scalar_n_label.config(state="normal")
+        self.scalar_n_entry.config(state="normal")
+        self.scalar_n_entry.delete(0, 'end')
+
+        self.scalar_ready_button.pack()
+        self.scalar_image_ok.pack_forget()
+        self.scalar_err_label.pack_forget()
+        self.scalar_error_frame.configure(height=1)
+        self.scalar_edit_button.pack_forget()
+
+        self.mult_clear_and_disable()
+
+    def scalar_clear_and_disable(self):
+        self.scalar_title.config(state="disable")
+        self.scalar_n_label.config(state="disable")
+
+        self.scalar_n_entry.config(state="normal")
+        self.scalar_n_entry.delete(0, 'end')
+        self.scalar_n_entry.config(state="disable")
+
+        self.scalar_ready_button.config(state="disabled")
+        self.scalar_ready_button.pack()
+        self.scalar_edit_button.pack_forget()
+        self.scalar_err_txt.set("")
+        self.scalar_image_err.pack_forget()
+        self.scalar_image_ok.pack_forget()
+        self.scalar_err_label.pack_forget()
+        self.scalar_error_frame.configure(height=1)
 
     def mult_set(self):
-        self.mult_title.config(text='Paso 3: se realiza la multiplicación', font='Helvetica 10 bold', state="disabled")
+        self.mult_title.config(text='Paso 4: se realiza la multiplicación R = n * P', font='Helvetica 10 bold', state="disabled")
         self.mult_title.pack()
         self.mult_frame.pack()
 
-        self.mult_direct_title_lbl.config(text="Método directo: ", state="disabled")
+        self.mult_direct_title_lbl.config(text="Método directo (segundos): ", state="disabled")
         self.mult_direct_title_lbl.pack()
         self.mult_direct_result_str.set("")
         self.mult_direct_result_lbl.config(state="disabled")
         self.mult_direct_result_lbl.pack()
         self.mult_direct_frame.pack()
 
-        self.mult_d_a_a_title_lbl.config(text="Método double-and-add: ", state="disabled")
+        self.mult_d_a_a_title_lbl.config(text="Método double-and-add (segundos): ", state="disabled")
         self.mult_d_a_a_title_lbl.pack()
         self.mult_d_a_a_result_str.set("")
         self.mult_d_a_a_result_lbl.config(state="disabled")
         self.mult_d_a_a_result_lbl.pack()
         self.mult_d_a_a_frame.pack()
+
+    def mult_clear_and_disable(self):
+        self.mult_title.config(state="disable")
+        self.r = None
+        self.mult_direct_title_lbl.config(state="disable")
+        self.mult_direct_result_str.set("")
+        self.mult_direct_result_lbl.config(state="disable")
+        self.mult_d_a_a_title_lbl.config(state="disable")
+        self.mult_d_a_a_result_str.set("")
+        self.mult_d_a_a_result_lbl.config(state="disable")
 
 
     def err_display(self, text, err_txt, image_err, err_label, error_frame):
