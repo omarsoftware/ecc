@@ -423,9 +423,8 @@ class PointMultiplication:
 
             n = int(self.scalar_n_entry.get())
 
-            limit = 1000000
-            if not 1 <= n <= limit:
-                raise AssertionError("n debe ser mayor o igual a 1 y menor a " + str(limit))
+            if not 1 <= n <= cons.limit_q:
+                raise AssertionError("n debe ser mayor o igual a 1 y menor o igual a " + str(cons.limit_q))
 
             start_1 = time.process_time()
             self.r_1 = self.elliptic_curve.point_mult_2(self.p, n)
@@ -436,6 +435,9 @@ class PointMultiplication:
             self.r_2 = self.elliptic_curve.point_mult(self.p, n)
             end_2 = time.process_time() - start_2
             self.mult_d_a_a_result_str.set(decimal.Decimal(end_2))
+
+            if not self.r_1 == self.r_2:
+                raise AssertionError("El resultado de ambas multiplicaciones no coincide")
 
             self.mult_result_point_str.set("R = " + self.r_1.print())
 
