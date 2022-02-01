@@ -1,7 +1,6 @@
 import tkinter as tk
 import constants as cons
-import ecmath as ec
-import random as rand
+from ecmath import ecmath as ec
 from PIL import Image, ImageTk
 
 

@@ -1,7 +1,7 @@
 import tkinter as tk
-import ecdraw as draw
+from draw import ecdraw as draw
 import constants as cons
-import ecmath as ec
+import ecmath.ecmath as ec
 import matplotlib.pyplot as plt
 import numpy as np; np.random.seed(1)
 from PIL import Image, ImageTk

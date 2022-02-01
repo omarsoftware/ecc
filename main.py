@@ -1,11 +1,9 @@
 import tkinter as tk
 import constants as cons
-import ecmath as ec
-from ecdh import Ecdh
-from pointops import PointOperations
-from commutativity import Commutativity
-from point_addition import PointAddition
-from point_multiplication import PointMultiplication
+from interfaces.ecdh import Ecdh
+from interfaces.commutativity import Commutativity
+from interfaces.point_addition import PointAddition
+from interfaces.point_multiplication import PointMultiplication
 
 
 class App:
@@ -52,10 +50,9 @@ class App:
         self.point_addition = PointAddition(master=self.root, app=self)
         self.point_multiplication = PointMultiplication(master=self.root, app=self)
         self.commutativity = Commutativity(master=self.root, app=self)
-        self.point_operations = PointOperations(master=self.root, app=self)
         self.ecdh = Ecdh(master=self.root, app=self)
 
-        self.pages = [self.point_addition, self.point_multiplication, self.commutativity, self.point_operations, self.ecdh]
+        self.pages = [self.point_addition, self.point_multiplication, self.commutativity, self.ecdh]
 
     def main_page(self):
         self.frame.grid()

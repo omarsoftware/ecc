@@ -1,7 +1,6 @@
 import unittest
 import constants as cons
-import ecmath as ec
-import random
+from ecmath import ecmath as ec
 from ddt import ddt, data
 
 @ddt
