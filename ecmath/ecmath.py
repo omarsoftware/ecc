@@ -193,23 +193,20 @@ class EllipticCurve:
 
         return point_r
 
+    '''Calculates n * P by direct algorithm'''
     def point_mult_2(self, point, k):
         point_r = self.infinity
         for x in range(k):
             point_r = self.point_addition(point_r, point)
-
         return point_r
 
-    def point_mult(self, point, k):
+    '''Calculates n * P by double-and-add algorithm'''
+    def point_mult(self, point, n):
         point_r = self.infinity
-        m = point
-
-        while k > 0:
-            if k & 1 == 1:
-                point_r = self.point_addition(point_r, m)
-                pass
-            k, m = k >> 1, self.point_addition(m, m)
-            pass
+        while n > 0:
+            if n & 1 == 1:
+                point_r = self.point_addition(point_r, point)
+            n, point = n >> 1, self.point_addition(point, point)
         return point_r
 
     def print(self):

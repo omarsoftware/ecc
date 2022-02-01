@@ -66,7 +66,9 @@ class TestEllipticCurve(unittest.TestCase):
         self.assertEqual(point_r1, point_r2)
 
     @data(([10, 15, 23], [8, 20], [9, 11]),
-          ([10, 15, 23], [8, 20], [0, 0, True])
+          ([10, 15, 23], [8, 20], [8, 20]),
+          ([10, 15, 23], [8, 20], [0, 0, True]),
+          ([10, 15, 23], [0, 0, True], [0, 0, True])
           )
     def test_commutativity(self, value):
         curve = ec.EllipticCurve(*value[0])

@@ -404,7 +404,7 @@ class PointMultiplication:
         self.scalar_image_ok.pack_forget()
         self.scalar_ready_frame.pack()
 
-        self.scalar_err_label.config(textvariable=self.ec_err_txt)
+        self.scalar_err_label.config(textvariable=self.scalar_err_txt)
         self.scalar_image_err.pack(side="left")
         self.scalar_image_err.pack_forget()
         self.scalar_err_label.pack(side="left")
@@ -422,6 +422,10 @@ class PointMultiplication:
                 raise AssertionError("n debe ser un número entero")
 
             n = int(self.scalar_n_entry.get())
+
+            limit = 1000000
+            if not 1 <= n <= limit:
+                raise AssertionError("n debe ser mayor o igual a 1 y menor a " + str(limit))
 
             start_1 = time.process_time()
             self.r_1 = self.elliptic_curve.point_mult_2(self.p, n)
