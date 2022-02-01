@@ -11,6 +11,7 @@ from point_multiplication import PointMultiplication
 class App:
     def __init__(self, root=None):
         self.root = root
+        self.root.title(cons.title)
         self.root.geometry(cons.screen_size)
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)

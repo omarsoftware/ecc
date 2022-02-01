@@ -1,5 +1,5 @@
-import numbers as num
 import random as rand
+from math import sqrt
 
 class Point:
     def __init__(self, x=0, y=0, infinity=False):
@@ -51,6 +51,9 @@ class EllipticCurve:
 
         if not 0 <= b < q:
             raise AssertionError("b debe ser mayor o igual a 0 y menor a q")
+
+        if not self.is_prime(q, 4):
+            raise AssertionError("q debe ser un número primo")
 
         if not q > 2:
             raise AssertionError("q debe ser mayor a 2")
@@ -285,6 +288,50 @@ class EllipticCurve:
 
     def get_ec_parms(self, curve):
         pass
+
+    def power(self, x, y, p):
+        res = 1;
+        x = x % p;
+        while (y > 0):
+            if (y & 1):
+                res = (res * x) % p;
+            y = y >> 1;  # y = y/2
+            x = (x * x) % p;
+        return res;
+
+    def miillerTest(self, d, n):
+        a = 2 + rand.randint(1, n - 4);
+        x = self.power(a, d, n);
+
+        if (x == 1 or x == n - 1):
+            return True;
+
+        while (d != n - 1):
+            x = (x * x) % n;
+            d *= 2;
+
+            if (x == 1):
+                return False;
+            if (x == n - 1):
+                return True;
+
+        return False;
+
+    def is_prime(self, n, k):
+
+        if (n <= 1 or n == 4):
+            return False;
+        if (n <= 3):
+            return True;
+
+        d = n - 1;
+        while (d % 2 == 0):
+            d //= 2;
+
+        for i in range(k):
+            if self.miillerTest(d, n) == False:
+                return False;
+        return True;
 
 
 class User:

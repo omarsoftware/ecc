@@ -1,6 +1,7 @@
 import unittest
 import constants as cons
 import ecmath as ec
+import random
 from ddt import ddt, data
 
 @ddt
@@ -11,6 +12,13 @@ class TestEllipticCurve(unittest.TestCase):
         with self.assertRaises(AssertionError) as context:
             elliptic_curve = ec.EllipticCurve(*value)
         self.assertTrue("a, b y q deben ser números" in str(context.exception))
+
+    @data((10, 15, 24))
+    def test_domain_q_is_prime(self, value):
+        with self.assertRaises(AssertionError) as context:
+            elliptic_curve = ec.EllipticCurve(*value)
+        self.assertTrue("q debe ser un número primo" in str(context.exception))
+
 
     @data((-5, 15, 23), (23, 15, 23), (24, 15, 23))
     def test_domain_a_range(self, value):
