@@ -146,10 +146,14 @@ class PointMultiplication:
         self.mult_result_point_str = tk.StringVar()
         self.mult_result_point_lbl = tk.Label(self.mult_result_point_frame, textvariable=self.mult_result_point_str)
 
+        self.space4 = tk.Label(self.mult_frame, text=" ")
+
         self.mult_direct_frame = tk.Frame(self.mult_frame)
         self.mult_direct_title_lbl = tk.Label(self.mult_direct_frame)
         self.mult_direct_result_str = tk.StringVar()
         self.mult_direct_result_lbl = tk.Label(self.mult_direct_frame, textvariable=self.mult_direct_result_str)
+
+        self.space5 = tk.Label(self.mult_frame, text=" ")
 
         self.mult_d_a_a_frame = tk.Frame(self.mult_frame)
         self.mult_d_a_a_title_lbl = tk.Label(self.mult_d_a_a_frame)
@@ -439,8 +443,6 @@ class PointMultiplication:
             if not self.r_1 == self.r_2:
                 raise AssertionError("El resultado de ambas multiplicaciones no coincide")
 
-            self.mult_result_point_str.set("R = " + self.r_1.print())
-
             self.scalar_n_label.config(state="disable")
             self.scalar_n_entry.config(state="disable")
 
@@ -452,6 +454,9 @@ class PointMultiplication:
             self.scalar_image_ok.pack(side="right")
 
             self.mult_title.config(state="normal")
+            self.mult_result_point_str.set(self.r_1.print())
+            self.mult_result_point_title_lbl.config(state="normal")
+            self.mult_result_point_lbl.config(state="normal")
             self.mult_direct_title_lbl.config(state="normal")
             self.mult_direct_result_lbl.config(state="normal")
             self.mult_d_a_a_title_lbl.config(state="normal")
@@ -510,12 +515,23 @@ class PointMultiplication:
         self.mult_title.pack()
         self.mult_frame.pack()
 
+        self.mult_result_point_title_lbl.config(text="R = ", state="disabled")
+        self.mult_result_point_title_lbl.pack(side="left")
+        self.mult_result_point_str.set("")
+        self.mult_result_point_lbl.config(state="disabled")
+        self.mult_result_point_lbl.pack(side="left")
+        self.mult_result_point_frame.pack()
+
+        self.space4.pack()
+
         self.mult_direct_title_lbl.config(text="Método directo (segundos): ", state="disabled")
         self.mult_direct_title_lbl.pack()
         self.mult_direct_result_str.set("")
         self.mult_direct_result_lbl.config(state="disabled")
         self.mult_direct_result_lbl.pack()
         self.mult_direct_frame.pack()
+
+        self.space5.pack()
 
         self.mult_d_a_a_title_lbl.config(text="Método double-and-add (segundos): ", state="disabled")
         self.mult_d_a_a_title_lbl.pack()
@@ -528,6 +544,9 @@ class PointMultiplication:
         self.mult_title.config(state="disable")
         self.r_1 = None
         self.r_2 = None
+        self.mult_result_point_title_lbl.config(state="disable")
+        self.mult_result_point_str.set("")
+        self.mult_result_point_lbl.config(state="disable")
         self.mult_direct_title_lbl.config(state="disable")
         self.mult_direct_result_str.set("")
         self.mult_direct_result_lbl.config(state="disable")
