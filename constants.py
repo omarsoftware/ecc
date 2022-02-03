@@ -4,7 +4,6 @@ title = "Laboratorio de Cifra de Curva Elíptica"
 x_path = "img/x.png"
 check_path = "img/check.png"
 x_and_check_size = (15, 15)
-limit_q = 100000
 
 EC_LIST = {
     "secp192r1": {

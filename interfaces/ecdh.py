@@ -807,10 +807,10 @@ class Ecdh:
 
     def priv_key_autogen(self):
         self.bob_priv_entry.delete(0, "end")
-        self.bob_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()))
+        self.bob_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()-1))
 
         self.alice_priv_entry.delete(0, "end")
-        self.alice_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()))
+        self.alice_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()-1))
 
     def err_display(self, text, err_txt, image_err, err_label, error_frame):
         err_txt.set(text)

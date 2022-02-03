@@ -63,9 +63,16 @@ class EllipticCurve:
         self.b = b
         self.q = q
         self.g = g
-        self.n = n
         self.h = h
+        self.generator_points = None
         self.infinity = Point(0, 0, True)
+
+        if n:
+            self.n = n
+        else:
+            self.generator_points = self.get_generator_points()
+            self.n = len(self.generator_points)
+
         self.predefined = False
 
     def set_a(self, a):
