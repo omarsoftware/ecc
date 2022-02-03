@@ -230,48 +230,7 @@ class Ecdh:
         self.alice_shared_y_val_label = tk.Label(self.alice_shared_y_frame)
 
         self.bob_alice_shared_set()
-
-        '''
-        self.shared_title_label = tk.Label(self.frame, text="Paso 4: generación de clave compartida por Alicia y Bob",
-                                    state="disabled", font='Helvetica 10 bold')
-        self.shared_title_label.pack()
-
-        self.shared_bob = tk.Label(self.frame, text="Clave compartida calculada por Bob: ", state="disabled")
-        self.shared_bob.pack()
-        self.shared_bob_txt = tk.StringVar()
-        self.shared_bob_label = tk.Label(self.frame, textvariable=self.shared_bob_txt)
-        self.shared_bob_label.pack()
-
-        self.shared_alice = tk.Label(self.frame, text="Clave compartida calculada por Alicia: ", state="disabled")
-        self.shared_alice.pack()
-        self.shared_alice_txt = tk.StringVar()
-        self.shared_alice_label = tk.Label(self.frame, textvariable=self.shared_alice_txt, state="disabled")
-        self.shared_alice_label.pack()
-        '''
-
         # ///////////// End Shared Calculations /////////////
-
-    def chosen_curve(self):
-        self.predef_curve = cons.get_curve(self.dropdown_str.get())
-        self.isPredefined = True
-
-        self.ec_a_entry.delete(0, "end")
-        self.ec_a_entry.insert(0, self.predef_curve["a"])
-
-        self.ec_b_entry.delete(0, "end")
-        self.ec_b_entry.insert(0, self.predef_curve["b"])
-
-        self.ec_q_entry.delete(0, "end")
-        self.ec_q_entry.insert(0, self.predef_curve["q"])
-
-        # self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"], self.predef_curve["q"])
-
-    def priv_key_autogen(self):
-        self.bob_priv_entry.delete(0, "end")
-        self.bob_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()))
-
-        self.alice_priv_entry.delete(0, "end")
-        self.alice_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()))
 
     def ec_set(self):
         self.ec_title.config(text='Paso 1: elegir curva elíptica utilizada y compartida por Bob y Alicia', font='Helvetica 10 bold')
@@ -372,12 +331,6 @@ class Ecdh:
 
         except Exception as msg:
             self.err_display(msg.args[0], self.ec_err_txt, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
-
-    def err_display(self, text, err_txt, image_err, err_label, error_frame):
-        err_txt.set(text)
-        image_err.pack(side="left")
-        err_label.pack(side="left")
-        error_frame.pack()
 
     def ec_clear(self):
         self.ec_a_entry.config(state="normal")
@@ -519,6 +472,7 @@ class Ecdh:
         self.g_err.pack_forget()
         self.g_error_frame.configure(height=1)
         self.g = None
+        self.isPredefined = False
 
     def bob_set(self):
         self.bob_title.config(text="Bob", state="disabled", font='Helvetica 10 bold')
@@ -837,6 +791,32 @@ class Ecdh:
         self.alice_shared_x_val_label.config(state="disabled")
         self.alice_shared_y_label.config(state="disabled")
         self.alice_shared_y_val_label.config(state="disabled")
+
+    def chosen_curve(self):
+        self.predef_curve = cons.get_curve(self.dropdown_str.get())
+        self.isPredefined = True
+
+        self.ec_a_entry.delete(0, "end")
+        self.ec_a_entry.insert(0, self.predef_curve["a"])
+
+        self.ec_b_entry.delete(0, "end")
+        self.ec_b_entry.insert(0, self.predef_curve["b"])
+
+        self.ec_q_entry.delete(0, "end")
+        self.ec_q_entry.insert(0, self.predef_curve["q"])
+
+    def priv_key_autogen(self):
+        self.bob_priv_entry.delete(0, "end")
+        self.bob_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()))
+
+        self.alice_priv_entry.delete(0, "end")
+        self.alice_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()))
+
+    def err_display(self, text, err_txt, image_err, err_label, error_frame):
+        err_txt.set(text)
+        image_err.pack(side="left")
+        err_label.pack(side="left")
+        error_frame.pack()
 
     def start_page(self):
         self.frame.grid(column=0, row=0, sticky="NWES")
