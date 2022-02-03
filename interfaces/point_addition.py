@@ -282,8 +282,8 @@ class PointAddition:
         y_coords = ()
 
         for point in points:
-            x_coords = x_coords + (point[0],)
-            y_coords = y_coords + (point[1],)
+            x_coords = x_coords + (point.get_x(),)
+            y_coords = y_coords + (point.get_y(),)
 
         # x = (1, 2, 3, 4)
         # y = (1, 2, 3, 4)

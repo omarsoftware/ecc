@@ -370,8 +370,8 @@ class PointMultiplication:
         y_coords = ()
 
         for point in points:
-            x_coords = x_coords + (point[0],)
-            y_coords = y_coords + (point[1],)
+            x_coords = x_coords + (point.get_x(),)
+            y_coords = y_coords + (point.get_y(),)
 
         fig, ax = plt.subplots()
         ax.scatter(x_coords, y_coords)
@@ -467,8 +467,8 @@ class PointMultiplication:
             y_coords = ()
 
             for point in points:
-                x_coords = x_coords + (point[0],)
-                y_coords = y_coords + (point[1],)
+                x_coords = x_coords + (point.get_x(),)
+                y_coords = y_coords + (point.get_y(),)
 
             fig2, ax2 = plt.subplots()
             ax2.scatter(x_coords, y_coords)

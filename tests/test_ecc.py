@@ -46,9 +46,13 @@ class TestEllipticCurve(unittest.TestCase):
     @data(([1, 6, 11], [(2, 4), (2, 7), (3, 5), (3, 6), (5, 2), (5, 9), (7, 2), (7, 9), (8, 3), (8, 8), (10, 2), (10, 9)]),
           ([10, 15, 23], [(1, 7), (1, 16), (3, 7), (3, 16), (4, 2), (4, 21), (5, 11), (5, 12), (8, 3), (8, 20), (9, 11), (9, 12), (12, 0), (14, 1), (14, 22), (16, 4), (16, 19), (18, 1), (18, 22), (19, 7), (19, 16), (20, 2), (20, 21), (22, 2), (22, 21)]))
     def test_points_over_curve(self, value):
+        final_points = []
         curve = ec.EllipticCurve(*value[0])
         points = curve.getPoints()
-        self.assertEqual(points, value[1])
+        for point in points:
+            final_points.append((point.get_x(), point.get_y()))
+
+        self.assertEqual(final_points, value[1])
 
     @data(([10, 15, 23], [3, 7, False], [9, 11, False], [14, 1, False]),
           ([10, 15, 23], [9, 11, False], [9, 12, False], [0, 0, True]),
@@ -78,12 +82,33 @@ class TestEllipticCurve(unittest.TestCase):
         point_q_plus_p = curve.point_addition(point_q, point_p)
         self.assertEqual(point_p_plus_q, point_q_plus_p)
 
-    def test_multiplication(self):
-        curve = ec.EllipticCurve(10, 15, 23)
-        point_p = ec.Point(3, 7)
-        point_r = curve.point_mult(point_p, 19)
-        point_f = ec.Point(22, 2)
+    @data(([10, 15, 23], (9, 11), 1, (9, 11)),
+          ([10, 15, 23], (9, 11), 14, (18, 22)),
+          ([10, 15, 23], (9, 11), 26, [0, 0, True]))
+    def test_multiplication(self, value):
+        curve = ec.EllipticCurve(*value[0])
+        point_p = ec.Point(*value[1])
+        n = value[2]
+        point_r = curve.point_mult(point_p, n)
+        point_f = ec.Point(*value[3])
+
         self.assertEqual(point_r, point_f)
+
+    @data(([1, 1, 5], [(2, 4), (2, 1)]),
+          ([10, 15, 23], [(1, 16), (1, 7), (5, 12), (5, 11), (14, 22), (14, 1), (16, 19), (16, 4), (18, 22), (18, 1), (20, 21), (20, 2)]))
+    def test_generator_points(self, value):
+        final_points = []
+        final_points_2 = []
+        curve = ec.EllipticCurve(*value[0])
+        gen_points = curve.get_generator_points()
+
+        for point in value[1]:
+            final_points.append(ec.Point(point[0], point[1], False))
+
+        for point in gen_points:
+            final_points_2.append(point[0])
+
+        self.assertEqual(final_points, final_points_2)
 
 
 class TestECDH(unittest.TestCase):

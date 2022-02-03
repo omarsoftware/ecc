@@ -31,12 +31,10 @@ class Point:
         return str_print
 
     def __eq__(self, other_point):
-        '''
         if other_point.is_infinity() and self.is_infinity():
             return True
         if (not other_point.is_infinity() and self.is_infinity()) or (other_point.is_infinity() and not self.is_infinity()):
             return False
-        '''
         return self.get_x() == other_point.get_x() and self.get_y() == other_point.get_y()
 
 
@@ -129,6 +127,7 @@ class EllipticCurve:
         left_side = []
         right_side = []
         points = []
+        final_points = []
 
         for x in range(self.q):
             left_side.append((x, (x**2) % self.q))
@@ -141,16 +140,29 @@ class EllipticCurve:
 
         points.sort(key=lambda y: y[0])
 
-        return points
+        for point in points:
+            final_points.append(Point(point[0], point[1], False))
+
+        return final_points
+
+
+    def get_generator_points(self):
+        gen_points = []
+        infinity = Point(0, 0, True)
+        prev_point = Point(0, 0, True)
+        points = self.getPoints()
+        for point in points:
+            for i in range(1, len(points)):
+                r = self.point_mult(point, i)
+                if r == infinity and self.is_prime(i, 4) and i >= 3:
+                    gen_points.append((prev_point, i))
+                    break
+                else:
+                    prev_point = r
+        return gen_points
+
 
     def point_addition(self, point_p, point_q):
-        '''
-        if point_p.get_x() == 0 and point_p.get_y() == 0:
-            return point_q
-
-        if point_q.get_x() == 0 and point_q.get_y() == 0:
-            return point_p
-        '''
 
         if point_p.is_infinity() and point_q.is_infinity():
             return self.infinity
