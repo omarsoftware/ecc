@@ -1,6 +1,9 @@
 import tkinter as tk
+from draw import ecdraw as draw
 import constants as cons
 from ecmath import ecmath as ec
+import matplotlib.pyplot as plt
+import numpy as np; np.random.seed(1)
 import random as rand
 from PIL import Image, ImageTk
 
@@ -18,7 +21,7 @@ class Ecdh:
         self.isPredefined = False
         self.bob_shared_key = None
         self.alice_shared_key = None
-        self.gen_points_dict = {}
+        self.selected_point = None
 
         self.title = tk.Label(self.frame, text='Diffie-Hellman con Curva Elíptica', font='Helvetica 16 bold')
         self.title.pack(fill="x")
@@ -73,15 +76,12 @@ class Ecdh:
         # ///////////// Begin Generator Point /////////////
         self.g_title = tk.Label(self.frame)
 
-        # begin generator points dropdown
-        self.g_dropdown_frame = tk.Frame(self.frame)
-        self.g_points_list = [""]
-        self.g_dropdown_str = tk.StringVar()
-        self.g_dropdown_str.set("")
-        self.g_dropdown = tk.OptionMenu(self.g_dropdown_frame, self.g_dropdown_str, *self.g_points_list)
-        self.g_chosen_point_btn = tk.Button(self.g_dropdown_frame, text="Seleccionar",
-                                             command=lambda: self.chosen_point())
-        # end generator points dropdown
+        self.g_plot_frame = tk.Frame(self.frame)
+        self.g_plot_button = tk.Button(master=self.g_plot_frame,
+                                       command=self.plot_graph,
+                                       height=1,
+                                       width=20,
+                                       text="Seleccionar Punto")
 
         self.g_x_frame = tk.Frame(self.frame)
         self.g_x_label = tk.Label(self.g_x_frame)
@@ -312,20 +312,6 @@ class Ecdh:
                                                        self.predef_curve["n"], self.predef_curve["h"])
             else:
                 self.elliptic_curve = ec.EllipticCurve(a, b, q)
-                self.generator_points = self.elliptic_curve.get_generator_points()
-                if self.generator_points:
-                    self.g_points_list = []
-                    self.gen_points_dict = {}
-                    self.g_dropdown_str.set(self.generator_points[0][0].print())
-
-                    for point in self.generator_points:
-                        self.gen_points_dict[point[0].print()] = point[0]
-                        self.g_points_list.append(point[0].print())
-                    menu = self.g_dropdown["menu"]
-                    menu.delete(0, "end")
-                    for string in self.g_points_list:
-                        menu.add_command(label=string,
-                                         command=lambda value=string: self.g_dropdown_str.set(value))
 
             self.ec_a_entry.config(state="disabled")
             self.ec_b_entry.config(state="disabled")
@@ -341,8 +327,8 @@ class Ecdh:
             self.ec_image_ok.pack(side="right")
 
             self.g_title.config(state='normal')
-            self.g_dropdown.config(state='normal')
-            self.g_chosen_point_btn.config(state='normal')
+            if not self.isPredefined:
+                self.g_plot_button.config(state='normal')
             self.g_x_label.config(state='normal')
             self.g_y_label.config(state='normal')
             self.g_x_entry.config(state='normal')
@@ -384,11 +370,9 @@ class Ecdh:
                             state="disabled", font='Helvetica 10 bold')
         self.g_title.pack()
 
-        self.g_dropdown.config(state="disable")
-        self.g_dropdown.pack(side="left")
-        self.g_chosen_point_btn.config(state="disable")
-        self.g_chosen_point_btn.pack(side="left")
-        self.g_dropdown_frame.pack()
+        self.g_plot_button.config(state="disabled")
+        self.g_plot_button.pack(side="left")
+        self.g_plot_frame.pack()
 
         self.g_x_label.config(text="x =", state="disabled")
         self.g_x_label.pack(side="left")
@@ -470,9 +454,7 @@ class Ecdh:
 
     def g_clear(self):
         self.privkey_autogen_btn.config(state="normal")
-        self.g_dropdown.config(state="normal")
-        self.g_dropdown_str.set("")
-        self.g_chosen_point_btn.config(state="normal")
+        self.g_plot_button.config(state="normal")
         self.g_x_entry.config(state="normal")
         self.g_x_entry.delete(0, "end")
         self.g_y_entry.config(state="normal")
@@ -490,9 +472,7 @@ class Ecdh:
 
     def g_clear_and_disable(self):
         self.g_title.config(state="disabled")
-        self.g_dropdown_str.set("")
-        self.g_dropdown.config(state="disabled")
-        self.g_chosen_point_btn.config(state="disabled")
+        self.g_plot_button.config(state="disabled")
         self.g_x_label.config(state="disabled")
         self.g_x_entry.config(state="normal")
         self.g_x_entry.delete(0, "end")
@@ -511,6 +491,7 @@ class Ecdh:
         self.g_error_frame.configure(height=1)
         self.g = None
         self.isPredefined = False
+        self.selected_point = None
 
     def bob_set(self):
         self.bob_title.config(text="Bob", state="disabled", font='Helvetica 10 bold')
@@ -843,21 +824,39 @@ class Ecdh:
         self.ec_q_entry.delete(0, "end")
         self.ec_q_entry.insert(0, self.predef_curve["q"])
 
-    def chosen_point(self):
-        self.g = self.gen_points_dict[self.g_dropdown_str.get()]
-
-        self.g_x_entry.delete(0, "end")
-        self.g_x_entry.insert(0, self.g.get_x())
-
-        self.g_y_entry.delete(0, "end")
-        self.g_y_entry.insert(0, self.g.get_y())
-
     def priv_key_autogen(self):
         self.bob_priv_entry.delete(0, "end")
         self.bob_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()-1))
 
         self.alice_priv_entry.delete(0, "end")
         self.alice_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()-1))
+
+    def plot_graph(self):
+
+        self.selected_point = None
+
+        points = self.elliptic_curve.get_points()
+
+        x_coords = ()
+        y_coords = ()
+
+        for point in points:
+            x_coords = x_coords + (point.get_x(),)
+            y_coords = y_coords + (point.get_y(),)
+
+        fig, ax = plt.subplots()
+        ax.scatter(x_coords, y_coords)
+        af = draw.DrawSinglePoint(x_coords, y_coords, ax=ax)
+        fig.canvas.mpl_connect('button_press_event', af)
+
+        plt.show()
+        self.selected_point = af.get_selected_points()
+
+        self.g_x_entry.delete(0, "end")
+        self.g_x_entry.insert(0, self.selected_point['P'][0])
+
+        self.g_y_entry.delete(0, "end")
+        self.g_y_entry.insert(0, self.selected_point['P'][1])
 
     def err_display(self, text, err_txt, image_err, err_label, error_frame):
         err_txt.set(text)

@@ -276,7 +276,7 @@ class PointAddition:
 
         self.selected_points = None
 
-        points = self.elliptic_curve.getPoints()
+        points = self.elliptic_curve.get_points()
 
         x_coords = ()
         y_coords = ()

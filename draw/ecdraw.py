@@ -127,7 +127,7 @@ class AnnoteFinder(object):
             self.drawnAnnotations[(x, y)] = (t, m, annote)
             self.ax.figure.canvas.draw_idle()
 
-class DrawMultiplication(object):
+class DrawSinglePoint(object):
 
     def __init__(self, xdata, ydata, ax=None, xtol=None, ytol=None):
         self.data = list(zip(xdata, ydata))

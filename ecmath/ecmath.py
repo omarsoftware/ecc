@@ -133,7 +133,7 @@ class EllipticCurve:
         return (point.get_y() ** 2) % self.q == \
                ((point.get_x() ** 3) + self.a * point.get_x() + self.b) % self.q
 
-    def getPoints(self):
+    def get_points(self):
         left_side = []
         right_side = []
         points = []
@@ -160,7 +160,7 @@ class EllipticCurve:
         gen_points = []
         infinity = Point(0, 0, True)
         prev_point = Point(0, 0, True)
-        points = self.getPoints()
+        points = self.get_points()
         for point in points:
             for i in range(1, len(points)+2):
                 r = self.point_mult(point, i)

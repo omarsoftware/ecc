@@ -364,7 +364,7 @@ class PointMultiplication:
 
         self.selected_points = None
 
-        points = self.elliptic_curve.getPoints()
+        points = self.elliptic_curve.get_points()
 
         x_coords = ()
         y_coords = ()
@@ -375,7 +375,7 @@ class PointMultiplication:
 
         fig, ax = plt.subplots()
         ax.scatter(x_coords, y_coords)
-        af = draw.DrawMultiplication(x_coords, y_coords, ax=ax)
+        af = draw.DrawSinglePoint(x_coords, y_coords, ax=ax)
         fig.canvas.mpl_connect('button_press_event', af)
 
         plt.show()
@@ -462,7 +462,7 @@ class PointMultiplication:
             self.mult_d_a_a_title_lbl.config(state="normal")
             self.mult_d_a_a_result_lbl.config(state="normal")
 
-            points = self.elliptic_curve.getPoints()
+            points = self.elliptic_curve.get_points()
             x_coords = ()
             y_coords = ()
 

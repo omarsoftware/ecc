@@ -48,7 +48,7 @@ class TestEllipticCurve(unittest.TestCase):
     def test_points_over_curve(self, value):
         final_points = []
         curve = ec.EllipticCurve(*value[0])
-        points = curve.getPoints()
+        points = curve.get_points()
         for point in points:
             final_points.append((point.get_x(), point.get_y()))
 
