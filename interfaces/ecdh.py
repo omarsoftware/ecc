@@ -313,18 +313,19 @@ class Ecdh:
             else:
                 self.elliptic_curve = ec.EllipticCurve(a, b, q)
                 self.generator_points = self.elliptic_curve.get_generator_points()
-                self.g_points_list = []
-                self.gen_points_dict = {}
-                self.g_dropdown_str.set(self.generator_points[0][0].print())
+                if self.generator_points:
+                    self.g_points_list = []
+                    self.gen_points_dict = {}
+                    self.g_dropdown_str.set(self.generator_points[0][0].print())
 
-                for point in self.generator_points:
-                    self.gen_points_dict[point[0].print()] = point[0]
-                    self.g_points_list.append(point[0].print())
-                menu = self.g_dropdown["menu"]
-                menu.delete(0, "end")
-                for string in self.g_points_list:
-                    menu.add_command(label=string,
-                                     command=lambda value=string: self.g_dropdown_str.set(value))
+                    for point in self.generator_points:
+                        self.gen_points_dict[point[0].print()] = point[0]
+                        self.g_points_list.append(point[0].print())
+                    menu = self.g_dropdown["menu"]
+                    menu.delete(0, "end")
+                    for string in self.g_points_list:
+                        menu.add_command(label=string,
+                                         command=lambda value=string: self.g_dropdown_str.set(value))
 
             self.ec_a_entry.config(state="disabled")
             self.ec_b_entry.config(state="disabled")

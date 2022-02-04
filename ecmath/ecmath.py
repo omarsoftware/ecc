@@ -71,7 +71,10 @@ class EllipticCurve:
             self.n = n
         else:
             self.generator_points = self.get_generator_points()
-            self.n = len(self.generator_points)
+            if self.generator_points:
+                self.n = len(self.generator_points)
+            else:
+                self.n = 0
 
         self.predefined = False
 
@@ -161,13 +164,12 @@ class EllipticCurve:
         for point in points:
             for i in range(1, len(points)+2):
                 r = self.point_mult(point, i)
-                if r == infinity and self.is_prime(i, 4) and i >= 3:
+                if r == infinity:
                     gen_points.append((prev_point, i))
                     break
                 else:
                     prev_point = r
         return gen_points
-
 
     def point_addition(self, point_p, point_q):
 
