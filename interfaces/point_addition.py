@@ -83,22 +83,6 @@ class PointAddition:
         self.plot1_q_val_str = tk.StringVar()
         self.plot1_q_val_label = tk.Label(self.plot1_q_frame, textvariable=self.plot1_q_val_str)
 
-        self.plot1_ready_frame = tk.Frame(self.plot1_frame)
-        self.plot1_ready_button = tk.Button(self.plot1_ready_frame)
-        self.plot1_edit_button = tk.Button(self.plot1_ready_frame)
-        self.plot1_load_ok = Image.open(cons.check_path)
-        self.plot1_resized = self.plot1_load_ok.resize(cons.x_and_check_size, Image.ANTIALIAS)
-        self.plot1_new_pic_ok = ImageTk.PhotoImage(self.plot1_resized)
-        self.plot1_image_ok = tk.Label(self.plot1_ready_frame, image=self.plot1_new_pic_ok)
-
-        self.plot1_error_frame = tk.Frame(self.plot1_frame)
-        self.plot1_load_err = Image.open(cons.x_path)
-        self.plot1_resized_err = self.plot1_load_err.resize(cons.x_and_check_size, Image.ANTIALIAS)
-        self.plot1_new_pic_err = ImageTk.PhotoImage(self.plot1_resized_err)
-        self.plot1_image_err = tk.Label(self.ec_error_frame, image=self.plot1_new_pic_err)
-        self.plot1_err_txt = tk.StringVar()
-        self.plot1_err_label = tk.Label(self.plot1_error_frame)
-
         self.plot1_set()
         # //////////// End Plot1 ///////////
 
@@ -124,15 +108,6 @@ class PointAddition:
         self.addition_point_label = tk.Label(self.addition_frame, textvariable=self.addition_point_str)
 
         self.addition_set()
-
-        '''
-        self.plot2_graph_frame = tk.Frame(self.plot1_frame)
-        self.plot1_button = tk.Button(master=self.plot1_graph_frame,
-                                      command=self.plot1_graph,
-                                      height=2,
-                                      width=20,
-                                      text="Seleccionar Puntos")
-        '''
         # ///////////// End Addition /////////////
 
     def ec_set(self):
@@ -230,6 +205,9 @@ class PointAddition:
         self.ec_edit_button.pack_forget()
         self.elliptic_curve = None
 
+        self.plot1_clear_and_disable()
+        self.addition_clear_and_disable()
+
     def plot1_set(self):
         self.plot1_title.config(text='Paso 2: elegir puntos P y Q a sumar', font='Helvetica 10 bold', state="disabled")
         self.plot1_title.pack()
@@ -249,28 +227,20 @@ class PointAddition:
         self.plot1_q_val_label.pack(side="left")
         self.plot1_q_frame.pack()
 
-        self.plot1_ready_button.config(text="Listo", command=lambda: self.plot1_ready(), state="disabled")
-        self.plot1_ready_button.pack()
-        self.plot1_edit_button.config(text="Editar", command=lambda: self.plot1_clear(), state="disabled")
-        self.plot1_edit_button.pack()
-        self.plot1_edit_button.pack_forget()
-        self.plot1_ready_button.pack(side="left")
-        self.plot1_image_ok.pack(side="left")
-        self.plot1_image_ok.pack_forget()
-        self.plot1_ready_frame.pack()
+    def plot1_clear_and_disable(self):
+        self.plot1_title.config(state="disable")
+        self.plot1_button.config(state="disable")
 
-        self.plot1_err_label.config(textvariable=self.plot1_err_txt)
-        self.plot1_image_err.pack(side="left")
-        self.plot1_image_err.pack_forget()
-        self.plot1_err_label.pack(side="left")
-        self.plot1_err_label.pack_forget()
-        self.plot1_error_frame.pack()
+        self.plot1_p_label.config(state="disable")
+        self.plot1_p_val_str.set("")
+        self.plot1_p_val_label.config(state="disable")
 
-    def plot1_ready(self):
-        pass
+        self.plot1_q_label.config(state="disable")
+        self.plot1_q_val_str.set("")
+        self.plot1_q_val_label.config(state="disable")
 
-    def plot1_clear(self):
-        pass
+        self.p = None
+        self.q = None
 
     def plot1_graph(self):
 
@@ -285,55 +255,54 @@ class PointAddition:
             x_coords = x_coords + (point.get_x(),)
             y_coords = y_coords + (point.get_y(),)
 
-        # x = (1, 2, 3, 4)
-        # y = (1, 2, 3, 4)
-        # annotes = ['a', 'b', 'c', 'd']
-
         fig, ax = plt.subplots()
         ax.scatter(x_coords, y_coords)
-        af = draw.AnnoteFinder(x_coords, y_coords, ax=ax)
+        af = draw.DrawAddition(x_coords, y_coords, ax=ax)
         fig.canvas.mpl_connect('button_press_event', af)
 
         plt.show()
         self.selected_points = af.get_selected_points()
 
-        self.p = ec.Point(self.selected_points['P'][0], self.selected_points['P'][1])
-        self.q = ec.Point(self.selected_points['Q'][0], self.selected_points['Q'][1])
+        if len(self.selected_points) == 2:
+            self.p = ec.Point(self.selected_points['P'][0], self.selected_points['P'][1])
+            self.q = ec.Point(self.selected_points['Q'][0], self.selected_points['Q'][1])
 
-        self.plot1_p_val_str.set(self.p.print())
-        self.plot1_q_val_str.set(self.q.print())
+            self.plot1_p_val_str.set(self.p.print())
+            self.plot1_q_val_str.set(self.q.print())
 
-        self.r = self.elliptic_curve.point_addition(self.p, self.q)
-        self.addition_point_str.set("R = " + self.r.print())
+            self.r = self.elliptic_curve.point_addition(self.p, self.q)
+            self.addition_point_str.set("R = " + self.r.print())
 
-        if self.p == self.q:
-            self.addition_eq_title_str.set(self.intro2 + "\n")
-            self.addition_eq_str.set(self.slope2_str + "\n" + self.rx_str + "\n" + self.ry_str + "\n")
-        else:
-            if self.p.get_x() == self.q.get_x():
-                self.addition_eq_title_str.set(self.intro3 + "\n")
-                self.addition_eq_str.set("")
+            if self.p == self.q:
+                self.addition_eq_title_str.set(self.intro2 + "\n")
+                self.addition_eq_str.set(self.slope2_str + "\n" + self.rx_str + "\n" + self.ry_str + "\n")
             else:
-                if self.p != self.q:
-                    self.addition_eq_title_str.set(self.intro1+"\n")
-                    self.addition_eq_str.set(self.slope1_str+"\n"+self.rx_str+"\n"+self.ry_str+"\n")
+                if self.p.get_x() == self.q.get_x():
+                    self.addition_eq_title_str.set(self.intro3 + "\n")
+                    self.addition_eq_str.set("")
+                else:
+                    if self.p != self.q:
+                        self.addition_eq_title_str.set(self.intro1+"\n")
+                        self.addition_eq_str.set(self.slope1_str+"\n"+self.rx_str+"\n"+self.ry_str+"\n")
 
-        self.addition_title.config(state="normal")
-        self.plot1_p_label.config(state="normal")
-        self.plot1_p_val_label.config(state="normal")
-        self.plot1_q_label.config(state="normal")
-        self.plot1_q_val_label.config(state="normal")
-        self.plot1_ready_button.config(state="normal")
-        self.addition_eq_title_label.config(state="normal")
-        self.addition_eq_label.config(state="normal")
-        self.addition_point_label.config(state="normal")
+            self.addition_title.config(state="normal")
+            self.plot1_p_label.config(state="normal")
+            self.plot1_p_val_label.config(state="normal")
+            self.plot1_q_label.config(state="normal")
+            self.plot1_q_val_label.config(state="normal")
+            self.addition_eq_title_label.config(state="normal")
+            self.addition_eq_label.config(state="normal")
+            self.addition_point_label.config(state="normal")
 
-        fig2, ax2 = plt.subplots()
-        ax2.scatter(x_coords, y_coords)
-        draw_points = [(self.p, 'P'), (self.q, 'Q'), (self.r, 'R')]
-        af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
-        # fig.canvas.mpl_connect('button_press_event', af2)
-        plt.show()
+            fig2, ax2 = plt.subplots()
+            ax2.scatter(x_coords, y_coords)
+            if not self.p == self.q:
+                draw_points = [(self.p, 'P'), (self.q, 'Q'), (self.r, 'R')]
+            else:
+                draw_points = [(self.p, 'P = Q'), (self.r, 'R')]
+            af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
+            # fig.canvas.mpl_connect('button_press_event', af2)
+            plt.show()
 
     def addition_set(self):
         self.addition_title.config(text='Paso 3: se realiza la suma', font='Helvetica 10 bold', state="disabled")
@@ -347,6 +316,14 @@ class PointAddition:
         self.addition_point_label.config(state="disabled")
         self.addition_point_label.pack()
 
+    def addition_clear_and_disable(self):
+        self.addition_title.config(state="disable")
+        self.addition_eq_title_str.set("")
+        self.addition_eq_title_label.config(state="disable")
+        self.addition_eq_str.set("")
+        self.addition_eq_label.config(state="disable")
+        self.addition_point_str.set("")
+        self.addition_point_label.config(state="disable")
 
     def err_display(self, text, err_txt, image_err, err_label, error_frame):
         err_txt.set(text)

@@ -366,7 +366,7 @@ class Ecdh:
         self.bob_alice_clear_and_disable()
 
     def g_set(self):
-        self.g_title.config(text="Paso 2: elegir punto generador utilizado y compartido por Bob y Alicia",
+        self.g_title.config(text="Paso 2: elegir punto generador (G) utilizado y compartido por Bob y Alicia",
                             state="disabled", font='Helvetica 10 bold')
         self.g_title.pack()
 
@@ -374,13 +374,13 @@ class Ecdh:
         self.g_plot_button.pack(side="left")
         self.g_plot_frame.pack()
 
-        self.g_x_label.config(text="x =", state="disabled")
+        self.g_x_label.config(text="Gx =", state="disabled")
         self.g_x_label.pack(side="left")
         self.g_x_entry.config(width=80, state="disabled")
         self.g_x_entry.pack(side="left")
         self.g_x_frame.pack()
 
-        self.g_y_label.config(text="y =", state="disabled")
+        self.g_y_label.config(text="Gy =", state="disabled")
         self.g_y_label.pack(side="left")
         self.g_y_entry.config(width=80, state="disabled")
         self.g_y_entry.pack(side="left")

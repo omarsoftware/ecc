@@ -24,16 +24,16 @@ class App:
         self.main_menu.add_cascade(label="Archivo", menu=file_menu)
         file_menu.add_command(label="Salir", command=self.root.quit)
 
-        # Creating Properties menu
-        properties_menu = tk.Menu(self.main_menu)
-        self.main_menu.add_cascade(label="Propiedades", menu=properties_menu)
-        properties_menu.add_command(label="Conmutatividad", command=self.make_commutativity)
-
         # Creating Operations menu
         analysis_menu = tk.Menu(self.main_menu)
         self.main_menu.add_cascade(label="Operaciones", menu=analysis_menu)
         analysis_menu.add_command(label="Suma", command=self.make_point_addition)
         analysis_menu.add_command(label="Multiplicación", command=self.make_point_multiplication)
+
+        # Creating Properties menu
+        properties_menu = tk.Menu(self.main_menu)
+        self.main_menu.add_cascade(label="Propiedades", menu=properties_menu)
+        properties_menu.add_command(label="Conmutatividad", command=self.make_commutativity)
 
         # Creating Algorithms menu
         encrypt_menu = tk.Menu(self.main_menu)

@@ -2,18 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np; np.random.seed(1)
 import math
 
-class AnnoteFinder(object):
-    """callback for matplotlib to display an annotation when points are
-    clicked on.  The point which is closest to the click and within
-    xtol and ytol is identified.
-
-    Register this function like this:
-
-    scatter(xdata, ydata)
-    af = AnnoteFinder(xdata, ydata, annotes)
-    connect('button_press_event', af)
-    """
-
+class DrawAddition(object):
     def __init__(self, xdata, ydata, ax=None, xtol=None, ytol=None):
         self.data = list(zip(xdata, ydata))
         if xtol is None:
