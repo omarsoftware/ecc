@@ -18,6 +18,7 @@ class Ecdh:
         self.isPredefined = False
         self.bob_shared_key = None
         self.alice_shared_key = None
+        self.gen_points_dict = {}
 
         self.title = tk.Label(self.frame, text='Diffie-Hellman con Curva Elíptica', font='Helvetica 16 bold')
         self.title.pack(fill="x")
@@ -72,6 +73,16 @@ class Ecdh:
         # ///////////// Begin Generator Point /////////////
         self.g_title = tk.Label(self.frame)
 
+        # begin generator points dropdown
+        self.g_dropdown_frame = tk.Frame(self.frame)
+        self.g_points_list = [""]
+        self.g_dropdown_str = tk.StringVar()
+        self.g_dropdown_str.set("")
+        self.g_dropdown = tk.OptionMenu(self.g_dropdown_frame, self.g_dropdown_str, *self.g_points_list)
+        self.g_chosen_point_btn = tk.Button(self.g_dropdown_frame, text="Seleccionar",
+                                             command=lambda: self.chosen_point())
+        # end generator points dropdown
+
         self.g_x_frame = tk.Frame(self.frame)
         self.g_x_label = tk.Label(self.g_x_frame)
         self.g_x_entry = tk.Entry(self.g_x_frame)
@@ -106,7 +117,6 @@ class Ecdh:
         self.key_gen_label.pack()
 
         # ///////////// Begin Private Key autogeneration /////////////
-        #self.privkey_autogen_frame = tk.Frame(self.frame)
         self.privkey_autogen_btn = tk.Button(self.frame)
         self.privkey_autogen_btn.config(text="Generación automática", state="disabled",
                                         command=lambda: self.priv_key_autogen())
@@ -302,6 +312,19 @@ class Ecdh:
                                                        self.predef_curve["n"], self.predef_curve["h"])
             else:
                 self.elliptic_curve = ec.EllipticCurve(a, b, q)
+                self.generator_points = self.elliptic_curve.get_generator_points()
+                self.g_points_list = []
+                self.gen_points_dict = {}
+                self.g_dropdown_str.set(self.generator_points[0][0].print())
+
+                for point in self.generator_points:
+                    self.gen_points_dict[point[0].print()] = point[0]
+                    self.g_points_list.append(point[0].print())
+                menu = self.g_dropdown["menu"]
+                menu.delete(0, "end")
+                for string in self.g_points_list:
+                    menu.add_command(label=string,
+                                     command=lambda value=string: self.g_dropdown_str.set(value))
 
             self.ec_a_entry.config(state="disabled")
             self.ec_b_entry.config(state="disabled")
@@ -317,6 +340,8 @@ class Ecdh:
             self.ec_image_ok.pack(side="right")
 
             self.g_title.config(state='normal')
+            self.g_dropdown.config(state='normal')
+            self.g_chosen_point_btn.config(state='normal')
             self.g_x_label.config(state='normal')
             self.g_y_label.config(state='normal')
             self.g_x_entry.config(state='normal')
@@ -357,6 +382,12 @@ class Ecdh:
         self.g_title.config(text="Paso 2: elegir punto generador utilizado y compartido por Bob y Alicia",
                             state="disabled", font='Helvetica 10 bold')
         self.g_title.pack()
+
+        self.g_dropdown.config(state="disable")
+        self.g_dropdown.pack(side="left")
+        self.g_chosen_point_btn.config(state="disable")
+        self.g_chosen_point_btn.pack(side="left")
+        self.g_dropdown_frame.pack()
 
         self.g_x_label.config(text="x =", state="disabled")
         self.g_x_label.pack(side="left")
@@ -438,6 +469,9 @@ class Ecdh:
 
     def g_clear(self):
         self.privkey_autogen_btn.config(state="normal")
+        self.g_dropdown.config(state="normal")
+        self.g_dropdown_str.set("")
+        self.g_chosen_point_btn.config(state="normal")
         self.g_x_entry.config(state="normal")
         self.g_x_entry.delete(0, "end")
         self.g_y_entry.config(state="normal")
@@ -455,6 +489,9 @@ class Ecdh:
 
     def g_clear_and_disable(self):
         self.g_title.config(state="disabled")
+        self.g_dropdown_str.set("")
+        self.g_dropdown.config(state="disabled")
+        self.g_chosen_point_btn.config(state="disabled")
         self.g_x_label.config(state="disabled")
         self.g_x_entry.config(state="normal")
         self.g_x_entry.delete(0, "end")
@@ -804,6 +841,15 @@ class Ecdh:
 
         self.ec_q_entry.delete(0, "end")
         self.ec_q_entry.insert(0, self.predef_curve["q"])
+
+    def chosen_point(self):
+        self.g = self.gen_points_dict[self.g_dropdown_str.get()]
+
+        self.g_x_entry.delete(0, "end")
+        self.g_x_entry.insert(0, self.g.get_x())
+
+        self.g_y_entry.delete(0, "end")
+        self.g_y_entry.insert(0, self.g.get_y())
 
     def priv_key_autogen(self):
         self.bob_priv_entry.delete(0, "end")

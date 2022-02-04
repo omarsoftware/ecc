@@ -159,7 +159,7 @@ class EllipticCurve:
         prev_point = Point(0, 0, True)
         points = self.getPoints()
         for point in points:
-            for i in range(1, len(points)):
+            for i in range(1, len(points)+2):
                 r = self.point_mult(point, i)
                 if r == infinity and self.is_prime(i, 4) and i >= 3:
                     gen_points.append((prev_point, i))

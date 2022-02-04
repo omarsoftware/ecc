@@ -427,8 +427,8 @@ class PointMultiplication:
 
             n = int(self.scalar_n_entry.get())
 
-            if not 1 <= n <= cons.limit_q:
-                raise AssertionError("n debe ser mayor o igual a 1 y menor o igual a " + str(cons.limit_q))
+            if not 1 <= n <= self.elliptic_curve.get_n():
+                raise AssertionError("n debe ser mayor o igual a 1 y menor o igual a " + str(self.elliptic_curve.get_n()))
 
             start_1 = time.process_time()
             self.r_1 = self.elliptic_curve.point_mult_2(self.p, n)

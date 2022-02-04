@@ -95,6 +95,7 @@ class TestEllipticCurve(unittest.TestCase):
         self.assertEqual(point_r, point_f)
 
     @data(([1, 1, 5], [(2, 4), (2, 1)]),
+          ([1, 1, 7], [(0, 6), (0, 1), (2, 5), (2, 2)]),
           ([10, 15, 23], [(1, 16), (1, 7), (5, 12), (5, 11), (14, 22), (14, 1), (16, 19), (16, 4), (18, 22), (18, 1), (20, 21), (20, 2)]))
     def test_generator_points(self, value):
         final_points = []

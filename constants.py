@@ -1,5 +1,5 @@
 # Global constants
-screen_size = "800x870"
+screen_size = "800x885"
 title = "Laboratorio de Cifra de Curva Elíptica"
 x_path = "img/x.png"
 check_path = "img/check.png"
