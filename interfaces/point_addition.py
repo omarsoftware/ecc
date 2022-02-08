@@ -177,6 +177,9 @@ class PointAddition:
             b = int(self.ec_b_entry.get())
             q = int(self.ec_q_entry.get())
 
+            if q > cons.max_q_size:
+                raise AssertionError("q debe ser menor a " + str(cons.max_q_size) + " para evitar graficar demasiados puntos")
+
             self.elliptic_curve = ec.EllipticCurve(a, b, q)
 
             self.ec_auto_sel_btn.config(state="disabled")

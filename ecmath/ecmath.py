@@ -64,17 +64,7 @@ class EllipticCurve:
         self.q = q
         self.g = g
         self.h = h
-        self.generator_points = None
         self.infinity = Point(0, 0, True)
-
-        if n:
-            self.n = n
-        else:
-            self.generator_points = self.get_generator_points()
-            if self.generator_points:
-                self.n = len(self.generator_points)
-            else:
-                self.n = 0
 
         self.predefined = False
 
@@ -101,12 +91,6 @@ class EllipticCurve:
 
     def get_g(self):
         return self.g
-
-    def set_n(self, n):
-        self.n = n
-
-    def get_n(self):
-        return self.n
 
     def set_h(self, h):
         self.h = h
@@ -154,22 +138,6 @@ class EllipticCurve:
             final_points.append(Point(point[0], point[1], False))
 
         return final_points
-
-
-    def get_generator_points(self):
-        gen_points = []
-        infinity = Point(0, 0, True)
-        prev_point = Point(0, 0, True)
-        points = self.get_points()
-        for point in points:
-            for i in range(1, len(points)+2):
-                r = self.point_mult(point, i)
-                if r == infinity:
-                    gen_points.append((prev_point, i))
-                    break
-                else:
-                    prev_point = r
-        return gen_points
 
     def point_addition(self, point_p, point_q):
 
@@ -379,8 +347,8 @@ class ECDH:
         return rand.randint(1, elliptic_curve.get_n())
 
     def gen_pub_key(self, priv_key):
-        if not 0 < priv_key < self.ec.get_n():
-            raise AssertionError("la clave privada debe ser mayor a 0 y menor a n")
+        if not 0 < priv_key:
+            raise AssertionError("la clave privada debe ser mayor a 0")
 
         return self.ec.point_mult(self.ec.get_g(), priv_key)
 
