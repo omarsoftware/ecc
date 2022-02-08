@@ -28,6 +28,9 @@ class PointAddition:
         self.ec_gen_eq = tk.StringVar()
         self.ec_gen_eq_label = tk.Label(self.ec_frame)
 
+        self.ec_auto_sel_frame = tk.Frame(self.frame)
+        self.ec_auto_sel_btn = tk.Button(self.ec_auto_sel_frame)
+
         self.ec_a_frame = tk.Frame(self.frame)
         self.ec_a_label = tk.Label(self.ec_a_frame)
         self.ec_a_entry = tk.Entry(self.ec_a_frame)
@@ -118,6 +121,10 @@ class PointAddition:
         self.ec_gen_eq_label.pack()
         self.ec_frame.pack()
 
+        self.ec_auto_sel_btn.config(text="Autocompletar", command=lambda: self.ec_auto_selection())
+        self.ec_auto_sel_btn.pack()
+        self.ec_auto_sel_frame.pack()
+
         self.ec_a_label.config(text="a =")
         self.ec_a_label.pack(side="left")
         self.ec_a_entry.config(width=20)
@@ -172,6 +179,8 @@ class PointAddition:
 
             self.elliptic_curve = ec.EllipticCurve(a, b, q)
 
+            self.ec_auto_sel_btn.config(state="disabled")
+
             self.ec_a_entry.config(state="disabled")
             self.ec_b_entry.config(state="disabled")
             self.ec_q_entry.config(state="disabled")
@@ -190,6 +199,7 @@ class PointAddition:
             self.err_display(msg.args[0], self.ec_err_txt, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
 
     def ec_clear(self):
+        self.ec_auto_sel_btn.config(state="normal")
         self.ec_a_entry.config(state="normal")
         self.ec_a_entry.delete(0, 'end')
         self.ec_b_entry.config(state="normal")
@@ -207,6 +217,16 @@ class PointAddition:
 
         self.plot1_clear_and_disable()
         self.addition_clear_and_disable()
+
+    def ec_auto_selection(self):
+        self.ec_a_entry.delete(0, "end")
+        self.ec_a_entry.insert(0, 10)
+
+        self.ec_b_entry.delete(0, "end")
+        self.ec_b_entry.insert(0, 15)
+
+        self.ec_q_entry.delete(0, "end")
+        self.ec_q_entry.insert(0, 23)
 
     def plot1_set(self):
         self.plot1_title.config(text='Paso 2: elegir puntos P y Q a sumar', font='Helvetica 10 bold', state="disabled")
