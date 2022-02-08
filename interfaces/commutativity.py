@@ -26,16 +26,8 @@ class Commutativity:
         self.ec_gen_eq = tk.StringVar()
         self.ec_gen_eq_label = tk.Label(self.ec_frame)
 
-        # Begin predefined curves dropdown
-        self.dropdown_frame = tk.Frame(self.frame)
-        self.predef_curve = None
-        self.curves_list = cons.get_predef_curves_names()
-        self.dropdown_str = tk.StringVar()
-        self.dropdown_str.set(self.curves_list[0])
-        self.predef_dropdown = tk.OptionMenu(self.dropdown_frame, self.dropdown_str, *self.curves_list)
-        self.button_chosen_curve = tk.Button(self.dropdown_frame, text="Seleccionar",
-                                             command=lambda: self.chosen_curve())
-        # end predefined curves dropdown
+        self.ec_auto_sel_frame = tk.Frame(self.frame)
+        self.ec_auto_sel_btn = tk.Button(self.ec_auto_sel_frame)
 
         self.ec_a_frame = tk.Frame(self.frame)
         self.ec_a_label = tk.Label(self.ec_a_frame)
@@ -153,9 +145,9 @@ class Commutativity:
         self.ec_gen_eq_label.pack()
         self.ec_frame.pack()
 
-        self.predef_dropdown.pack(side="left")
-        self.button_chosen_curve.pack(side="left")
-        self.dropdown_frame.pack()
+        self.ec_auto_sel_btn.config(text="Autocompletar", command=lambda: self.ec_auto_selection())
+        self.ec_auto_sel_btn.pack()
+        self.ec_auto_sel_frame.pack()
 
         self.ec_a_label.config(text="a =")
         self.ec_a_label.pack(side="left")
@@ -209,19 +201,16 @@ class Commutativity:
             b = int(self.ec_b_entry.get())
             q = int(self.ec_q_entry.get())
 
-            if self.isPredefined:
-                self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"],
-                                                       self.predef_curve["q"],
-                                                       ec.Point(self.predef_curve["g"][0], self.predef_curve["g"][1]),
-                                                       self.predef_curve["n"], self.predef_curve["h"])
-            else:
-                self.elliptic_curve = ec.EllipticCurve(a, b, q)
+            if q > cons.max_q_size:
+                raise AssertionError("q debe ser menor a " + str(cons.max_q_size) + " para evitar graficar demasiados puntos")
+
+            self.elliptic_curve = ec.EllipticCurve(a, b, q)
+
+            self.ec_auto_sel_btn.config(state="disabled")
 
             self.ec_a_entry.config(state="disabled")
             self.ec_b_entry.config(state="disabled")
             self.ec_q_entry.config(state="disabled")
-            self.predef_dropdown.config(state="disabled")
-            self.button_chosen_curve.config(state="disabled")
 
             self.ec_ready_button.pack_forget()
             self.ec_image_err.pack_forget()
@@ -248,14 +237,13 @@ class Commutativity:
             self.err_display(msg.args[0], self.ec_err_txt, self.ec_image_err, self.ec_err_label, self.ec_error_frame)
 
     def ec_clear(self):
+        self.ec_auto_sel_btn.config(state="normal")
         self.ec_a_entry.config(state="normal")
         self.ec_a_entry.delete(0, 'end')
         self.ec_b_entry.config(state="normal")
         self.ec_b_entry.delete(0, 'end')
         self.ec_q_entry.config(state="normal")
         self.ec_q_entry.delete(0, 'end')
-        self.predef_dropdown.config(state="normal")
-        self.button_chosen_curve.config(state="normal")
         self.ec_title.pack()
         self.ec_err_txt.set("")
         self.ec_ready_button.pack()
@@ -508,18 +496,15 @@ class Commutativity:
         err_label.pack(side="left")
         error_frame.pack()
 
-    def chosen_curve(self):
-        self.predef_curve = cons.get_curve(self.dropdown_str.get())
-        self.isPredefined = True
-
+    def ec_auto_selection(self):
         self.ec_a_entry.delete(0, "end")
-        self.ec_a_entry.insert(0, self.predef_curve["a"])
+        self.ec_a_entry.insert(0, 10)
 
         self.ec_b_entry.delete(0, "end")
-        self.ec_b_entry.insert(0, self.predef_curve["b"])
+        self.ec_b_entry.insert(0, 15)
 
         self.ec_q_entry.delete(0, "end")
-        self.ec_q_entry.insert(0, self.predef_curve["q"])
+        self.ec_q_entry.insert(0, 23)
 
     def start_page(self):
         self.frame.grid(column=0, row=0, sticky="NWES")
