@@ -228,6 +228,9 @@ class PointMultiplication:
             b = int(self.ec_b_entry.get())
             q = int(self.ec_q_entry.get())
 
+            if q > cons.max_q_size:
+                raise AssertionError("q debe ser menor a " + str(cons.max_q_size) + " para evitar graficar demasiados puntos")
+
             self.elliptic_curve = ec.EllipticCurve(a, b, q)
 
             self.ec_auto_sel_btn.config(state="disabled")
@@ -427,8 +430,10 @@ class PointMultiplication:
 
             n = int(self.scalar_n_entry.get())
 
-            if not 1 <= n <= self.elliptic_curve.get_n():
-                raise AssertionError("n debe ser mayor o igual a 1 y menor o igual a " + str(self.elliptic_curve.get_n()))
+            if not 1 <= n <= cons.max_n_size:
+                raise AssertionError("n debe ser mayor o igual a 1 y menor o igual a \n"
+                                     + str(cons.max_n_size) +
+                                     " para evitar tiempos de espera excesivos.")
 
             start_1 = time.process_time()
             self.r_1 = self.elliptic_curve.point_mult_2(self.p, n)
@@ -553,7 +558,6 @@ class PointMultiplication:
         self.mult_d_a_a_title_lbl.config(state="disable")
         self.mult_d_a_a_result_str.set("")
         self.mult_d_a_a_result_lbl.config(state="disable")
-
 
     def err_display(self, text, err_txt, image_err, err_label, error_frame):
         err_txt.set(text)
