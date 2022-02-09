@@ -180,17 +180,7 @@ class EllipticCurve:
 
         return point_r
 
-    def point_doubling(self, point):
-        alpha = (3 * point.get_x() ** 2 + self.get_a()) / (2 * point.get_y())
-
-        point_r = Point()
-        point_r.set_x(alpha ** 2 - 2 * point.get_x())
-        point_r.set_y(alpha * (point.get_x() - point_r.get_x()) - point.get_y())
-
-        return point_r
-
     '''Calculates n * P by direct algorithm'''
-
     def direct_mult(self, point, k):
         point_r = self.infinity
         for x in range(k):
