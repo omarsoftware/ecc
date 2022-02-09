@@ -1,6 +1,7 @@
 import random as rand
 from math import sqrt
 
+
 class Point:
     def __init__(self, x=0, y=0, infinity=False):
         self.x = x
@@ -33,7 +34,8 @@ class Point:
     def __eq__(self, other_point):
         if other_point.is_infinity() and self.is_infinity():
             return True
-        if (not other_point.is_infinity() and self.is_infinity()) or (other_point.is_infinity() and not self.is_infinity()):
+        if (not other_point.is_infinity() and self.is_infinity()) or (
+                other_point.is_infinity() and not self.is_infinity()):
             return False
         return self.get_x() == other_point.get_x() and self.get_y() == other_point.get_y()
 
@@ -129,8 +131,8 @@ class EllipticCurve:
         final_points = []
 
         for x in range(self.q):
-            left_side.append((x, (x**2) % self.q))
-            right_side.append((x, ((x**3)+(self.a*x)+self.b) % self.q))
+            left_side.append((x, (x ** 2) % self.q))
+            right_side.append((x, ((x ** 3) + (self.a * x) + self.b) % self.q))
 
         for val_l in left_side:
             for val_r in right_side:
@@ -156,7 +158,7 @@ class EllipticCurve:
             return point_p
 
         if point_p.get_x() == point_q.get_x() and \
-           (point_p.get_y() != point_q.get_y() or point_p.get_y() == 0):
+                (point_p.get_y() != point_q.get_y() or point_p.get_y() == 0):
             return self.infinity
 
         if point_p.get_x() == point_q.get_x():
@@ -188,6 +190,7 @@ class EllipticCurve:
         return point_r
 
     '''Calculates n * P by direct algorithm'''
+
     def direct_mult(self, point, k):
         point_r = self.infinity
         for x in range(k):
@@ -195,6 +198,7 @@ class EllipticCurve:
         return point_r
 
     '''Calculates n * P by double-and-add algorithm'''
+
     def double_and_add(self, point, n):
         point_r = self.infinity
         while n > 0:
@@ -221,12 +225,6 @@ class EllipticCurve:
         return text
 
     def egcd(self, a, b):
-        """extended GCD
-        returns: (s, t, gcd) as a*s + b*t == gcd
-        #>>> s, t, gcd = egcd(a, b)
-        #>>> assert a % gcd == 0 and b % gcd == 0
-        #>>> assert a * s + b * t == gcd
-        """
         s0, s1, t0, t1 = 1, 0, 0, 1
         while b > 0:
             q, r = divmod(a, b)
@@ -236,93 +234,44 @@ class EllipticCurve:
         return s0, t0, a
 
     def inv(self, n, q):
-        """div on PN modulo a/b mod q as a * inv(b, q) mod q
-        # >>> assert n * inv(n, q) % q == 1
-        """
-        # n*inv % q = 1 => n*inv = q*m + 1 => n*inv + q*-m = 1
-        # => egcd(n, q) = (inv, -m, 1) => inv = egcd(n, q)[0] (mod q)
         return self.egcd(n, q)[0] % q
-        # [ref] naive implementation
-        # for i in range(q):
-        #    if (n * i) % q == 1:
-        #        return i
-        #    pass
-        # assert False, "unreached"
-        # pass
-
-    def sqrt(self, n, q):
-        """sqrt on PN modulo: returns two numbers or exception if not exist
-        >>> assert (sqrt(n, q)[0] ** 2) % q == n
-        >>> assert (sqrt(n, q)[1] ** 2) % q == n
-        """
-        assert n < q
-        for i in range(1, q):
-            if i * i % q == n:
-                return Point(i, q - i)
-            pass
-        raise Exception("not found")
-
-    def at(self, x):
-        """find points on curve at x
-        - x: int < q
-        - returns: ((x, y), (x,-y)) or not found exception
-        >>> a, ma = ec.at(x)
-        >>> assert a.x == ma.x and a.x == x
-        >>> assert a.x == ma.x and a.x == x
-        >>> assert ec.neg(a) == ma
-        >>> assert ec.is_valid(a) and ec.is_valid(ma)
-        """
-        assert x < self.q
-        ysq = (x ** 3 + self.a * x + self.b) % self.q
-        y, my = self.sqrt(ysq, self.q)
-        return Point(x, y), Point(x, my)
-
-    def get_ec_parms(self, curve):
-        pass
 
     def power(self, x, y, p):
-        res = 1;
-        x = x % p;
-        while (y > 0):
-            if (y & 1):
-                res = (res * x) % p;
-            y = y >> 1;  # y = y/2
-            x = (x * x) % p;
-        return res;
+        res = 1
+        x = x % p
+        while y > 0:
+            if y & 1:
+                res = (res * x) % p
+            y = y >> 1
+            x = (x * x) % p
+        return res
 
     def miillerTest(self, d, n):
-        a = 2 + rand.randint(1, n - 4);
-        x = self.power(a, d, n);
-
-        if (x == 1 or x == n - 1):
-            return True;
-
-        while (d != n - 1):
-            x = (x * x) % n;
-            d *= 2;
-
-            if (x == 1):
-                return False;
-            if (x == n - 1):
-                return True;
-
-        return False;
+        a = 2 + rand.randint(1, n - 4)
+        x = self.power(a, d, n)
+        if x == 1 or x == n - 1:
+            return True
+        while d != n - 1:
+            x = (x * x) % n
+            d *= 2
+            if x == 1:
+                return False
+            if x == n - 1:
+                return True
+        return False
 
     def is_prime(self, n, k):
-
-        if (n <= 1 or n == 4):
-            return False;
-        if (n <= 3):
-            return True;
-
-        d = n - 1;
-        while (d % 2 == 0):
-            d //= 2;
-
+        if n <= 1 or n == 4:
+            return False
+        if n <= 3:
+            return True
+        d = n - 1
+        while d % 2 == 0:
+            d //= 2
         for i in range(k):
-            if self.miillerTest(d, n) == False:
-                return False;
-        return True;
+            if not self.miillerTest(d, n):
+                return False
+        return True
 
 
 class User:

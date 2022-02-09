@@ -383,12 +383,14 @@ class PointMultiplication:
 
         plt.show()
         self.selected_points = af.get_selected_points()
-        self.p = ec.Point(self.selected_points['P'][0], self.selected_points['P'][1])
-        self.plot1_p_val_str.set(self.p.print())
 
-        self.plot1_p_label.config(state="normal")
-        self.plot1_p_val_label.config(state="normal")
-        self.plot1_ready_button.config(state="normal")
+        if self.selected_points:
+            self.p = ec.Point(self.selected_points['P'][0], self.selected_points['P'][1])
+            self.plot1_p_val_str.set(self.p.print())
+
+            self.plot1_p_label.config(state="normal")
+            self.plot1_p_val_label.config(state="normal")
+            self.plot1_ready_button.config(state="normal")
 
     def scalar_set(self):
         self.scalar_title.config(text='Paso 3: elegir escalar n para luego calcular R = n * P', font='Helvetica 10 bold', state="disabled")
