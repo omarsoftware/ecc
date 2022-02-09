@@ -24,7 +24,7 @@ class Commutativity:
         self.selected_points = None
         self.p_q_addition = None
         self.q_p_addition = None
-        self.isPredefined = False
+        self.is_predefined = False
 
         # ///////////// Begin Elliptic Curve /////////////
         self.ec_frame = tk.Frame(self.frame)

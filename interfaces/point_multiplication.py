@@ -436,12 +436,12 @@ class PointMultiplication:
                                      " para evitar tiempos de espera excesivos.")
 
             start_1 = time.process_time()
-            self.r_1 = self.elliptic_curve.point_mult_2(self.p, n)
+            self.r_1 = self.elliptic_curve.direct_mult(self.p, n)
             end_1 = time.process_time() - start_1
             self.mult_direct_result_str.set(decimal.Decimal(end_1))
 
             start_2 = time.process_time()
-            self.r_2 = self.elliptic_curve.point_mult(self.p, n)
+            self.r_2 = self.elliptic_curve.double_and_add(self.p, n)
             end_2 = time.process_time() - start_2
             self.mult_d_a_a_result_str.set(decimal.Decimal(end_2))
 

@@ -85,38 +85,29 @@ class TestEllipticCurve(unittest.TestCase):
     @data(([10, 15, 23], (9, 11), 1, (9, 11)),
           ([10, 15, 23], (9, 11), 14, (18, 22)),
           ([10, 15, 23], (9, 11), 26, [0, 0, True]))
-    def test_multiplication(self, value):
+    def test_direct_multiplication(self, value):
         curve = ec.EllipticCurve(*value[0])
         point_p = ec.Point(*value[1])
         n = value[2]
-        point_r = curve.point_mult(point_p, n)
+        point_r = curve.direct_mult(point_p, n)
         point_f = ec.Point(*value[3])
 
         self.assertEqual(point_r, point_f)
 
-    '''
-    @data(
-          ([6, 1, 19], []),
-          ([1, 1, 5], [(2, 4), (2, 1)]),
-          ([1, 1, 7], [(0, 6), (0, 1), (2, 5), (2, 2)]),
-          ([10, 15, 23], [(1, 16), (1, 7), (5, 12), (5, 11), (14, 22), (14, 1), (16, 19), (16, 4), (18, 22), (18, 1), (20, 21), (20, 2)]))
-    def test_generator_points(self, value):
-        final_points = []
-        final_points_2 = []
+    @data(([10, 15, 23], (9, 11), 1, (9, 11)),
+          ([10, 15, 23], (9, 11), 14, (18, 22)),
+          ([10, 15, 23], (9, 11), 26, [0, 0, True]))
+    def test_double_and_add(self, value):
         curve = ec.EllipticCurve(*value[0])
-        gen_points = curve.get_generator_points()
+        point_p = ec.Point(*value[1])
+        n = value[2]
+        point_r = curve.double_and_add(point_p, n)
+        point_f = ec.Point(*value[3])
 
-        for point in value[1]:
-            final_points.append(ec.Point(point[0], point[1], False))
+        self.assertEqual(point_r, point_f)
 
-        for point in gen_points:
-            final_points_2.append(point[0])
-
-        self.assertEqual(final_points, final_points_2)
-    '''
 
 class TestECDH(unittest.TestCase):
-
     def test_predefined_curve_1(self):
         curva = cons.EC_LIST["brainpoolP192r1"]
         self.elliptic_curve = ec.EllipticCurve(curva["a"], curva["b"], curva["q"], ec.Point(curva["g"][0],
@@ -125,13 +116,13 @@ class TestECDH(unittest.TestCase):
         self.alice = ec.User()
 
         self.bob.setPrivKey(0x6)
-        self.bob.setPubKey(self.elliptic_curve.point_mult(self.elliptic_curve.get_g(), self.bob.getPrivKey()))
+        self.bob.setPubKey(self.elliptic_curve.double_and_add(self.elliptic_curve.get_g(), self.bob.getPrivKey()))
 
         self.alice.setPrivKey(0x8)
-        self.alice.setPubKey(self.elliptic_curve.point_mult(self.elliptic_curve.get_g(), self.alice.getPrivKey()))
+        self.alice.setPubKey(self.elliptic_curve.double_and_add(self.elliptic_curve.get_g(), self.alice.getPrivKey()))
 
-        shared_secret_by_bob = self.elliptic_curve.point_mult(self.alice.getPubKey(), self.bob.getPrivKey())
-        shared_secret_by_alice = self.elliptic_curve.point_mult(self.bob.getPubKey(), self.alice.getPrivKey())
+        shared_secret_by_bob = self.elliptic_curve.double_and_add(self.alice.getPubKey(), self.bob.getPrivKey())
+        shared_secret_by_alice = self.elliptic_curve.double_and_add(self.bob.getPubKey(), self.alice.getPrivKey())
 
         self.assertEqual(shared_secret_by_bob, shared_secret_by_alice)
 

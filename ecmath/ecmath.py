@@ -56,17 +56,19 @@ class EllipticCurve:
         if not q > 2:
             raise AssertionError("q debe ser mayor a 2")
 
-        if not self.isNonSingular(a, b, q):
+        if not self.is_non_singular(a, b, q):
             raise AssertionError("curva elíptica singular")
 
         self.a = a
         self.b = b
         self.q = q
-        self.g = g
-        self.h = h
-        self.infinity = Point(0, 0, True)
-
         self.predefined = False
+        self.infinity = Point(0, 0, True)
+        if g:
+            self.g = g
+            self.n = n
+            self.h = h
+            self.predefined = True
 
     def set_a(self, a):
         self.a = a
@@ -92,25 +94,28 @@ class EllipticCurve:
     def get_g(self):
         return self.g
 
+    def set_n(self, n):
+        self.n = n
+
+    def get_n(self):
+        return self.n
+
     def set_h(self, h):
         self.h = h
 
     def get_h(self):
         return self.h
 
-    def isPreDefined(self):
+    def is_predefined(self):
         return self.predefined
 
-    def setPreDefined(self, bool_val):
-        self.predefined = bool_val
-
-    def isNonSingular(self, a, b, q):
+    def is_non_singular(self, a, b, q):
         if q:
             return (4 * (a ** 3) + 27 * (b ** 2)) % q != 0
         else:
             return (4 * (a ** 3) + 27 * (b ** 2)) != 0
 
-    def belongsToCurve(self, point):
+    def belongs_to_curve(self, point):
         if not isinstance(point, Point):
             raise AssertionError("parámetro de tipo incorrecto")
 
@@ -183,14 +188,14 @@ class EllipticCurve:
         return point_r
 
     '''Calculates n * P by direct algorithm'''
-    def point_mult_2(self, point, k):
+    def direct_mult(self, point, k):
         point_r = self.infinity
         for x in range(k):
             point_r = self.point_addition(point_r, point)
         return point_r
 
     '''Calculates n * P by double-and-add algorithm'''
-    def point_mult(self, point, n):
+    def double_and_add(self, point, n):
         point_r = self.infinity
         while n > 0:
             if n & 1 == 1:
@@ -350,7 +355,7 @@ class ECDH:
         if not 0 < priv_key:
             raise AssertionError("la clave privada debe ser mayor a 0")
 
-        return self.ec.point_mult(self.ec.get_g(), priv_key)
+        return self.ec.double_and_add(self.ec.get_g(), priv_key)
 
     def calc_shared_key(self, priv, pub):
-        return self.ec.point_mult(pub, priv)
+        return self.ec.double_and_add(pub, priv)

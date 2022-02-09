@@ -18,7 +18,7 @@ class Ecdh:
         self.bob = None
         self.alice = None
         self.ecdh = None
-        self.isPredefined = False
+        self.is_predefined = False
         self.bob_shared_key = None
         self.alice_shared_key = None
         self.selected_point = None
@@ -305,7 +305,7 @@ class Ecdh:
             b = int(self.ec_b_entry.get())
             q = int(self.ec_q_entry.get())
 
-            if self.isPredefined:
+            if self.is_predefined:
                 self.elliptic_curve = ec.EllipticCurve(self.predef_curve["a"], self.predef_curve["b"],
                                                        self.predef_curve["q"],
                                                        ec.Point(self.predef_curve["g"][0], self.predef_curve["g"][1]),
@@ -327,7 +327,7 @@ class Ecdh:
             self.ec_image_ok.pack(side="right")
 
             self.g_title.config(state='normal')
-            if not self.isPredefined:
+            if not self.is_predefined:
                 self.g_plot_button.config(state='normal')
             self.g_x_label.config(state='normal')
             self.g_y_label.config(state='normal')
@@ -335,7 +335,7 @@ class Ecdh:
             self.g_y_entry.config(state='normal')
             self.g_ready_button.config(state='normal')
 
-            if self.isPredefined:
+            if self.is_predefined:
                 self.g_x_entry.delete(0, "end")
                 self.g_x_entry.insert(0, self.elliptic_curve.get_g().get_x())
                 self.g_y_entry.delete(0, "end")
@@ -414,11 +414,10 @@ class Ecdh:
 
             self.g = ec.Point(int(x_str), int(y_str))
 
-            if not self.elliptic_curve.belongsToCurve(self.g):
+            if not self.elliptic_curve.belongs_to_curve(self.g):
                 raise AssertionError("el punto no pertenece a la curva")
 
-            if not self.elliptic_curve.get_g():
-                self.elliptic_curve.set_g(self.g)
+            self.elliptic_curve.set_g(self.g)
 
             self.g_x_entry.config(state="disabled")
             self.g_y_entry.config(state="disabled")
@@ -490,7 +489,7 @@ class Ecdh:
         self.g_err.pack_forget()
         self.g_error_frame.configure(height=1)
         self.g = None
-        self.isPredefined = False
+        self.is_predefined = False
         self.selected_point = None
 
     def bob_set(self):
@@ -813,7 +812,7 @@ class Ecdh:
 
     def chosen_curve(self):
         self.predef_curve = cons.get_curve(self.dropdown_str.get())
-        self.isPredefined = True
+        self.is_predefined = True
 
         self.ec_a_entry.delete(0, "end")
         self.ec_a_entry.insert(0, self.predef_curve["a"])
@@ -826,10 +825,16 @@ class Ecdh:
 
     def priv_key_autogen(self):
         self.bob_priv_entry.delete(0, "end")
-        self.bob_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()-1))
+        if self.elliptic_curve.is_predefined():
+            self.bob_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()-1))
+        else:
+            self.bob_priv_entry.insert(0, rand.randint(1, cons.max_n_size))
 
         self.alice_priv_entry.delete(0, "end")
-        self.alice_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()-1))
+        if self.elliptic_curve.is_predefined():
+            self.alice_priv_entry.insert(0, rand.randint(1, self.elliptic_curve.get_n()-1))
+        else:
+            self.alice_priv_entry.insert(0, rand.randint(1, cons.max_n_size))
 
     def plot_graph(self):
 

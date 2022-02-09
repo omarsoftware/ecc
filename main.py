@@ -28,7 +28,7 @@ class App:
         analysis_menu = tk.Menu(self.main_menu)
         self.main_menu.add_cascade(label="Operaciones", menu=analysis_menu)
         analysis_menu.add_command(label="Suma", command=self.make_point_addition)
-        analysis_menu.add_command(label="Multiplicación", command=self.make_point_multiplication)
+        analysis_menu.add_command(label="Multiplicación", command=self.make_double_and_addiplication)
 
         # Creating Properties menu
         properties_menu = tk.Menu(self.main_menu)
@@ -48,11 +48,11 @@ class App:
         # self.addition = Addition(master=self.root, app=self)
         # self.addition = Multiplication(master=self.root, app=self)
         self.point_addition = PointAddition(master=self.root, app=self)
-        self.point_multiplication = PointMultiplication(master=self.root, app=self)
+        self.double_and_addiplication = PointMultiplication(master=self.root, app=self)
         self.commutativity = Commutativity(master=self.root, app=self)
         self.ecdh = Ecdh(master=self.root, app=self)
 
-        self.pages = [self.point_addition, self.point_multiplication, self.commutativity, self.ecdh]
+        self.pages = [self.point_addition, self.double_and_addiplication, self.commutativity, self.ecdh]
 
     def main_page(self):
         self.frame.grid()
@@ -67,10 +67,10 @@ class App:
         self.hide_all_frames()
         self.point_addition.start_page()
 
-    def make_point_multiplication(self):
+    def make_double_and_addiplication(self):
         self.frame.grid_forget()
         self.hide_all_frames()
-        self.point_multiplication.start_page()
+        self.double_and_addiplication.start_page()
 
     def make_point_operations(self):
         self.frame.grid_forget()
