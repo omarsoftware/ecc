@@ -188,7 +188,6 @@ class EllipticCurve:
         return point_r
 
     '''Calculates n * P by double-and-add algorithm'''
-
     def double_and_add(self, point, n):
         point_r = self.infinity
         while n > 0:
