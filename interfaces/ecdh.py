@@ -625,6 +625,23 @@ class Ecdh:
             if not bob_priv_str.lstrip('-').isnumeric() or not alice_priv_str.lstrip('-').isnumeric():
                 raise AssertionError("clave/s privada/s deben ser números")
 
+            self.bob = ec.User()
+            self.alice = ec.User()
+            self.ecdh = ec.ECDH(self.elliptic_curve)
+
+            bob_priv = int(bob_priv_str)
+            alice_priv = int(alice_priv_str)
+
+            self.bob.setPrivKey(bob_priv)
+            self.bob.setPubKey(self.ecdh.gen_pub_key(self.bob.getPrivKey()))
+            if self.bob.getPubKey().is_infinity():
+                raise AssertionError("La clave pública obtenida fue el punto en el infinito.\n Pruebe otra clave privada")
+
+            self.alice.setPrivKey(alice_priv)
+            self.alice.setPubKey(self.ecdh.gen_pub_key(self.alice.getPrivKey()))
+            if self.alice.getPubKey().is_infinity():
+                raise AssertionError("La clave pública obtenida fue el punto en el infinito.\n Pruebe otra clave privada")
+
             self.bob_alice_ready_button.pack_forget()
             self.bob_alice_edit_button.pack(side="left")
             self.bob_alice_image_ok.pack(side="right")
@@ -634,20 +651,7 @@ class Ecdh:
 
             self.shared_title_label.configure(state="normal")
 
-            self.bob = ec.User()
-            self.alice = ec.User()
-            self.ecdh = ec.ECDH(self.elliptic_curve)
-
-            bob_priv = int(bob_priv_str)
-            alice_priv = int(alice_priv_str)
-
             self.privkey_autogen_btn.config(state="disabled")
-
-            self.bob.setPrivKey(bob_priv)
-            self.bob.setPubKey(self.ecdh.gen_pub_key(self.bob.getPrivKey()))
-
-            self.alice.setPrivKey(alice_priv)
-            self.alice.setPubKey(self.ecdh.gen_pub_key(self.alice.getPrivKey()))
 
             self.bob_shared_key = self.ecdh.calc_shared_key(self.bob.getPrivKey(), self.alice.getPubKey())
             self.alice_shared_key = self.ecdh.calc_shared_key(self.alice.getPrivKey(), self.bob.getPubKey())

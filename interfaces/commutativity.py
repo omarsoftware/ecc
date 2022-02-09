@@ -24,7 +24,6 @@ class Commutativity:
         self.selected_points = None
         self.p_q_addition = None
         self.q_p_addition = None
-        self.is_predefined = False
 
         # ///////////// Begin Elliptic Curve /////////////
         self.ec_frame = tk.Frame(self.frame)
@@ -291,15 +290,16 @@ class Commutativity:
                 self.q_plus_p_str.set("punto en el infinito")
             self.q_plus_p_val_label.config(state="normal")
 
-            fig2, ax2 = plt.subplots()
-            ax2.scatter(x_coords, y_coords)
-            if not self.p == self.q:
-                draw_points = [(self.p, 'P'), (self.q, 'Q'), (self.r1, 'R')]
-            else:
-                draw_points = [(self.p, 'P = Q'), (self.r1, 'R')]
-            af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
-            # fig.canvas.mpl_connect('button_press_event', af2)
-            plt.show()
+            if not self.r1.is_infinity():
+                fig2, ax2 = plt.subplots()
+                ax2.scatter(x_coords, y_coords)
+                if not self.p == self.q:
+                    draw_points = [(self.p, 'P'), (self.q, 'Q'), (self.r1, 'R')]
+                else:
+                    draw_points = [(self.p, 'P = Q'), (self.r1, 'R')]
+                af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
+                # fig.canvas.mpl_connect('button_press_event', af2)
+                plt.show()
 
     def plot1_clear_and_disable(self):
         self.plot1_title.config(state="disabled")

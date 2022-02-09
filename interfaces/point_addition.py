@@ -317,15 +317,16 @@ class PointAddition:
             self.addition_eq_label.config(state="normal")
             self.addition_point_label.config(state="normal")
 
-            fig2, ax2 = plt.subplots()
-            ax2.scatter(x_coords, y_coords)
-            if not self.p == self.q:
-                draw_points = [(self.p, 'P'), (self.q, 'Q'), (self.r, 'R')]
-            else:
-                draw_points = [(self.p, 'P = Q'), (self.r, 'R')]
-            af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
-            # fig.canvas.mpl_connect('button_press_event', af2)
-            plt.show()
+            if not self.r.is_infinity():
+                fig2, ax2 = plt.subplots()
+                ax2.scatter(x_coords, y_coords)
+                if not self.p == self.q:
+                    draw_points = [(self.p, 'P'), (self.q, 'Q'), (self.r, 'R')]
+                else:
+                    draw_points = [(self.p, 'P = Q'), (self.r, 'R')]
+                af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
+                # fig.canvas.mpl_connect('button_press_event', af2)
+                plt.show()
 
     def addition_set(self):
         self.addition_title.config(text='Paso 3: se realiza la suma', font='Helvetica 10 bold', state="disabled")

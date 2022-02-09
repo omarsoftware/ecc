@@ -475,12 +475,13 @@ class PointMultiplication:
                 x_coords = x_coords + (point.get_x(),)
                 y_coords = y_coords + (point.get_y(),)
 
-            fig2, ax2 = plt.subplots()
-            ax2.scatter(x_coords, y_coords)
-            draw_points = [(self.p, 'P'), (self.r_1, 'R')]
-            af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
-            # fig.canvas.mpl_connect('button_press_event', af2)
-            plt.show()
+            if not self.r_1.is_infinity():
+                fig2, ax2 = plt.subplots()
+                ax2.scatter(x_coords, y_coords)
+                draw_points = [(self.p, 'P'), (self.r_1, 'R')]
+                af2 = draw.DrawOnly(x_coords, y_coords, draw_points, ax=ax2)
+                # fig.canvas.mpl_connect('button_press_event', af2)
+                plt.show()
 
         except Exception as msg:
             self.err_display(msg.args[0], self.scalar_err_txt, self.scalar_image_err, self.scalar_err_label, self.scalar_error_frame)
