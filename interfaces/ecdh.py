@@ -117,10 +117,10 @@ class Ecdh:
         self.key_gen_label.pack()
 
         # ///////////// Begin Private Key autogeneration /////////////
-        self.privkey_autogen_btn = tk.Button(self.frame)
-        self.privkey_autogen_btn.config(text="Generación automática", state="disabled",
+        self.priv_key_autogen_btn = tk.Button(self.frame)
+        self.priv_key_autogen_btn.config(text="Generación automática", state="disabled",
                                         command=lambda: self.priv_key_autogen())
-        self.privkey_autogen_btn.pack()
+        self.priv_key_autogen_btn.pack()
 
         # ///////////// End Private Key autogeneration /////////////
 
@@ -431,7 +431,7 @@ class Ecdh:
 
             self.key_gen_label.config(state="normal")
 
-            self.privkey_autogen_btn.config(state="normal")
+            self.priv_key_autogen_btn.config(state="normal")
 
             self.bob_title.config(state="normal")
             self.bob_priv_label.config(state="normal")
@@ -452,7 +452,7 @@ class Ecdh:
             self.err_display(msg.args[0], self.g_err_txt, self.g_image_err, self.g_err, self.g_error_frame)
 
     def g_clear(self):
-        self.privkey_autogen_btn.config(state="normal")
+        self.priv_key_autogen_btn.config(state="normal")
         self.g_plot_button.config(state="normal")
         self.g_x_entry.config(state="normal")
         self.g_x_entry.delete(0, "end")
@@ -632,14 +632,14 @@ class Ecdh:
             bob_priv = int(bob_priv_str)
             alice_priv = int(alice_priv_str)
 
-            self.bob.setPrivKey(bob_priv)
-            self.bob.setPubKey(self.ecdh.gen_pub_key(self.bob.getPrivKey()))
-            if self.bob.getPubKey().is_infinity():
+            self.bob.set_priv_key(bob_priv)
+            self.bob.set_pub_key(self.ecdh.gen_pub_key(self.bob.get_priv_key()))
+            if self.bob.get_pub_key().is_infinity():
                 raise AssertionError("La clave pública obtenida fue el punto en el infinito.\n Pruebe otra clave privada")
 
-            self.alice.setPrivKey(alice_priv)
-            self.alice.setPubKey(self.ecdh.gen_pub_key(self.alice.getPrivKey()))
-            if self.alice.getPubKey().is_infinity():
+            self.alice.set_priv_key(alice_priv)
+            self.alice.set_pub_key(self.ecdh.gen_pub_key(self.alice.get_priv_key()))
+            if self.alice.get_pub_key().is_infinity():
                 raise AssertionError("La clave pública obtenida fue el punto en el infinito.\n Pruebe otra clave privada")
 
             self.bob_alice_ready_button.pack_forget()
@@ -651,10 +651,10 @@ class Ecdh:
 
             self.shared_title_label.configure(state="normal")
 
-            self.privkey_autogen_btn.config(state="disabled")
+            self.priv_key_autogen_btn.config(state="disabled")
 
-            self.bob_shared_key = self.ecdh.calc_shared_key(self.bob.getPrivKey(), self.alice.getPubKey())
-            self.alice_shared_key = self.ecdh.calc_shared_key(self.alice.getPrivKey(), self.bob.getPubKey())
+            self.bob_shared_key = self.ecdh.calc_shared_key(self.bob.get_priv_key(), self.alice.get_pub_key())
+            self.alice_shared_key = self.ecdh.calc_shared_key(self.alice.get_priv_key(), self.bob.get_pub_key())
 
             self.alice_shared_x_val_str.set(self.alice_shared_key.get_x())
             self.alice_shared_y_val_str.set(self.alice_shared_key.get_y())
@@ -676,19 +676,19 @@ class Ecdh:
             self.alice_shared_y_val_label.config(state="normal")
 
             self.bob_pub_x_label.config(state="normal")
-            self.bob_pub_x_val_str.set(self.bob.getPubKey().get_x())
+            self.bob_pub_x_val_str.set(self.bob.get_pub_key().get_x())
             self.bob_pub_x_val_label.config(state="normal")
             self.bob_pub_y_label.config(state="normal")
-            self.bob_pub_y_val_str.set(self.bob.getPubKey().get_y())
+            self.bob_pub_y_val_str.set(self.bob.get_pub_key().get_y())
             self.bob_pub_y_val_label.config(state="normal")
 
-            self.alice.setPrivKey(alice_priv)
-            self.alice.setPubKey(self.ecdh.gen_pub_key(self.alice.getPrivKey()))
+            self.alice.set_priv_key(alice_priv)
+            self.alice.set_pub_key(self.ecdh.gen_pub_key(self.alice.get_priv_key()))
             self.alice_pub_x_label.config(state="normal")
-            self.alice_pub_x_val_str.set(self.alice.getPubKey().get_x())
+            self.alice_pub_x_val_str.set(self.alice.get_pub_key().get_x())
             self.alice_pub_x_val_label.config(state="normal")
             self.alice_pub_y_label.config(state="normal")
-            self.alice_pub_y_val_str.set(self.alice.getPubKey().get_y())
+            self.alice_pub_y_val_str.set(self.alice.get_pub_key().get_y())
             self.alice_pub_y_val_label.config(state="normal")
 
             self.bob_priv_entry.config(state="disabled")
@@ -702,7 +702,7 @@ class Ecdh:
                              self.bob_alice_err, self.bob_alice_error_frame)
 
     def bob_alice_clear(self):
-        self.privkey_autogen_btn.config(state="normal")
+        self.priv_key_autogen_btn.config(state="normal")
 
         self.bob_priv_entry.config(state="normal")
         self.bob_priv_entry.delete(0, "end")
@@ -792,7 +792,7 @@ class Ecdh:
         self.bob_alice_image_ok.pack_forget()
         self.bob_alice_ready_button.pack()
 
-        self.privkey_autogen_btn.config(state="disabled")
+        self.priv_key_autogen_btn.config(state="disabled")
 
         self.bob_label.config(state="disabled")
         self.alice_label.config(state="disabled")

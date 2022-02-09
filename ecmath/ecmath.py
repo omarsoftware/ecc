@@ -41,7 +41,7 @@ class Point:
 
 
 class EllipticCurve:
-    def __init__(self, a, b, q=None, g=None, n=None, h=None):
+    def __init__(self, a, b, q, g=None, n=None, h=None):
 
         if not isinstance(a, int) or not isinstance(b, int) or not isinstance(q, int):
             raise AssertionError("a, b y q deben ser números")
@@ -276,20 +276,20 @@ class EllipticCurve:
 
 class User:
     def __init__(self):
-        self.privKey = None
-        self.pubKey = None
+        self.priv_key = None
+        self.pub_key = None
 
-    def setPrivKey(self, privKey):
-        self.privKey = privKey
+    def set_priv_key(self, priv_key):
+        self.priv_key = priv_key
 
-    def getPrivKey(self):
-        return self.privKey
+    def get_priv_key(self):
+        return self.priv_key
 
-    def setPubKey(self, pubKey):
-        self.pubKey = pubKey
+    def set_pub_key(self, pub_key):
+        self.pub_key = pub_key
 
-    def getPubKey(self):
-        return self.pubKey
+    def get_pub_key(self):
+        return self.pub_key
 
 
 class ECDH:

@@ -115,14 +115,14 @@ class TestECDH(unittest.TestCase):
         self.bob = ec.User()
         self.alice = ec.User()
 
-        self.bob.setPrivKey(0x6)
-        self.bob.setPubKey(self.elliptic_curve.double_and_add(self.elliptic_curve.get_g(), self.bob.getPrivKey()))
+        self.bob.set_priv_key(0x6)
+        self.bob.set_pub_key(self.elliptic_curve.double_and_add(self.elliptic_curve.get_g(), self.bob.get_priv_key()))
 
-        self.alice.setPrivKey(0x8)
-        self.alice.setPubKey(self.elliptic_curve.double_and_add(self.elliptic_curve.get_g(), self.alice.getPrivKey()))
+        self.alice.set_priv_key(0x8)
+        self.alice.set_pub_key(self.elliptic_curve.double_and_add(self.elliptic_curve.get_g(), self.alice.get_priv_key()))
 
-        shared_secret_by_bob = self.elliptic_curve.double_and_add(self.alice.getPubKey(), self.bob.getPrivKey())
-        shared_secret_by_alice = self.elliptic_curve.double_and_add(self.bob.getPubKey(), self.alice.getPrivKey())
+        shared_secret_by_bob = self.elliptic_curve.double_and_add(self.alice.get_pub_key(), self.bob.get_priv_key())
+        shared_secret_by_alice = self.elliptic_curve.double_and_add(self.bob.get_pub_key(), self.alice.get_priv_key())
 
         self.assertEqual(shared_secret_by_bob, shared_secret_by_alice)
 
